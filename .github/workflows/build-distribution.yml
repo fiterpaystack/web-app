@@ -3,8 +3,6 @@ name: Build distribution image
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 jobs:
 
@@ -18,6 +16,10 @@ jobs:
         uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4
         with:
           fetch-depth: 0
+      
+      - name: Get the commit message
+        id: commit-message
+        run: echo "::set-output name=message::$(git log -1 --pretty=format:'%s')"
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v3
@@ -39,4 +41,24 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-     
+
+
+  notify-slack:
+    runs-on: ubuntu-latest
+    needs: build
+    if: always()
+    steps:
+      - name: Notify Slack
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+          SLACK_TITLE: 'Deployment status of ${GITHUB_REPOSITORY}'
+          run: |
+            if [[ "${{ job.status }}" == "success" ]]; then
+              echo "SLACK_MESSAGE=✅ Build and deployment completed successfully on branch ${GITHUB_REF}. Last commit: ${NEEDS_BUILD_OUTPUTS_COMMIT_MESSAGE}" >> $GITHUB_ENV
+            else
+              echo "SLACK_MESSAGE=❌ Build and deployment failed on branch ${GITHUB_REF}. Last commit: ${NEEDS_BUILD_OUTPUTS_COMMIT_MESSAGE}" >> $GITHUB_ENV
+            fi
+          SLACK_COLOR: ${{ job.status == 'success' && '#36A64F' || '#FF2D00' }}
+    
