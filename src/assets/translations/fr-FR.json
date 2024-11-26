@@ -741,7 +741,7 @@
     },
     "commons": {
       "50 characters long": "50 caractères",
-      "8 characters long": "8 caractères",
+      "12 characters long": "12 caractères",
       "Amount must be": "Le montant doit être",
       "At least one restricted product": "Au moins un produit restreint",
       "At least one role": "Au moins un rôle",
@@ -1104,6 +1104,7 @@
       "Template Parameters": "Paramètres du modèle",
       "Term Options": "Options de durée",
       "Terms": "Termes",
+      "Term Variations": "Variations de durée",
       "Total Withdrawals": "Retraits totaux",
       "Transaction Details": "détails de la transaction",
       "Transaction Reverted": "Transaction annulée",
@@ -1132,7 +1133,8 @@
       "Working Days": "Jours de travail",
       "You have created": "Vous avez créé",
       "You can drag and drop the rows to set a Payment Allocations order": "Vous pouvez faire glisser et déposer les lignes pour définir un ordre de répartition des paiements",
-      "successfully select option": "avec succès. Veuillez sélectionner parmi les options ci-dessous pour continuer."
+      "successfully select option": "avec succès. Veuillez sélectionner parmi les options ci-dessous pour continuer.",
+      "Map Charge-off reasons to Expense accounts": "Cartographier les motifs de radiation sur les comptes de dépenses"
     },
     "inputs": {
       "accounting": {
@@ -2224,6 +2226,7 @@
       "Show Closed Centers": "Afficher les centres fermés",
       "Show Closed Groups": "Afficher les groupes fermés",
       "Show Payment Details": "Afficher les détails du paiement",
+      "Specific to Installment": "Spécifique au versement",
       "Staff": "Personnel",
       "Standing Instruction": "Instruction permanente",
       "Standing Instruction Type": "Type d'instruction permanente",
@@ -2268,6 +2271,7 @@
       "Tenant": "Locataire",
       "Tenant App Key": "Clé d'application du locataire",
       "Tenant Id": "Identifiant du locataire",
+      "Term Variations": "Variations de durée",
       "Terms vary based on loan cycle": "Les conditions varient en fonction du cycle de prêt",
       "Text": "Texte",
       "Theme": "Thème",
@@ -2419,7 +2423,8 @@
       "valid": "valide",
       "INTEREST REFUND": "REMBOURSEMENT DES INTÉRÊTS",
       "Supported Interest Refund Types": "Types de remboursement d'intérêts pris en charge",
-      "SUPPORTED REFUND TRANSACTIONS FOR INTEREST REFUND": "Types de remboursement d'intérêts pris en charge"
+      "SUPPORTED REFUND TRANSACTIONS FOR INTEREST REFUND": "Types de remboursement d'intérêts pris en charge",
+      "Charge-off reason": "Motif de la radiation"
     },
     "links": {
       "Community": "Communauté",

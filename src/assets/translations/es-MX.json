@@ -739,7 +739,7 @@
         },
         "commons": {
             "50 characters long": "50 caracteres de largo",
-            "8 characters long": "8 caracteres de largo",
+            "12 characters long": "12 caracteres de largo",
             "Amount must be": "La cantidad debe ser",
             "At least one restricted product": "Al menos un producto restringido",
             "At least one role": "Al menos un rol",
@@ -1102,6 +1102,7 @@
             "Template Parameters": "Parámetros de plantilla",
             "Term Options": "Opciones de plazo",
             "Terms": "Términos",
+            "Term Variations": "Variaciones de términos",
             "Total Withdrawals": "Retiros totales",
             "Transaction Details": "Detalles de la transacción",
             "Transaction Reverted": "Transacción revertida",
@@ -1130,7 +1131,8 @@
             "Working Days": "Días laborables",
             "You have created": "tu has creado",
             "You can drag and drop the rows to set a Payment Allocations order": "Puede arrastrar y soltar las filas para establecer un orden de asignaciones de pago",
-            "successfully select option": "exitosamente. Seleccione una de las opciones siguientes para continuar."
+            "successfully select option": "exitosamente. Seleccione una de las opciones siguientes para continuar.",
+            "Map Charge-off reasons to Expense accounts": "Asignar motivos de cancelación a cuentas de gastos"
         },
         "inputs": {
             "accounting": {
@@ -2223,6 +2225,7 @@
             "Show Closed Centers": "Mostrar Centros Cerrados",
             "Show Closed Groups": "Mostrar grupos cerrados",
             "Show Payment Details": "Mostrar detalles de pago",
+            "Specific to Installment": "Específico para la cuota",
             "Staff": "Asesor",
             "Standing Instruction": "Instrucción permanente",
             "Standing Instruction Type": "Tipo de instrucción permanente",
@@ -2267,6 +2270,7 @@
             "Tenant": "Entidad",
             "Tenant App Key": "Clave de aplicación para la entidad",
             "Tenant Id": "Id de la entidad",
+            "Term Variations": "Variaciones de Condiciones",
             "Terms vary based on loan cycle": "Los términos varían según el ciclo del Crédito.",
             "Text": "Texto",
             "Theme": "Tema",
@@ -2418,7 +2422,8 @@
             "valid": "válido",
           "INTEREST REFUND": "REEMBOLSO DE INTERESES",
           "Supported Interest Refund Types": "Tipos de reembolso de intereses admitidos",
-          "SUPPORTED REFUND TRANSACTIONS FOR INTEREST REFUND": "Tipos de reembolso de intereses admitidos"
+          "SUPPORTED REFUND TRANSACTIONS FOR INTEREST REFUND": "Tipos de reembolso de intereses admitidos",
+            "Charge-off reason": "Motivo de la cancelación"
         },
         "links": {
             "Community": "Comunidad",

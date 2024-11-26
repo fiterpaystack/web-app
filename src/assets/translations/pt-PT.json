@@ -741,7 +741,7 @@
     },
     "commons": {
       "50 characters long": "50 caracteres",
-      "8 characters long": "8 caracteres de comprimento",
+      "12 characters long": "12 caracteres de comprimento",
       "Amount must be": "O valor deve ser",
       "At least one restricted product": "Pelo menos um produto restrito",
       "At least one role": "Pelo menos um papel",
@@ -1104,6 +1104,7 @@
       "Template Parameters": "Parâmetros do modelo",
       "Term Options": "Opções de prazo",
       "Terms": "Termos",
+      "Term Variations": "Variações de prazo",
       "Total Withdrawals": "Retiradas totais",
       "Transaction Details": "Detalhes da transação",
       "Transaction Reverted": "Transação revertida",
@@ -1132,7 +1133,8 @@
       "Working Days": "Dias úteis",
       "You have created": "Você criou",
       "You can drag and drop the rows to set a Payment Allocations order": "Você pode arrastar e soltar as linhas para definir um pedido de alocações de pagamento",
-      "successfully select option": "com sucesso. Selecione uma das opções abaixo para prosseguir."
+      "successfully select option": "com sucesso. Selecione uma das opções abaixo para prosseguir.",
+      "Map Charge-off reasons to Expense accounts": "Mapear os motivos de baixa para as contas de despesas"
     },
     "inputs": {
       "accounting": {
@@ -2224,6 +2226,7 @@
       "Show Closed Centers": "Mostrar Centros Fechados",
       "Show Closed Groups": "Mostrar grupos fechados",
       "Show Payment Details": "Mostrar detalhes de pagamento",
+      "Specific to Installment": "Específico para parcelamento",
       "Staff": "Funcionários",
       "Standing Instruction": "Instrução Permanente",
       "Standing Instruction Type": "Tipo de instrução permanente",
@@ -2268,6 +2271,7 @@
       "Tenant": "Inquilino",
       "Tenant App Key": "Chave do aplicativo do locatário",
       "Tenant Id": "ID do locatário",
+      "Term Variations": "Variações de prazo",
       "Terms vary based on loan cycle": "Os termos variam de acordo com o ciclo do empréstimo",
       "Text": "Texto",
       "Theme": "Tema",
@@ -2419,7 +2423,8 @@
       "valid": "válido",
       "INTEREST REFUND": "REEMBOLSO DE JUROS",
       "Supported Interest Refund Types": "Tipos de reembolso de juros suportados",
-      "SUPPORTED REFUND TRANSACTIONS FOR INTEREST REFUND": "Tipos de reembolso de juros suportados"
+      "SUPPORTED REFUND TRANSACTIONS FOR INTEREST REFUND": "Tipos de reembolso de juros suportados",
+      "Charge-off reason": "Motivo da cobrança"
     },
     "links": {
       "Community": "Comunidade",
