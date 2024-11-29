@@ -737,7 +737,9 @@
       "Add periodic accrual entries": "Přidejte pravidelné položky časového rozlišení",
       "Accrual Activity Posting on Installment Due Date": "Účtování akruální činnosti v den splatnosti splátky",
       "Check loan repayment due": "Zkontrolujte splatnost půjčky",
-      "Transfer to Savings": "Převod do Úspory"
+      "Transfer to Savings": "Převod do Úspory",
+      "Zero interest after charge-off": "Nulový úrok po nabití",
+      "Accelerate maturity to charge-off date": "Urychlete splatnost do data odúčtování"
     },
     "commons": {
       "50 characters long": "50 znaků dlouhé",
@@ -1505,6 +1507,7 @@
       "Dividend Period End Date": "Datum ukončení dividendového období",
       "Dividend Period Start Date": "Datum zahájení dividendového období",
       "Dividends": "Dividendy",
+      "Do not calculate interest on past due principal balances": "Neúčtovat úroky z dlužných hlavních zůstatků",
       "Documents": "Dokumenty",
       "Document Key": "Klíč dokumentu",
       "Document Type": "Typ dokumentu",
@@ -1790,6 +1793,7 @@
       "Loan Amount and Balance": "Výše a zůstatek půjčky",
       "Loan Approval": "Schválení půjčky",
       "Loan Balance": "Zůstatek půjčky",
+      "Loan Charge-off behaviour": "Chování při odúčtování půjčky",
       "Loan Collateral Details": "Podrobnosti o zajištění úvěru",
       "Loan Cycle": "Úvěrový cyklus",
       "Loan Disbursal": "Vyplacení půjčky",
