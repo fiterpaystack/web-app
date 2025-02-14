@@ -1,7 +1,4 @@
 /dist
 /node_modules
 **/.git
-*.html
-*.js
-*.json
-*.ts
+src/environments/.env.ts

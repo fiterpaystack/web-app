@@ -2,7 +2,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpBackend, HttpClient, HttpClientModule } from '@angular/common/http';
 
 /** Environment Configuration */
 
@@ -35,7 +35,7 @@ import { CollectionsModule } from './collections/collections.module';
 import { ProfileModule } from './profile/profile.module';
 import { TasksModule } from './tasks/tasks.module';
 import { ConfigurationWizardModule } from './configuration-wizard/configuration-wizard.module';
-import {PortalModule} from '@angular/cdk/portal';
+import { PortalModule } from '@angular/cdk/portal';
 
 /** Main Routing Module */
 import { AppRoutingModule } from './app-routing.module';
@@ -58,10 +58,14 @@ export function HttpLoaderFactory(http: HttpClient) {
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: (http: HttpClient, locationStrategy: LocationStrategy) => {
-          return new TranslateHttpLoader(http, `${ window.location.protocol }//${ window.location.host }${locationStrategy.getBaseHref()}/assets/translations/`, '.json');
+        useFactory: (httpBackend: HttpBackend, locationStrategy: LocationStrategy) => {
+          const http = new HttpClient(httpBackend);
+          return new TranslateHttpLoader(http, `/assets/translations/`, '.json');
         },
-        deps: [HttpClient, LocationStrategy]
+        deps: [
+          HttpBackend,
+          LocationStrategy
+        ]
       }
     }),
     BrowserModule,
@@ -91,9 +95,13 @@ export function HttpLoaderFactory(http: HttpClient) {
     TasksModule,
     ConfigurationWizardModule,
     AppRoutingModule
+
   ],
-  declarations: [WebAppComponent, NotFoundComponent],
+  declarations: [
+    WebAppComponent,
+    NotFoundComponent
+  ],
   providers: [DatePipe],
   bootstrap: [WebAppComponent]
 })
-export class AppModule { }
+export class AppModule {}

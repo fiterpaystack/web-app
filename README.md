@@ -1,4 +1,4 @@
-# Mifos X Web App [![Build Status](https://travis-ci.com/openMF/web-app.svg?branch=master)](https://travis-ci.com/openMF/web-app) [![Gitter](https://badges.gitter.im/openMF/web-app.svg)](https://gitter.im/openMF/web-app?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+# Mifos X Web App ![build](https://github.com/openMF/web-app/actions/workflows/build.yml/badge.svg) [Slack](https://app.slack.com/client/T0F5GHE8Y/CJJGJLN10)
 
 Mifos X Web App is the revamped version of the Mifos X Community App, an effective financial inclusion solution and the default web application built on top of the Mifos X platform for the Mifos User Community.
 
@@ -6,7 +6,7 @@ It is a Single-Page App (SPA) written in standard web technologies [HTML5](http:
 
 ## Getting started using
 
-The latest code is continuously deployed at https://openmf.github.io/web-app/ whenever a PR is merged into the master branch.
+The latest code is continuously deployed at [https://sandbox.mifos.community/#/login](https://sandbox.mifos.community/#/login) every night.
 
 ## Getting started developing
 
@@ -14,12 +14,12 @@ The latest code is continuously deployed at https://openmf.github.io/web-app/ wh
 
    [`git`](https://git-scm.com/downloads)
 
-   [`npm`](https://nodejs.org/en/download/)
+   [`nodeJs`](https://nodejs.org/en/download/)
 
 2. Install [angular-cli](https://github.com/angular/angular-cli) globally.
 
 ```
-npm install -g @angular/cli@14.2.12
+npm install -g @angular/cli@16.0.2
 ```
 
 3. Clone the project locally into your system.
@@ -226,6 +226,17 @@ MIFOS_DISPLAY_BACKEND_INFO=false
 
 For more information look the env.sample file in the root directory of the project
 
+# Jira Links
+
+Jira Board Link: [Kanban Board]
+https://mifosforge.jira.com/jira/your-work
+
+Jira Web App Project Link:  
+https://mifosforge.jira.com/jira/software/c/projects/WEB/boards/62
+
 ## Want to help? [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/openMF/web-app/issues)
 
 Want to file a bug, request a feature, contribute some code, or improve documentation? Excellent! Read up on our guidelines for [contributing](.github/CONTRIBUTING.md) and then check out one of our [issues](https://github.com/openMF/web-app/issues). Make sure you follow the guidelines before sending a contribution!
+
+Apache Fineract provides open APIs and affordable core banking solution for financial institutions
+and it is the backend for all UIs of the Mifos. Its GitHub Repository is (https://github.com/apache/fineract)
