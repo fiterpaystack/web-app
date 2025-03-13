@@ -1,4 +1,4 @@
-# Mifos X Web App ![build](https://github.com/openMF/web-app/actions/workflows/build.yml/badge.svg) [Slack](https://app.slack.com/client/T0F5GHE8Y/CJJGJLN10)
+# Mifos X Web App ![build](https://github.com/openMF/web-app/actions/workflows/build.yml/badge.svg) [testRigor](https://app.testrigor.com/public/X3THbQd9nxLMxkdPu) [Slack](https://app.slack.com/client/T0F5GHE8Y/CJJGJLN10)
 
 Mifos X Web App is the revamped version of the Mifos X Community App, an effective financial inclusion solution and the default web application built on top of the Mifos X platform for the Mifos User Community.
 
@@ -126,7 +126,7 @@ FINERACT_API_URLS
 Value to set a Fineract server list (environments) to be used, Default value:
 
 ```
-https://dev.mifos.io,https://demo.mifos.io,https://qa.mifos.io,https://staging.mifos.io,https://mobile.mifos.io,https://demo.fineract.dev,https://localhost:8443
+https://sandbox.mifos.community,https://demo.mifos.community,https://localhost:8443
 ```
 
 ```
