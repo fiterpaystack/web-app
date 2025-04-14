@@ -167,10 +167,7 @@ export class WebAppComponent implements OnInit {
         mergeMap((route) => route.data)
       )
       .subscribe((event) => {
-        let title = event['title'];
-        if (!title) {
-          title = 'APP_NAME';
-        }
+        const title = event['title'] ? `labels.text.${event['title']}` : 'APP_NAME';
         this.i18nService.translate(title).subscribe((titleTranslated: any) => {
           this.titleService.setTitle(titleTranslated);
         });

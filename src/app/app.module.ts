@@ -22,7 +22,6 @@ import { ClientsModule } from './clients/clients.module';
 import { GroupsModule } from './groups/groups.module';
 import { CentersModule } from './centers/centers.module';
 import { AccountingModule } from './accounting/accounting.module';
-import { SelfServiceModule } from './self-service/self-service.module';
 import { SystemModule } from './system/system.module';
 import { ProductsModule } from './products/products.module';
 import { OrganizationModule } from './organization/organization.module';
@@ -40,8 +39,20 @@ import { PortalModule } from '@angular/cdk/portal';
 /** Main Routing Module */
 import { AppRoutingModule } from './app-routing.module';
 import { DatePipe, LocationStrategy } from '@angular/common';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import {
+  TranslateLoader,
+  TranslateModule,
+  MissingTranslationHandler,
+  MissingTranslationHandlerParams
+} from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+
+export class CustomMissingTranslationHandler implements MissingTranslationHandler {
+  handle(params: MissingTranslationHandlerParams): string {
+    // Remove the 'labels.catalogs.' prefix and return the fallback value
+    return params.key.replace('labels.catalogs.', '');
+  }
+}
 
 /**
  * App Module
@@ -66,7 +77,8 @@ export function HttpLoaderFactory(http: HttpClient) {
           HttpBackend,
           LocationStrategy
         ]
-      }
+      },
+      missingTranslationHandler: { provide: MissingTranslationHandler, useClass: CustomMissingTranslationHandler }
     }),
     BrowserModule,
     BrowserAnimationsModule,
@@ -83,7 +95,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     GroupsModule,
     CentersModule,
     AccountingModule,
-    SelfServiceModule,
     SystemModule,
     ProductsModule,
     OrganizationModule,

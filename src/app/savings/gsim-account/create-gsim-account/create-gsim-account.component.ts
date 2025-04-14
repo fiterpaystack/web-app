@@ -6,6 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { SavingsAccountDetailsStepComponent } from '../../savings-account-stepper/savings-account-details-step/savings-account-details-step.component';
 import { SavingsAccountTermsStepComponent } from '../../savings-account-stepper/savings-account-terms-step/savings-account-terms-step.component';
 import { SavingsAccountChargesStepComponent } from '../../savings-account-stepper/savings-account-charges-step/savings-account-charges-step.component';
+import { SavingsActiveClientMembersComponent } from '../../savings-account-stepper/savings-active-client-members/savings-active-client-members.component';
 
 /** Custom Services */
 import { SavingsService } from '../../savings.service';
@@ -39,6 +40,9 @@ export class CreateGsimAccountComponent {
   /** Savings Account Charges Step */
   @ViewChild(SavingsAccountChargesStepComponent, { static: true })
   savingsAccountChargesStep: SavingsAccountChargesStepComponent;
+  /** Savings Active Client Members */
+  @ViewChild(SavingsActiveClientMembersComponent, { static: true })
+  savingsActiveClientMembers: SavingsActiveClientMembersComponent;
 
   /**
    * Fetches savings account template from `resolve`
@@ -94,14 +98,18 @@ export class CreateGsimAccountComponent {
    * Checks validity of overall savings account form.
    */
   get savingsAccountFormValid() {
-    return this.savingsAccountDetailsForm.valid && this.savingsAccountTermsForm.valid;
+    return (
+      this.savingsAccountDetailsForm.valid &&
+      this.savingsAccountTermsForm.valid &&
+      this.activeClientMembers.filter((m: any) => m.selected).length > 0
+    );
   }
 
   /**
    * Retrieves savings account object.
    */
   get savingsAccount() {
-    this.selectedMembers = this.savingsAccountChargesStep.selectedClientMembers;
+    this.selectedMembers = this.savingsActiveClientMembers.selectedClientMembers;
     return {
       ...this.savingsAccountDetailsStep.savingsAccountDetails,
       ...this.savingsAccountTermsStep.savingsAccountTerms,

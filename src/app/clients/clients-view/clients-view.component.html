@@ -53,7 +53,7 @@
             <b>{{ 'labels.inputs.Client Name' | translate }} :</b
             ><mifosx-entity-name entityName="{{ clientViewData.displayName }}"></mifosx-entity-name>
           </h3>
-          <div fxFlex="5%">
+          <div fxFlex="5%" fxLayoutAlign="end center">
             <button mat-icon-button [matMenuTriggerFor]="clientMenu" aria-label="Client actions" yPosition="below">
               <mat-icon matListIcon class="actions-menu">
                 <fa-icon icon="bars" size="sm"></fa-icon>
@@ -282,7 +282,9 @@
         <button mat-menu-item (click)="doAction('Create Collateral')">
           {{ 'labels.buttons.Create Collateral' | translate }}
         </button>
-        <button mat-menu-item (click)="doAction('Survey')">{{ 'labels.buttons.Survey' | translate }}</button>
+        <button mat-menu-item (click)="doAction('Survey')" [disabled]="true">
+          {{ 'labels.buttons.Survey' | translate }}
+        </button>
         <button
           mat-menu-item
           (click)="doAction('Update Default Savings')"
@@ -315,9 +317,6 @@
             {{ 'labels.buttons.View Standing Instructions' | translate }}
           </button>
         </span>
-        <button mat-menu-item (click)="doAction('Create Self Service User')">
-          {{ 'labels.buttons.Create Self Service User' | translate }}
-        </button>
       </mat-menu>
     </mat-card-title-group>
   </mat-card-header>

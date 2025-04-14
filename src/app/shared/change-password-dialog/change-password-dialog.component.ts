@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UntypedFormBuilder, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { PasswordsUtility } from 'app/core/utils/passwords-utility';
+import { environment } from 'environments/environment';
 
 /**
  * Change Password Dialog component.
@@ -14,8 +15,15 @@ import { PasswordsUtility } from 'app/core/utils/passwords-utility';
   styleUrls: ['./change-password-dialog.component.scss']
 })
 export class ChangePasswordDialogComponent implements OnInit {
+  minPasswordLength: number = environment.minPasswordLength | 12;
+
   /** Change Password Form */
   changePasswordForm: any;
+  /** Password input field type. */
+  passwordInputType: string[] = [
+    'password',
+    'password'
+  ];
 
   /**
    * @param {MatDialogRef} dialogRef Component reference to dialog.
@@ -34,18 +42,21 @@ export class ChangePasswordDialogComponent implements OnInit {
 
   /** Change Password form */
   createChangePasswordForm() {
-    this.changePasswordForm = this.formBuilder.group({
-      password: [
-        '',
-        this.passwordsUtility.getPasswordValidators()
-      ],
-      repeatPassword: [
-        '',
-        [
-          Validators.required,
-          this.confirmPassword('password')]
-      ]
-    });
+    this.changePasswordForm = this.formBuilder.group(
+      {
+        password: [
+          '',
+          this.passwordsUtility.getPasswordValidators()
+        ],
+        repeatPassword: [
+          '',
+          [
+            Validators.required,
+            this.confirmPassword('password')]
+        ]
+      },
+      { updateOn: 'blur' }
+    );
   }
 
   /**
