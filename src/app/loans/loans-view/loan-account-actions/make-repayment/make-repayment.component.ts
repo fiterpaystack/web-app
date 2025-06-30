@@ -1,13 +1,24 @@
 /** Angular Imports */
 import { Component, OnInit, Input } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder, Validators, UntypedFormControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import {
+  UntypedFormGroup,
+  UntypedFormBuilder,
+  Validators,
+  UntypedFormControl,
+  ReactiveFormsModule
+} from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 /** Custom Services */
 import { LoansService } from 'app/loans/loans.service';
 import { SettingsService } from 'app/settings/settings.service';
 import { Dates } from 'app/core/utils/dates';
 import { Currency } from 'app/shared/models/general.model';
+import { InputAmountComponent } from '../../../../shared/input-amount/input-amount.component';
+import { MatSlideToggle } from '@angular/material/slide-toggle';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { FormatNumberPipe } from '../../../../pipes/format-number.pipe';
+import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /**
  * Loan Make Repayment Component
@@ -15,7 +26,14 @@ import { Currency } from 'app/shared/models/general.model';
 @Component({
   selector: 'mifosx-make-repayment',
   templateUrl: './make-repayment.component.html',
-  styleUrls: ['./make-repayment.component.scss']
+  styleUrls: ['./make-repayment.component.scss'],
+  imports: [
+    ...STANDALONE_SHARED_IMPORTS,
+    InputAmountComponent,
+    MatSlideToggle,
+    CdkTextareaAutosize,
+    FormatNumberPipe
+  ]
 })
 export class MakeRepaymentComponent implements OnInit {
   @Input() dataObject: any;
@@ -32,6 +50,8 @@ export class MakeRepaymentComponent implements OnInit {
   /** Repayment Loan Form */
   repaymentLoanForm: UntypedFormGroup;
   currency: Currency | null = null;
+
+  command: string | null = null;
 
   /**
    * @param {FormBuilder} formBuilder Form Builder.
@@ -56,6 +76,7 @@ export class MakeRepaymentComponent implements OnInit {
    * and initialize with the required values
    */
   ngOnInit() {
+    this.command = this.dataObject.type.code.split('.')[1];
     this.maxDate = this.settingsService.businessDate;
     this.createRepaymentLoanForm();
     this.setRepaymentLoanDetails();
@@ -73,14 +94,27 @@ export class MakeRepaymentComponent implements OnInit {
         this.settingsService.businessDate,
         Validators.required
       ],
-      transactionAmount: [
-        '',
-        Validators.required
-      ],
       externalId: '',
       paymentTypeId: '',
       note: ''
     });
+
+    if (this.isCapitalizedIncome()) {
+      this.repaymentLoanForm.addControl(
+        'transactionAmount',
+        new UntypedFormControl('', [
+          Validators.required,
+          Validators.min(0.001),
+          Validators.max(this.dataObject.amount)])
+      );
+    } else {
+      this.repaymentLoanForm.addControl(
+        'transactionAmount',
+        new UntypedFormControl('', [
+          Validators.required,
+          Validators.min(0.001)])
+      );
+    }
   }
 
   setRepaymentLoanDetails() {
@@ -110,6 +144,23 @@ export class MakeRepaymentComponent implements OnInit {
     }
   }
 
+  showDetails(): boolean {
+    return !this.isCapitalizedIncome() && !this.isBuyDownFee();
+  }
+
+  isCapitalizedIncome(): boolean {
+    return [
+      'capitalizedIncome',
+      'capitalizedIncomeAdjustment'
+    ].includes(this.command);
+  }
+
+  isBuyDownFee(): boolean {
+    return [
+      'buyDownFee'
+    ].includes(this.command);
+  }
+
   /** Submits the repayment form */
   submit() {
     const repaymentLoanFormData = this.repaymentLoanForm.value;
@@ -124,9 +175,8 @@ export class MakeRepaymentComponent implements OnInit {
       dateFormat,
       locale
     };
-    const command = this.dataObject.type.code.split('.')[1];
     data['transactionAmount'] = data['transactionAmount'] * 1;
-    this.loanService.submitLoanActionButton(this.loanId, data, command).subscribe((response: any) => {
+    this.loanService.submitLoanActionButton(this.loanId, data, this.command).subscribe((response: any) => {
       this.router.navigate(['../../transactions'], { relativeTo: this.route });
     });
   }

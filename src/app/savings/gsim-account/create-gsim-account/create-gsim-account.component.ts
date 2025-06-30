@@ -12,6 +12,10 @@ import { SavingsActiveClientMembersComponent } from '../../savings-account-stepp
 import { SavingsService } from '../../savings.service';
 import { SettingsService } from 'app/settings/settings.service';
 import { Dates } from 'app/core/utils/dates';
+import { MatStepper, MatStepperIcon, MatStep, MatStepLabel } from '@angular/material/stepper';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { SavingsAccountPreviewStepComponent } from '../../savings-account-stepper/savings-account-preview-step/savings-account-preview-step.component';
+import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /**
  * Create GSIM Account Component
@@ -19,7 +23,20 @@ import { Dates } from 'app/core/utils/dates';
 @Component({
   selector: 'mifosx-create-gsim-account',
   templateUrl: './create-gsim-account.component.html',
-  styleUrls: ['./create-gsim-account.component.scss']
+  styleUrls: ['./create-gsim-account.component.scss'],
+  imports: [
+    ...STANDALONE_SHARED_IMPORTS,
+    MatStepper,
+    MatStepperIcon,
+    FaIconComponent,
+    MatStep,
+    MatStepLabel,
+    SavingsAccountDetailsStepComponent,
+    SavingsAccountTermsStepComponent,
+    SavingsAccountChargesStepComponent,
+    SavingsActiveClientMembersComponent,
+    SavingsAccountPreviewStepComponent
+  ]
 })
 export class CreateGsimAccountComponent {
   /** Savings Account Template */
@@ -118,7 +135,7 @@ export class CreateGsimAccountComponent {
   }
 
   /** Set Body for each client selected */
-  setData(client: any): any {
+  setData(client: any, isParentAccount: any): any {
     const locale = this.settingsService.language.code;
     const dateFormat = this.settingsService.dateFormat;
     const monthDayFormat = 'dd MMMM';
@@ -130,7 +147,7 @@ export class CreateGsimAccountComponent {
       })),
       clientId: client.id,
       isGSIM: true,
-      isParentAccount: true,
+      isParentAccount: isParentAccount,
       submittedOnDate: this.dateUtils.formatDate(this.savingsAccount.submittedOnDate, dateFormat),
       dateFormat,
       monthDayFormat,
@@ -146,7 +163,10 @@ export class CreateGsimAccountComponent {
     const requestData = [];
     const memberSelected = this.selectedMembers.selectedMembers;
     for (let index = 0; index < 1; index++) {
-      requestData.push(this.setData(memberSelected[index]));
+      requestData.push(this.setData(memberSelected[index], true));
+    }
+    for (let index = 1; index < memberSelected.length; index++) {
+      requestData.push(this.setData(memberSelected[index], false));
     }
     return requestData;
   }

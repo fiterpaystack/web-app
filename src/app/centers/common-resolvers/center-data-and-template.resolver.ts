@@ -1,6 +1,6 @@
 /** Angular Imports */
 import { Injectable } from '@angular/core';
-import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot } from '@angular/router';
 
 /** rxjs Imports */
 import { Observable } from 'rxjs';
@@ -12,7 +12,7 @@ import { CentersService } from '../centers.service';
  * Centers data and template resolver.
  */
 @Injectable()
-export class CenterDataAndTemplateResolver implements Resolve<Object> {
+export class CenterDataAndTemplateResolver {
   /**
    * @param {CentersService} CentersService Centers service.
    */
@@ -20,6 +20,7 @@ export class CenterDataAndTemplateResolver implements Resolve<Object> {
 
   /**
    * Returns the Centers and template data.
+   * @param {ActivatedRouteSnapshot} route Route Snapshot
    * @returns {Observable<any>}
    */
   resolve(route: ActivatedRouteSnapshot): Observable<any> {

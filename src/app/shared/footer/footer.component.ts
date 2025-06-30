@@ -1,5 +1,5 @@
 /** Angular Imports */
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Alert } from 'app/core/alert/alert.model';
 import { AlertService } from 'app/core/alert/alert.service';
 import { AuthenticationService } from 'app/core/authentication/authentication.service';
@@ -9,8 +9,11 @@ import { SystemService } from 'app/system/system.service';
 import { VersionService } from 'app/system/version.service';
 
 /** Environment Configuration */
-import { environment } from 'environments/environment';
+import { environment } from '../../../environments/environment';
 import { Subscription } from 'rxjs';
+import { NgIf, NgClass, DatePipe } from '@angular/common';
+import { MatDivider } from '@angular/material/divider';
+import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /**
  *  Footer component.
@@ -18,9 +21,17 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'mifosx-footer',
   templateUrl: './footer.component.html',
-  styleUrls: ['./footer.component.scss']
+  styleUrls: ['./footer.component.scss'],
+  imports: [
+    ...STANDALONE_SHARED_IMPORTS,
+    NgClass,
+    MatDivider,
+    DatePipe
+  ]
 })
 export class FooterComponent implements OnInit, OnDestroy {
+  @Input() styleClass: string = '';
+
   /** Mifos X version. */
   versions: any = {
     mifos: environment.version,

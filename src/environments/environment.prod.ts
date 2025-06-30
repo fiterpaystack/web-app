@@ -18,7 +18,7 @@ export const environment = {
   // For connecting to server running elsewhere set the base API URL
   baseApiUrl:
     loadedEnv['fineractApiUrl'] ||
-    (loadedEnv['fineractApiUrls']?.length > 0 ? loadedEnv['fineractApiUrls'][0] : window.location.origin),
+    (loadedEnv['fineractApiUrls']?.length > 0 ? loadedEnv['fineractApiUrls'].split(',')[0] : window.location.origin),
   oauthServerUrl: loadedEnv['oauthServerUrl'] || loadedEnv['fineractApiUrl'] + loadedEnv['apiProvider'],
   allowServerSwitch: env.allow_switching_backend_instance,
   apiProvider: loadedEnv['apiProvider'] || '/fineract-provider/api',
@@ -53,6 +53,7 @@ export const environment = {
       idleTimeout: loadedEnv['sessionIdleTimeout'] || 300000 // 5 minutes
     }
   },
+  httpCacheEnabled: loadedEnv.httpCacheEnabled || false,
 
   vNextApiUrl: window['env']['vNextApiUrl'] || 'https://apis.mifos.community',
   vNextApiProvider: window['env']['vNextApiProvider'] || '/vnext1',

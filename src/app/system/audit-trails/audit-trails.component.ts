@@ -1,9 +1,9 @@
 /** Angular Imports */
 import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { ActivatedRoute } from '@angular/router';
-import { UntypedFormControl } from '@angular/forms';
+import { MatSort, MatSortHeader } from '@angular/material/sort';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { UntypedFormControl, ReactiveFormsModule } from '@angular/forms';
 
 /** Custom Data Source */
 import { AuditTrailsDataSource } from './audit-trail.datasource';
@@ -16,6 +16,24 @@ import { SettingsService } from 'app/settings/settings.service';
 import { merge } from 'rxjs';
 import { tap, debounceTime, distinctUntilChanged, startWith, map } from 'rxjs/operators';
 import { Dates } from 'app/core/utils/dates';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { NgFor, NgIf, AsyncPipe } from '@angular/common';
+import { MatOption, MatAutocompleteTrigger, MatAutocomplete } from '@angular/material/autocomplete';
+import { MatProgressBar } from '@angular/material/progress-bar';
+import {
+  MatTable,
+  MatColumnDef,
+  MatHeaderCellDef,
+  MatHeaderCell,
+  MatCellDef,
+  MatCell,
+  MatHeaderRowDef,
+  MatHeaderRow,
+  MatRowDef,
+  MatRow
+} from '@angular/material/table';
+import { DateFormatPipe } from '../../pipes/date-format.pipe';
+import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /**
  * Audit Trails Component.
@@ -23,7 +41,29 @@ import { Dates } from 'app/core/utils/dates';
 @Component({
   selector: 'mifosx-audit-trails',
   templateUrl: './audit-trails.component.html',
-  styleUrls: ['./audit-trails.component.scss']
+  styleUrls: ['./audit-trails.component.scss'],
+  imports: [
+    ...STANDALONE_SHARED_IMPORTS,
+    FaIconComponent,
+    MatAutocompleteTrigger,
+    MatAutocomplete,
+    MatProgressBar,
+    MatTable,
+    MatSort,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatSortHeader,
+    MatCellDef,
+    MatCell,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    MatPaginator,
+    AsyncPipe,
+    DateFormatPipe
+  ]
 })
 export class AuditTrailsComponent implements OnInit, AfterViewInit {
   /** Minimum date allowed. */
@@ -129,10 +169,12 @@ export class AuditTrailsComponent implements OnInit, AfterViewInit {
   /** Checker form control. */
   checker = new UntypedFormControl();
 
+  isLoading = false;
+
   /** Paginator for audit trails table. */
-  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
   /** Sorter for audit trails table. */
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatSort) sort: MatSort;
 
   /**
    * Retrieves the audit trail search template data from `resolve`.
@@ -161,6 +203,7 @@ export class AuditTrailsComponent implements OnInit, AfterViewInit {
     this.setFilteredActions();
     this.setFilteredEntities();
     this.setFilteredCheckers();
+    this.dataSource = new AuditTrailsDataSource(this.systemService);
     this.getAuditTrails();
   }
 
@@ -264,7 +307,7 @@ export class AuditTrailsComponent implements OnInit, AfterViewInit {
       )
       .subscribe();
 
-    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+    //this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
 
     merge(this.sort.sortChange, this.paginator.page)
       .pipe(tap(() => this.loadAuditTrailsPage()))
@@ -275,14 +318,14 @@ export class AuditTrailsComponent implements OnInit, AfterViewInit {
    * Initializes the data source for audit trails table and loads the first page.
    */
   getAuditTrails() {
-    this.dataSource = new AuditTrailsDataSource(this.systemService);
-    this.dataSource.getAuditTrails(
-      this.filterAuditTrailsBy,
-      this.sort.active,
-      this.sort.direction,
-      this.paginator.pageIndex,
-      this.paginator.pageSize
-    );
+    this.isLoading = true;
+    const isActive: string = this.sort ? this.sort.active : '';
+    const direction: string = this.sort ? this.sort.direction : '';
+    const pageIndex: number = this.paginator ? this.paginator.pageIndex : 0;
+    const pageSize: any = this.paginator ? this.paginator.pageSize : 20;
+
+    this.dataSource.getAuditTrails(this.filterAuditTrailsBy, isActive, direction, pageIndex, pageSize);
+    this.isLoading = false;
   }
 
   /**
@@ -292,13 +335,7 @@ export class AuditTrailsComponent implements OnInit, AfterViewInit {
     if (!this.sort.direction) {
       delete this.sort.active;
     }
-    this.dataSource.getAuditTrails(
-      this.filterAuditTrailsBy,
-      this.sort.active,
-      this.sort.direction,
-      this.paginator.pageIndex,
-      this.paginator.pageSize
-    );
+    this.getAuditTrails();
   }
 
   /**

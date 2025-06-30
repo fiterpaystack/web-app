@@ -6,6 +6,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Dates } from 'app/core/utils/dates';
 import { SettingsService } from 'app/settings/settings.service';
+import { DisbursementData } from './models/loan-account.model';
 
 /**
  * Loans service.
@@ -29,6 +30,11 @@ export class LoansService {
 
   getLoanActionTemplate(loanId: string, command: string): Observable<any> {
     const httpParams = new HttpParams().set('command', command);
+    return this.http.get(`/loans/${loanId}/transactions/template`, { params: httpParams });
+  }
+
+  getLoanTransactionActionTemplate(loanId: string, command: string, transactionId: string): Observable<any> {
+    const httpParams = new HttpParams().set('command', command).set('transactionId', transactionId);
     return this.http.get(`/loans/${loanId}/transactions/template`, { params: httpParams });
   }
 
@@ -662,5 +668,13 @@ export class LoansService {
     loansAccountData.allowPartialPeriodInterestCalcualtion = loansAccountData.allowPartialPeriodInterestCalculation;
     delete loansAccountData.allowPartialPeriodInterestCalculation;
     return loansAccountData;
+  }
+
+  saveLoanDisbursementDetailsData(disbursementData: DisbursementData[]): void {
+    localStorage.setItem('disbursementData', JSON.stringify(disbursementData));
+  }
+
+  getLoanDisbursementDetailsData(): DisbursementData[] {
+    return JSON.parse(localStorage.getItem('disbursementData'));
   }
 }

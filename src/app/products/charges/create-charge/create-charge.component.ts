@@ -1,12 +1,25 @@
 /** Angular Imports */
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder, UntypedFormControl, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import {
+  UntypedFormGroup,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  Validators,
+  ReactiveFormsModule
+} from '@angular/forms';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 
 /** Custom Services */
 import { ProductsService } from '../../products.service';
 import { SettingsService } from 'app/settings/settings.service';
 import { Dates } from 'app/core/utils/dates';
+import { minNumberValueValidator } from 'app/shared/validators/min-number-value.validator';
+import { maxNumberValueValidator } from 'app/shared/validators/max-number-value.validator';
+import { MatDivider } from '@angular/material/divider';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { ValidateOnFocusDirective } from '../../../directives/validate-on-focus.directive';
+import { GlAccountSelectorComponent } from '../../../shared/accounting/gl-account-selector/gl-account-selector.component';
+import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /**
  * Create charge component.
@@ -14,7 +27,14 @@ import { Dates } from 'app/core/utils/dates';
 @Component({
   selector: 'mifosx-create-charge',
   templateUrl: './create-charge.component.html',
-  styleUrls: ['./create-charge.component.scss']
+  styleUrls: ['./create-charge.component.scss'],
+  imports: [
+    ...STANDALONE_SHARED_IMPORTS,
+    MatDivider,
+    MatCheckbox,
+    ValidateOnFocusDirective,
+    GlAccountSelectorComponent
+  ]
 })
 export class CreateChargeComponent implements OnInit {
   /** Charge form. */
@@ -108,9 +128,15 @@ export class CreateChargeComponent implements OnInit {
       ],
       active: [false],
       penalty: [false],
-      taxGroupId: [''],
-      minCap: [''],
-      maxCap: ['']
+      taxGroupId: [null],
+      minCap: [
+        null,
+        [maxNumberValueValidator('maxCap')]
+      ],
+      maxCap: [
+        null,
+        [minNumberValueValidator('minCap')]
+      ]
     });
   }
 
@@ -275,15 +301,6 @@ export class CreateChargeComponent implements OnInit {
       this.currencyDecimalPlaces = this.chargesTemplateData.currencyOptions.find(
         (currency: any) => currency.code === currencyCode
       ).decimalPlaces;
-      if (this.currencyDecimalPlaces === 0) {
-        this.chargeForm.get('amount').setValidators([
-          Validators.required,
-          Validators.pattern('^[1-9]\\d*$')]);
-      } else {
-        this.chargeForm.get('amount').setValidators([
-          Validators.required,
-          Validators.pattern(`^\\s*(?=.*[1-9])\\d*(\\.\\d{1,${this.currencyDecimalPlaces}})?\\s*$`)]);
-      }
     });
   }
 

@@ -1,11 +1,17 @@
 /** Angular Imports */
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 /** Custom Services */
 import { ProductsService } from 'app/products/products.service';
 import { SettingsService } from 'app/settings/settings.service';
+import { maxNumberValueValidator } from 'app/shared/validators/max-number-value.validator';
+import { minNumberValueValidator } from 'app/shared/validators/min-number-value.validator';
+import { ValidateOnFocusDirective } from '../../../directives/validate-on-focus.directive';
+import { GlAccountSelectorComponent } from '../../../shared/accounting/gl-account-selector/gl-account-selector.component';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /**
  * Edit Charge component.
@@ -13,7 +19,13 @@ import { SettingsService } from 'app/settings/settings.service';
 @Component({
   selector: 'mifosx-edit-charge',
   templateUrl: './edit-charge.component.html',
-  styleUrls: ['./edit-charge.component.scss']
+  styleUrls: ['./edit-charge.component.scss'],
+  imports: [
+    ...STANDALONE_SHARED_IMPORTS,
+    ValidateOnFocusDirective,
+    GlAccountSelectorComponent,
+    MatCheckbox
+  ]
 })
 export class EditChargeComponent implements OnInit {
   /** Selected Data. */
@@ -92,8 +104,14 @@ export class EditChargeComponent implements OnInit {
       ],
       active: [this.chargeData.active],
       penalty: [this.chargeData.penalty],
-      minCap: [this.chargeData.minCap],
-      maxCap: [this.chargeData.maxCap],
+      minCap: [
+        this.chargeData.minCap || null,
+        [maxNumberValueValidator('maxCap')]
+      ],
+      maxCap: [
+        this.chargeData.maxCap || null,
+        [minNumberValueValidator('minCap')]
+      ],
       chargeTimeType: [
         this.chargeData.chargeTimeType.id,
         Validators.required
@@ -143,7 +161,7 @@ export class EditChargeComponent implements OnInit {
         this.addFeeFrequency = false;
         this.chargeForm.addControl(
           'incomeAccountId',
-          this.formBuilder.control(this.chargeData.incomeOrLiabilityAccount.id, Validators.required)
+          this.formBuilder.control(this.chargeData.incomeOrLiabilityAccount?.id, Validators.required)
         );
         break;
       }

@@ -17,17 +17,43 @@ import { LoanProducts } from '../loan-products';
 import {
   AdvancedPaymentAllocation,
   AdvancedPaymentStrategy,
-  CapitalizedIncome,
+  DeferredIncomeRecognition,
   PaymentAllocation
 } from '../loan-product-stepper/loan-product-payment-strategy-step/payment-allocation-model';
 import { Accounting } from 'app/core/utils/accounting';
 import { StringEnumOptionData } from '../../../shared/models/option-data.model';
-import { LoanProductCapitalizedIncomeStepComponent } from '../loan-product-stepper/loan-product-capitalized-income-step/loan-product-capitalized-income-step.component';
+import { LoanProductDeferredIncomeRecognitionStepComponent } from '../loan-product-stepper/loan-product-capitalized-income-step/loan-product-deferred-income-recognition-step.component';
+import { UntypedFormGroup } from '@angular/forms';
+import { MatStepper, MatStepperIcon, MatStep, MatStepLabel } from '@angular/material/stepper';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { LoanProductPaymentStrategyStepComponent } from '../loan-product-stepper/loan-product-payment-strategy-step/loan-product-payment-strategy-step.component';
+import { StepperButtonsComponent } from '../../../shared/steppers/stepper-buttons/stepper-buttons.component';
+import { LoanProductPreviewStepComponent } from '../loan-product-stepper/loan-product-preview-step/loan-product-preview-step.component';
+import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 @Component({
   selector: 'mifosx-create-loan-product',
   templateUrl: './create-loan-product.component.html',
-  styleUrls: ['./create-loan-product.component.scss']
+  styleUrls: ['./create-loan-product.component.scss'],
+  imports: [
+    ...STANDALONE_SHARED_IMPORTS,
+    MatStepper,
+    MatStepperIcon,
+    FaIconComponent,
+    MatStep,
+    MatStepLabel,
+    LoanProductDetailsStepComponent,
+    LoanProductCurrencyStepComponent,
+    LoanProductSettingsStepComponent,
+    LoanProductInterestRefundStepComponent,
+    LoanProductPaymentStrategyStepComponent,
+    StepperButtonsComponent,
+    LoanProductTermsStepComponent,
+    LoanProductChargesStepComponent,
+    LoanProductDeferredIncomeRecognitionStepComponent,
+    LoanProductAccountingStepComponent,
+    LoanProductPreviewStepComponent
+  ]
 })
 export class CreateLoanProductComponent implements OnInit {
   @ViewChild(LoanProductDetailsStepComponent, { static: true }) loanProductDetailsStep: LoanProductDetailsStepComponent;
@@ -35,8 +61,8 @@ export class CreateLoanProductComponent implements OnInit {
   loanProductCurrencyStep: LoanProductCurrencyStepComponent;
   @ViewChild(LoanProductInterestRefundStepComponent, { static: true })
   loanProductInterestRefundStep: LoanProductInterestRefundStepComponent;
-  @ViewChild(LoanProductCapitalizedIncomeStepComponent, { static: true })
-  loanProductCapitalizedIncomeStep: LoanProductCapitalizedIncomeStepComponent;
+  @ViewChild(LoanProductDeferredIncomeRecognitionStepComponent, { static: true })
+  loanProductDeferredIncomeRecognitionStep: LoanProductDeferredIncomeRecognitionStepComponent;
   @ViewChild(LoanProductTermsStepComponent, { static: true }) loanProductTermsStep: LoanProductTermsStepComponent;
   @ViewChild(LoanProductSettingsStepComponent, { static: true })
   loanProductSettingsStep: LoanProductSettingsStepComponent;
@@ -55,7 +81,8 @@ export class CreateLoanProductComponent implements OnInit {
   advancedPaymentAllocations: AdvancedPaymentAllocation[] = [];
   advancedCreditAllocations: AdvancedPaymentAllocation[] = [];
 
-  capitalizedIncome: CapitalizedIncome | null = null;
+  deferredIncomeRecognition: DeferredIncomeRecognition | null = null;
+  loanDeferredIncomeRecognitionForm: UntypedFormGroup;
 
   /**
    * @param {ActivatedRoute} route Activated Route.
@@ -112,15 +139,31 @@ export class CreateLoanProductComponent implements OnInit {
   advancePaymentStrategy(value: string) {
     this.isAdvancedPaymentStrategy = LoanProducts.isAdvancedPaymentAllocationStrategy(value);
     if (this.isAdvancedPaymentStrategy) {
+      if (this.deferredIncomeRecognition == null) {
+        this.deferredIncomeRecognition = {};
+      }
       if (this.loanProductsTemplate.enableIncomeCapitalization) {
-        this.capitalizedIncome = {
+        this.deferredIncomeRecognition.capitalizedIncome = {
           enableIncomeCapitalization: true,
-          incomeCapitalizationCalculationType: this.loanProductsTemplate.capitalizedIncomeCalculationTypeOptions[0],
-          incomeCapitalizationStrategy: this.loanProductsTemplate.capitalizedIncomeStrategyOptions[0]
+          capitalizedIncomeCalculationType: this.loanProductsTemplate.capitalizedIncomeCalculationTypeOptions[0],
+          capitalizedIncomeStrategy: this.loanProductsTemplate.capitalizedIncomeStrategyOptions[0],
+          capitalizedIncomeType: this.loanProductsTemplate.capitalizedIncomeTypeOptions[0]
         };
       } else {
-        this.capitalizedIncome = {
+        this.deferredIncomeRecognition.capitalizedIncome = {
           enableIncomeCapitalization: false
+        };
+      }
+      if (this.loanProductsTemplate.enableBuyDownFee) {
+        this.deferredIncomeRecognition.buyDownFee = {
+          enableBuyDownFee: true,
+          buyDownFeeCalculationType: this.loanProductsTemplate.buyDownFeeCalculationTypeOptions[0],
+          buyDownFeeStrategy: this.loanProductsTemplate.buyDownFeeStrategyOptions[0],
+          buyDownFeeIncomeType: this.loanProductsTemplate.buyDownFeeIncomeTypeOptions[0]
+        };
+      } else {
+        this.deferredIncomeRecognition.buyDownFee = {
+          enableBuyDownFee: false
         };
       }
     }
@@ -144,10 +187,14 @@ export class CreateLoanProductComponent implements OnInit {
     this.supportedInterestRefundTypes = supportedInterestRefundTypes;
   }
 
-  setCapitalizedIncome(capitalizedIncome: CapitalizedIncome): void {
+  setDeferredIncomeRecognition(deferredIncomeRecognition: DeferredIncomeRecognition): void {
     if (this.isAdvancedPaymentStrategy) {
-      this.capitalizedIncome = capitalizedIncome;
+      this.deferredIncomeRecognition = deferredIncomeRecognition;
     }
+  }
+
+  setViewChildForm(viewChildForm: UntypedFormGroup): void {
+    this.loanDeferredIncomeRecognitionForm = viewChildForm;
   }
 
   get loanProductSettingsForm() {
@@ -158,20 +205,25 @@ export class CreateLoanProductComponent implements OnInit {
     return this.loanProductAccountingStep.loanProductAccountingForm;
   }
 
-  get loanIncomeCapitalizationForm() {
-    if (this.loanProductCapitalizedIncomeStep != null) {
-      return this.loanProductCapitalizedIncomeStep.loanIncomeCapitalizationForm;
-    }
-  }
-
   get loanProductFormValid() {
-    return (
-      this.loanProductDetailsForm.valid &&
-      this.loanProductCurrencyForm.valid &&
-      this.loanProductTermsForm.valid &&
-      this.loanProductSettingsForm.valid &&
-      this.loanProductAccountingForm.valid
-    );
+    if (this.isAdvancedPaymentStrategy) {
+      return (
+        this.loanProductDetailsForm.valid &&
+        this.loanProductCurrencyForm.valid &&
+        this.loanProductTermsForm.valid &&
+        this.loanProductSettingsForm.valid &&
+        this.loanDeferredIncomeRecognitionForm.valid &&
+        this.loanProductAccountingForm.valid
+      );
+    } else {
+      return (
+        this.loanProductDetailsForm.valid &&
+        this.loanProductCurrencyForm.valid &&
+        this.loanProductTermsForm.valid &&
+        this.loanProductSettingsForm.valid &&
+        this.loanProductAccountingForm.valid
+      );
+    }
   }
 
   get loanProduct() {
@@ -187,11 +239,24 @@ export class CreateLoanProductComponent implements OnInit {
       loanProduct['paymentAllocation'] = this.paymentAllocation;
       loanProduct['creditAllocation'] = this.creditAllocation;
       loanProduct['supportedInterestRefundTypes'] = this.supportedInterestRefundTypes;
-      if (this.capitalizedIncome != null) {
-        loanProduct['enableIncomeCapitalization'] = this.capitalizedIncome.enableIncomeCapitalization;
-        if (this.capitalizedIncome.enableIncomeCapitalization) {
-          loanProduct['capitalizedIncomeCalculationType'] = this.capitalizedIncome.incomeCapitalizationCalculationType;
-          loanProduct['capitalizedIncomeStrategy'] = this.capitalizedIncome.incomeCapitalizationStrategy;
+      if (this.deferredIncomeRecognition.capitalizedIncome != null) {
+        loanProduct['enableIncomeCapitalization'] =
+          this.deferredIncomeRecognition.capitalizedIncome.enableIncomeCapitalization;
+        if (this.deferredIncomeRecognition.capitalizedIncome.enableIncomeCapitalization) {
+          loanProduct['capitalizedIncomeCalculationType'] =
+            this.deferredIncomeRecognition.capitalizedIncome.capitalizedIncomeCalculationType;
+          loanProduct['capitalizedIncomeStrategy'] =
+            this.deferredIncomeRecognition.capitalizedIncome.capitalizedIncomeStrategy;
+          loanProduct['capitalizedIncomeType'] = this.deferredIncomeRecognition.capitalizedIncome.capitalizedIncomeType;
+        }
+      }
+      if (this.deferredIncomeRecognition.buyDownFee != null) {
+        loanProduct['enableBuyDownFee'] = this.deferredIncomeRecognition.buyDownFee.enableBuyDownFee;
+        if (this.deferredIncomeRecognition.buyDownFee.enableBuyDownFee) {
+          loanProduct['buyDownFeeCalculationType'] =
+            this.deferredIncomeRecognition.buyDownFee.buyDownFeeCalculationType;
+          loanProduct['buyDownFeeStrategy'] = this.deferredIncomeRecognition.buyDownFee.buyDownFeeStrategy;
+          loanProduct['buyDownFeeIncomeType'] = this.deferredIncomeRecognition.buyDownFee.buyDownFeeIncomeType;
         }
       }
     }
@@ -210,6 +275,7 @@ export class CreateLoanProductComponent implements OnInit {
       );
     } else {
       delete loanProduct['supportedInterestRefundTypes'];
+      delete loanProduct['daysInYearCustomStrategy'];
     }
     delete loanProduct['useDueForRepaymentsConfigurations'];
 

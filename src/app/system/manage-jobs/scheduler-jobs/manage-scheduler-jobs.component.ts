@@ -1,9 +1,21 @@
 /** Angular Imports */
 import { Component, OnInit, TemplateRef, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { ActivatedRoute, Router } from '@angular/router';
+import { MatSort, MatSortHeader } from '@angular/material/sort';
+import {
+  MatTableDataSource,
+  MatTable,
+  MatColumnDef,
+  MatHeaderCellDef,
+  MatHeaderCell,
+  MatCellDef,
+  MatCell,
+  MatHeaderRowDef,
+  MatHeaderRow,
+  MatRowDef,
+  MatRow
+} from '@angular/material/table';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
 
@@ -20,6 +32,14 @@ import { CustomParametersPopoverComponent } from './custom-parameters-popover/cu
 import { SchedulerJob } from './models/scheduler-job.model';
 import { ErrorLogPopoverComponent } from './error-log-popover/error-log-popover.component';
 import { RunSelectedJobsPopoverComponent } from './run-selected-jobs-popover/run-selected-jobs-popover.component';
+import { NgIf, NgClass } from '@angular/common';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatTooltip } from '@angular/material/tooltip';
+import { DatetimeFormatPipe } from '../../../pipes/datetime-format.pipe';
+import { YesnoPipe } from '../../../pipes/yesno.pipe';
+import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /**
  * Manage scheduler jobs component.
@@ -27,7 +47,30 @@ import { RunSelectedJobsPopoverComponent } from './run-selected-jobs-popover/run
 @Component({
   selector: 'mifosx-manage-scheduler-jobs',
   templateUrl: './manage-scheduler-jobs.component.html',
-  styleUrls: ['./manage-scheduler-jobs.component.scss']
+  styleUrls: ['./manage-scheduler-jobs.component.scss'],
+  imports: [
+    ...STANDALONE_SHARED_IMPORTS,
+    FaIconComponent,
+    MatTable,
+    MatSort,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCheckbox,
+    MatCellDef,
+    MatCell,
+    MatSortHeader,
+    MatTooltip,
+    MatIconButton,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    NgClass,
+    MatPaginator,
+    DatetimeFormatPipe,
+    YesnoPipe
+  ]
 })
 export class ManageSchedulerJobsComponent implements OnInit, AfterViewInit {
   /** Jobs data. */
@@ -126,11 +169,12 @@ export class ManageSchedulerJobsComponent implements OnInit, AfterViewInit {
    * Initializes the data source, paginator and sorter for manage scheduler jobs table.
    */
   setJobs() {
-    this.systemService.getJobs().subscribe((jobData: any) => {
-      this.dataSource = new MatTableDataSource(jobData);
+    this.systemService.getJobs().subscribe((jobData: any[]) => {
+      const sortedData = jobData.sort((a, b) => b.active - a.active || this.sortByName(a, b));
+      this.dataSource = new MatTableDataSource(sortedData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      this.jobsCounter = jobData.length;
+      this.jobsCounter = sortedData.length;
       this.selection.clear();
       this.dataSource.sortingDataAccessor = (item, property) => {
         switch (property) {
@@ -147,6 +191,18 @@ export class ManageSchedulerJobsComponent implements OnInit, AfterViewInit {
         }
       };
     });
+  }
+
+  sortByName(a: any, b: any): number {
+    // Sort on name
+    if (a.displayName < b.displayName) {
+      return -1;
+    }
+    if (a.displayName > b.displayName) {
+      return 1;
+    }
+    // Both idential, return 0
+    return 0;
   }
 
   getScheduler() {
@@ -302,5 +358,16 @@ export class ManageSchedulerJobsComponent implements OnInit, AfterViewInit {
         dialog.close();
       }
     });
+  }
+
+  jobWithError(job: any): boolean {
+    return !(job.lastRunHistory && job.lastRunHistory.status === 'success');
+  }
+
+  rowColor(job: any): string {
+    if (this.jobWithError(job)) {
+      return 'job-error';
+    }
+    return '';
   }
 }

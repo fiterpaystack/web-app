@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 /** Custom Components */
@@ -6,13 +6,19 @@ import { ActivatedRoute } from '@angular/router';
 /** Custom Services */
 import { LoansService } from '../../loans.service';
 import { AuthenticationService } from '../../../core/authentication/authentication.service';
+import { EntityNotesTabComponent } from '../../../shared/tabs/entity-notes-tab/entity-notes-tab.component';
+import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 @Component({
   selector: 'mifosx-notes-tab',
   templateUrl: './notes-tab.component.html',
-  styleUrls: ['./notes-tab.component.scss']
+  styleUrls: ['./notes-tab.component.scss'],
+  imports: [
+    ...STANDALONE_SHARED_IMPORTS,
+    EntityNotesTabComponent
+  ]
 })
-export class NotesTabComponent {
+export class NotesTabComponent implements OnInit {
   entityId: string;
   username: string;
   entityNotes: any;
@@ -27,6 +33,12 @@ export class NotesTabComponent {
     this.entityId = this.route.parent.snapshot.params['loanId'];
     this.route.data.subscribe((data: { loanNotes: any }) => {
       this.entityNotes = data.loanNotes;
+    });
+  }
+
+  ngOnInit(): void {
+    this.route.parent.params.subscribe((params) => {
+      this.entityId = params['loanId'];
     });
   }
 

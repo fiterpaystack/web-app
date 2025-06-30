@@ -1,11 +1,13 @@
 /** Angular Imports */
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 /** Custom Services */
-import { environment } from 'environments/environment';
+import { environment } from '../../../../environments/environment';
 import { LoansService } from 'app/loans/loans.service';
 import { SettingsService } from 'app/settings/settings.service';
+import { EntityDocumentsTabComponent } from '../../../shared/tabs/entity-documents-tab/entity-documents-tab.component';
+import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /**
  * Overdue charges tab component
@@ -13,9 +15,13 @@ import { SettingsService } from 'app/settings/settings.service';
 @Component({
   selector: 'mifosx-loan-documents-tab',
   templateUrl: './loan-documents-tab.component.html',
-  styleUrls: ['./loan-documents-tab.component.scss']
+  styleUrls: ['./loan-documents-tab.component.scss'],
+  imports: [
+    ...STANDALONE_SHARED_IMPORTS,
+    EntityDocumentsTabComponent
+  ]
 })
-export class LoanDocumentsTabComponent {
+export class LoanDocumentsTabComponent implements OnInit {
   /** Stores the resolved loan documents data */
   entityDocuments: any;
   /** Loan account Id */
@@ -35,6 +41,12 @@ export class LoanDocumentsTabComponent {
 
     this.route.data.subscribe((data: { loanDocuments: any }) => {
       this.getLoanDocumentsData(data.loanDocuments);
+    });
+  }
+
+  ngOnInit(): void {
+    this.route.parent.params.subscribe((params) => {
+      this.entityId = params['loanId'];
     });
   }
 

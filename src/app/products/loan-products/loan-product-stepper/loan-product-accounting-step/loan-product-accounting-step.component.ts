@@ -1,5 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import {
+  UntypedFormArray,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+  ReactiveFormsModule
+} from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 
 import { DeleteDialogComponent } from 'app/shared/delete-dialog/delete-dialog.component';
@@ -9,16 +16,62 @@ import { TranslateService } from '@ngx-translate/core';
 import { FormfieldBase } from 'app/shared/form-dialog/formfield/model/formfield-base';
 import { SelectBase } from 'app/shared/form-dialog/formfield/model/select-base';
 import { ChargeOffReasonToExpenseAccountMapping } from 'app/shared/models/general.model';
+import { DeferredIncomeRecognition } from '../loan-product-payment-strategy-step/payment-allocation-model';
+import { MatRadioGroup, MatRadioButton } from '@angular/material/radio';
+import { MatDivider } from '@angular/material/divider';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { GlAccountSelectorComponent } from '../../../../shared/accounting/gl-account-selector/gl-account-selector.component';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import {
+  MatTable,
+  MatColumnDef,
+  MatHeaderCellDef,
+  MatHeaderCell,
+  MatCellDef,
+  MatCell,
+  MatHeaderRowDef,
+  MatHeaderRow,
+  MatRowDef,
+  MatRow
+} from '@angular/material/table';
+import { MatStepperPrevious, MatStepperNext } from '@angular/material/stepper';
+import { FindPipe } from '../../../../pipes/find.pipe';
+import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 @Component({
   selector: 'mifosx-loan-product-accounting-step',
   templateUrl: './loan-product-accounting-step.component.html',
-  styleUrls: ['./loan-product-accounting-step.component.scss']
+  styleUrls: ['./loan-product-accounting-step.component.scss'],
+  imports: [
+    ...STANDALONE_SHARED_IMPORTS,
+    MatRadioGroup,
+    MatRadioButton,
+    MatDivider,
+    MatCheckbox,
+    GlAccountSelectorComponent,
+    FaIconComponent,
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatIconButton,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    MatStepperPrevious,
+    MatStepperNext,
+    FindPipe
+  ]
 })
-export class LoanProductAccountingStepComponent implements OnInit {
+export class LoanProductAccountingStepComponent implements OnInit, OnChanges {
   @Input() loanProductsTemplate: any;
   @Input() accountingRuleData: any;
   @Input() loanProductFormValid: boolean;
+  @Input() deferredIncomeRecognition: DeferredIncomeRecognition;
 
   loanProductAccountingForm: UntypedFormGroup;
 
@@ -61,6 +114,10 @@ export class LoanProductAccountingStepComponent implements OnInit {
     this.setConditionalControls();
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    this.setDeferredIncomeRecognitionControls();
+  }
+
   ngOnInit() {
     this.chargeData = this.loanProductsTemplate.chargeOptions || [];
     this.penaltyData = this.loanProductsTemplate.penaltyOptions || [];
@@ -79,6 +136,7 @@ export class LoanProductAccountingStepComponent implements OnInit {
     });
 
     const accountingMappings = this.loanProductsTemplate.accountingMappings;
+    this.setDeferredIncomeRecognitionControls();
     switch (this.loanProductsTemplate.accountingRule.id) {
       case 3:
       case 4:
@@ -90,6 +148,20 @@ export class LoanProductAccountingStepComponent implements OnInit {
         this.loanProductAccountingForm.patchValue({
           enableAccrualActivityPosting: this.loanProductsTemplate.enableAccrualActivityPosting
         });
+        if (this.deferredIncomeRecognition) {
+          if (this.deferredIncomeRecognition.capitalizedIncome.enableIncomeCapitalization) {
+            this.loanProductAccountingForm.patchValue({
+              deferredIncomeLiabilityAccountId: accountingMappings.deferredIncomeLiabilityAccount.id,
+              incomeFromCapitalizationAccountId: accountingMappings.incomeFromCapitalizationAccount.id
+            });
+          }
+          if (this.deferredIncomeRecognition.buyDownFee.enableBuyDownFee) {
+            this.loanProductAccountingForm.patchValue({
+              buyDownExpenseAccountId: accountingMappings.buyDownExpenseAccount.id,
+              incomeFromBuyDownAccountId: accountingMappings.incomeFromBuyDownAccount.id
+            });
+          }
+        }
       /* falls through */
       case 2:
         this.loanProductAccountingForm.patchValue({
@@ -101,7 +173,7 @@ export class LoanProductAccountingStepComponent implements OnInit {
           incomeFromPenaltyAccountId: accountingMappings.incomeFromPenaltyAccount.id,
           incomeFromRecoveryAccountId: accountingMappings.incomeFromRecoveryAccount.id,
           writeOffAccountId: accountingMappings.writeOffAccount.id,
-          goodwillCreditAccountId: accountingMappings.goodwillCreditAccount.id,
+          goodwillCreditAccountId: accountingMappings.goodwillCreditAccount?.id || null,
           overpaymentLiabilityAccountId: accountingMappings.overpaymentLiabilityAccount.id,
           chargeOffFraudExpenseAccountId: accountingMappings.chargeOffFraudExpenseAccount
             ? accountingMappings.chargeOffFraudExpenseAccount.id
@@ -523,5 +595,38 @@ export class LoanProductAccountingStepComponent implements OnInit {
 
   get loanProductAccounting() {
     return this.loanProductAccountingForm.value;
+  }
+
+  setDeferredIncomeRecognitionControls() {
+    if (this.isAccountingAccrualBased) {
+      if (this.deferredIncomeRecognition) {
+        if (this.deferredIncomeRecognition.capitalizedIncome.enableIncomeCapitalization) {
+          this.loanProductAccountingForm.addControl(
+            'deferredIncomeLiabilityAccountId',
+            new UntypedFormControl('', Validators.required)
+          );
+          this.loanProductAccountingForm.addControl(
+            'incomeFromCapitalizationAccountId',
+            new UntypedFormControl('', Validators.required)
+          );
+        } else {
+          this.loanProductAccountingForm.removeControl('deferredIncomeLiabilityAccountId');
+          this.loanProductAccountingForm.removeControl('incomeFromCapitalizationAccountId');
+        }
+        if (this.deferredIncomeRecognition.buyDownFee.enableBuyDownFee) {
+          this.loanProductAccountingForm.addControl(
+            'buyDownExpenseAccountId',
+            new UntypedFormControl('', Validators.required)
+          );
+          this.loanProductAccountingForm.addControl(
+            'incomeFromBuyDownAccountId',
+            new UntypedFormControl('', Validators.required)
+          );
+        } else {
+          this.loanProductAccountingForm.removeControl('buyDownExpenseAccountId');
+          this.loanProductAccountingForm.removeControl('incomeFromBuyDownAccountId');
+        }
+      }
+    }
   }
 }

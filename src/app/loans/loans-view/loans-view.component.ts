@@ -1,6 +1,6 @@
 /** Angular Imports */
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Router, RouterLinkActive, RouterLink, RouterOutlet } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 
 /** Custom Services */
@@ -17,11 +17,53 @@ import { Currency } from 'app/shared/models/general.model';
 import { DelinquencyPausePeriod } from '../models/loan-account.model';
 import { TranslateService } from '@ngx-translate/core';
 import { LoanTransaction } from 'app/products/loan-products/models/loan-account.model';
+import { OptionData } from 'app/shared/models/option-data.model';
+import { MatCard, MatCardHeader, MatCardTitleGroup, MatCardTitle, MatCardContent } from '@angular/material/card';
+import { SvgIconComponent } from '../../shared/svg-icon/svg-icon.component';
+import { MatTooltip } from '@angular/material/tooltip';
+import { NgClass, NgIf, NgFor, CurrencyPipe } from '@angular/common';
+import { LongTextComponent } from '../../shared/long-text/long-text.component';
+import { AccountNumberComponent } from '../../shared/account-number/account-number.component';
+import { MatIconButton } from '@angular/material/button';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import { MatIcon } from '@angular/material/icon';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { MatTabNav, MatTabLink, MatTabNavPanel } from '@angular/material/tabs';
+import { StatusLookupPipe } from '../../pipes/status-lookup.pipe';
+import { DateFormatPipe } from '../../pipes/date-format.pipe';
+import { FormatNumberPipe } from '../../pipes/format-number.pipe';
+import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 @Component({
   selector: 'mifosx-loans-view',
   templateUrl: './loans-view.component.html',
-  styleUrls: ['./loans-view.component.scss']
+  styleUrls: ['./loans-view.component.scss'],
+  imports: [
+    ...STANDALONE_SHARED_IMPORTS,
+    MatCardHeader,
+    MatCardTitleGroup,
+    SvgIconComponent,
+    MatTooltip,
+    MatCardTitle,
+    NgClass,
+    LongTextComponent,
+    AccountNumberComponent,
+    MatIconButton,
+    MatMenuTrigger,
+    MatIcon,
+    FaIconComponent,
+    MatMenu,
+    MatMenuItem,
+    MatTabNav,
+    MatTabLink,
+    RouterLinkActive,
+    MatTabNavPanel,
+    RouterOutlet,
+    CurrencyPipe,
+    StatusLookupPipe,
+    DateFormatPipe,
+    FormatNumberPipe
+  ]
 })
 export class LoansViewComponent implements OnInit {
   /** Loan Details Data */
@@ -46,6 +88,7 @@ export class LoansViewComponent implements OnInit {
 
   loanDelinquencyClassificationStyle = '';
   loanStatus: LoanStatus;
+  loanSubStatus: OptionData | null = null;
   currency: Currency;
   loanReAged = false;
   loanReAmortized = false;
@@ -63,7 +106,9 @@ export class LoansViewComponent implements OnInit {
         this.loanDatatables = data.loanDatatables;
         this.loanDisplayArrearsDelinquency = data.loanArrearsDelinquencyConfig.value || 0;
         this.loanStatus = this.loanDetailsData.status;
+        this.loanSubStatus = this.loanDetailsData.subStatus === undefined ? null : this.loanDetailsData.subStatus;
         this.currency = this.loanDetailsData.currency;
+        loansService.saveLoanDisbursementDetailsData(this.loanDetailsData.disbursementDetails);
         if (this.loanStatus.active) {
           this.loanDetailsData.transactions.forEach((lt: LoanTransaction) => {
             if (!lt.manuallyReversed) {
@@ -75,6 +120,7 @@ export class LoansViewComponent implements OnInit {
             }
           });
         }
+        this.setConditionalButtons();
       }
     );
     this.loanId = this.route.snapshot.params['loanId'];
@@ -82,8 +128,16 @@ export class LoansViewComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.route.params.subscribe((params) => {
+      if (this.loanId != params['loanId']) {
+        this.loanId = params['loanId'];
+        this.reload();
+      }
+    });
     this.recalculateInterest = this.loanDetailsData.recalculateInterest || true;
     this.status = this.loanDetailsData.status.value;
+    this.loanStatus = this.loanDetailsData.status;
+    this.loanSubStatus = this.loanDetailsData.subStatus === undefined ? null : this.loanDetailsData.subStatus;
     if (this.loanStatus.active && this.loanDetailsData.multiDisburseLoan) {
       if (this.loanDetailsData && this.loanDetailsData.transactions) {
         this.loanDetailsData.transactions.forEach((transaction: any) => {
@@ -106,7 +160,7 @@ export class LoansViewComponent implements OnInit {
 
   // Defines the buttons based on the status of the loan account
   setConditionalButtons() {
-    this.buttonConfig = new LoansAccountButtonConfiguration(this.status);
+    this.buttonConfig = new LoansAccountButtonConfiguration(this.status, this.loanSubStatus);
 
     if (this.status === 'Submitted and pending approval') {
       this.buttonConfig.addOption({
@@ -129,6 +183,19 @@ export class LoansViewComponent implements OnInit {
         taskPermissionName: 'DISBURSE_LOAN'
       });
     } else if (this.status === 'Active') {
+      this.buttonConfig.addButton({
+        name: 'Buy Down Fee',
+        icon: 'plus',
+        taskPermissionName: 'BUY_DOWN_FEE_LOAN'
+      });
+      if (this.loanDetailsData.enableIncomeCapitalization) {
+        this.buttonConfig.addButton({
+          name: 'Capitalized Income',
+          icon: 'coins',
+          taskPermissionName: 'CAPITALIZED_INCOME_LOAN'
+        });
+      }
+
       if (this.loanDetailsData.canDisburse || this.loanDetailsData.multiDisburseLoan) {
         this.buttonConfig.addButton({
           name: 'Disburse',
@@ -216,6 +283,14 @@ export class LoansViewComponent implements OnInit {
           name: 'Undo Re-Amortize',
           icon: 'undo',
           taskPermissionName: 'UNDO_REAMORTIZE_LOAN'
+        });
+      }
+    } else if (this.status === 'Closed (obligations met)' || this.status === 'Overpaid') {
+      if (this.loanDetailsData.multiDisburseLoan) {
+        this.buttonConfig.addButton({
+          name: 'Disburse',
+          icon: 'hand-holding-usd',
+          taskPermissionName: 'DISBURSE_LOAN'
         });
       }
     }
@@ -331,7 +406,30 @@ export class LoansViewComponent implements OnInit {
     if (this.loanDetailsData.chargedOff) {
       return 'loanStatusType.chargeoff';
     }
+    if (this.isContractTermination(this.loanSubStatus)) {
+      return 'loanSubStatusType.contractTermination';
+    }
+    if (this.loanDetailsData.inArrears) {
+      return 'loanStatusType.activeOverdue';
+    }
     return this.loanDetailsData.status.code;
+  }
+
+  loanStatusTooltip() {
+    if (this.loanDetailsData.chargedOff) {
+      return 'Chargeoff';
+    }
+    if (this.loanDetailsData.inArrears) {
+      return 'activeOverdue';
+    }
+    return this.loanDetailsData.status.code;
+  }
+
+  loanSubStatusTooltip() {
+    if (this.isContractTermination(this.loanSubStatus)) {
+      return 'contractTermination';
+    }
+    return '';
   }
 
   /**
@@ -360,5 +458,12 @@ export class LoansViewComponent implements OnInit {
     this.router
       .navigateByUrl(`/clients/${clientId}/loans-accounts`, { skipLocationChange: true })
       .then(() => this.router.navigate([url]));
+  }
+
+  private isContractTermination(substatus: OptionData): boolean {
+    if (substatus == null) {
+      return false;
+    }
+    return substatus.code === 'loanSubStatus.loanSubStatusType.contractTermination';
   }
 }

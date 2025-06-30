@@ -6,8 +6,13 @@ table {
   margin: 2% 0%;
 }
 
+.table-row {
+  font-size: small;
+}
+
 .container {
   padding-bottom: 2%;
+  width: 98%;
 }
 
 .check {
@@ -36,4 +41,20 @@ table {
 
 .overdued {
   color: $status-matured;
+}
+
+#repaymentSchedule,
+#repaymentScheduleEdit {
+  width: 100%;
+}
+
+.mat-header-cell {
+  color: rgba($color: #000, $alpha: 54%);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+div.container {
+  overflow: auto;
+  max-width: 100%;
 }

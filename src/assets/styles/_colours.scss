@@ -80,6 +80,7 @@ $status-matured: #ff4000;
 $state-done: #2af72a;
 $status-transfer-progress: #ff4000;
 $status-transfer-hold: #df0101;
+$subStatus-contract-termination: #b3b3b3;
 
 $error-log: #ffa726;
 
@@ -126,4 +127,16 @@ $error-log: #ffa726;
 
 .accrual {
   color: $msg-default;
+}
+
+.fa-question {
+  color: $status-approved;
+}
+
+.enabled {
+  color: #32cd32;
+}
+
+.disabled {
+  color: #f44366;
 }

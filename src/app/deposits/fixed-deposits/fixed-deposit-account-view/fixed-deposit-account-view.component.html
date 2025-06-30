@@ -1,5 +1,5 @@
 <mat-card class="account-card">
-  <mat-card-header fxLayout="column" class="header">
+  <mat-card-header class="header layout-column">
     <mat-card-title-group class="header-title-group">
       <div class="profile-image-container">
         <div>
@@ -14,70 +14,70 @@
 
       <div class="mat-typography account-card-title">
         <mat-card-title>
-          <div fxFlex="60%">
-            <h3>
-              <i
-                class="fa fa-stop"
-                [ngClass]="fixedDepositsAccountData.status.code | statusLookup"
-                [matTooltip]="fixedDepositsAccountData.status.value"
-              ></i>
-              {{ 'labels.inputs.Fixed Deposit Product' | translate }} :
-              {{ fixedDepositsAccountData.depositProductName }}
-              <mifosx-account-number accountNo="{{ fixedDepositsAccountData.accountNo }}"></mifosx-account-number>
-            </h3>
-            <span class="account-overview">
-              <span class="m-r-10">{{ 'labels.text.' + entityType | translate }} :</span>
-              {{ fixedDepositsAccountData.clientName || fixedDepositsAccountData.groupName }}
-              <span class="m-l-10" *ngIf="fixedDepositsAccountData.clientAccountNo">
-                <mifosx-account-number
-                  accountNo="{{ fixedDepositsAccountData.clientAccountNo }}"
-                ></mifosx-account-number>
+          <div class="layout-row responsive-column">
+            <div class="flex-60">
+              <h3>
+                <i
+                  class="fa fa-stop"
+                  [ngClass]="fixedDepositsAccountData.status.code | statusLookup"
+                  [matTooltip]="fixedDepositsAccountData.status.value"
+                ></i>
+                {{ 'labels.inputs.Fixed Deposit Product' | translate }} :
+                {{ fixedDepositsAccountData.depositProductName }}
+                <mifosx-account-number accountNo="{{ fixedDepositsAccountData.accountNo }}"></mifosx-account-number>
+              </h3>
+              <span class="account-overview">
+                <span class="m-r-10">{{ 'labels.text.' + entityType | translate }} :</span>
+                {{ fixedDepositsAccountData.clientName || fixedDepositsAccountData.groupName }}
+                <span class="m-l-10" *ngIf="fixedDepositsAccountData.clientAccountNo">
+                  <mifosx-account-number
+                    accountNo="{{ fixedDepositsAccountData.clientAccountNo }}"
+                  ></mifosx-account-number>
+                </span>
               </span>
-            </span>
-          </div>
+            </div>
 
-          <div
-            *ngIf="
-              !fixedDepositsAccountData.status.rejected && !fixedDepositsAccountData.status.submittedAndPendingApproval
-            "
-            fxFlex="30%"
-            fxLayout="column"
-          >
-            <h3 fxFlex="100%">{{ 'labels.heading.Account Overview' | translate }}</h3>
-            <table class="account-overview" fxFlex="100%">
-              <tbody>
-                <tr>
-                  <td fxFlex="70%">{{ 'labels.inputs.Current Balance' | translate }}</td>
-                  <td fxFlex="30%" class="r-amount">
-                    {{
-                      fixedDepositsAccountData.summary.accountBalance
-                        | currency: currency.code : 'symbol-narrow' : '1.2-2'
-                    }}
-                  </td>
-                </tr>
-                <tr>
-                  <td fxFlex="70%">{{ 'labels.inputs.Deposit Amount' | translate }}</td>
-                  <td fxFlex="30%" class="r-amount">
-                    {{ fixedDepositsAccountData.depositAmount | currency: currency.code : 'symbol-narrow' : '1.2-2' }}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <span fxFlex="auto"></span>
-
-          <div fxFlex="5%">
-            <button
-              mat-icon-button
-              [matMenuTriggerFor]="accountMenu"
-              aria-label="Fixed Deposit account actions"
-              yPosition="below"
+            <div
+              *ngIf="
+                !fixedDepositsAccountData.status.rejected &&
+                !fixedDepositsAccountData.status.submittedAndPendingApproval
+              "
+              class="flex-30"
             >
-              <mat-icon matListIcon class="actions-menu">
-                <fa-icon icon="bars" size="sm"></fa-icon>
-              </mat-icon>
-            </button>
+              <h3 class="flex-100">{{ 'labels.heading.Account Overview' | translate }}</h3>
+              <table class="account-overview flex-100">
+                <tbody>
+                  <tr>
+                    <td class="flex-70">{{ 'labels.inputs.Current Balance' | translate }}</td>
+                    <td class="r-amount flex-30">
+                      {{
+                        fixedDepositsAccountData.summary.accountBalance
+                          | currency: currency.code : 'symbol-narrow' : '1.2-2'
+                      }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="flex-70">{{ 'labels.inputs.Deposit Amount' | translate }}</td>
+                    <td class="r-amount flex-30">
+                      {{ fixedDepositsAccountData.depositAmount | currency: currency.code : 'symbol-narrow' : '1.2-2' }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="flex-5">
+              <button
+                mat-icon-button
+                [matMenuTriggerFor]="accountMenu"
+                aria-label="Fixed Deposit account actions"
+                yPosition="below"
+              >
+                <mat-icon matListIcon class="actions-menu">
+                  <fa-icon icon="bars" size="sm"></fa-icon>
+                </mat-icon>
+              </button>
+            </div>
           </div>
         </mat-card-title>
       </div>
@@ -102,7 +102,7 @@
   </mat-card-header>
 
   <mat-card-content class="content">
-    <nav mat-tab-nav-bar class="navigation-tabs">
+    <nav mat-tab-nav-bar class="navigation-tabs" [tabPanel]="tabPanel">
       <a
         mat-tab-link
         [routerLink]="['./general']"
@@ -165,6 +165,8 @@
       </ng-container>
     </nav>
 
-    <router-outlet></router-outlet>
+    <mat-tab-nav-panel #tabPanel>
+      <router-outlet></router-outlet>
+    </mat-tab-nav-panel>
   </mat-card-content>
 </mat-card>

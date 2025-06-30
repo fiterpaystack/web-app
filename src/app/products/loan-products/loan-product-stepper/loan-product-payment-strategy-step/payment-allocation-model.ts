@@ -44,8 +44,21 @@ export interface CreditAllocation {
 
 export interface CapitalizedIncome {
   enableIncomeCapitalization: boolean;
-  incomeCapitalizationCalculationType?: string;
-  incomeCapitalizationStrategy?: string;
+  capitalizedIncomeCalculationType?: string;
+  capitalizedIncomeStrategy?: string;
+  capitalizedIncomeType?: string;
+}
+
+export interface BuyDownFee {
+  enableBuyDownFee: boolean;
+  buyDownFeeCalculationType?: string;
+  buyDownFeeStrategy?: string;
+  buyDownFeeIncomeType?: string;
+}
+
+export interface DeferredIncomeRecognition {
+  capitalizedIncome?: CapitalizedIncome;
+  buyDownFee?: BuyDownFee;
 }
 
 export class PaymentAllocationTransactionTypes {
