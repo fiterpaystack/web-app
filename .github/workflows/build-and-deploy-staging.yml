@@ -1,0 +1,60 @@
+name: Staging - Build & Deploy
+
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - dev
+
+concurrency:
+  group: ${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  ENVIRONMENT: staging
+  AWS_REGION: eu-west-2
+#  CLUSTER: paystack-staging   
+#  NAMESPACE: <team_namespace>
+  APP_NAME: web-app
+#  ARGOCD_URL: <argocd-endpoint-url>
+#  RUNNER: paystack-staging-<team_namespace>
+  DOCKERFILE_PATH: . # Update if your Dockerfile is at a different path. Eg: './packages/tps-api'
+
+jobs:
+  # Hack: We can't pass env vars directly to a reusable workflow,
+  # so using this job to expose env vars as outputs
+  vars:
+    name: Set up environment variables
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ env.ENVIRONMENT }}
+      aws-region: ${{ env.AWS_REGION }}
+#      cluster: ${{ env.CLUSTER }}
+#      namespace: ${{ env.NAMESPACE }}
+      app-name: ${{ env.APP_NAME }}
+#      argocd-url: ${{ env.ARGOCD_URL }}
+#      runner: ${{ env.RUNNER }}
+      dockerfile-path: ${{ env.DOCKERFILE_PATH }}
+
+    steps:
+      - name: Exposing env vars as outputs
+        run: echo "Exposing env vars as outputs"
+
+  build-push-image:
+    name: Build and push docker image to ECR
+    uses: PaystackHQ/common-github-actions/.github/workflows/build-push-docker-image.yml@v1.8.1
+    needs:
+      - vars
+    with:
+      application-name: ${{ needs.vars.outputs.app-name }}
+      aws-region: ${{ needs.vars.outputs.aws-region }}
+      dockerfile-path: ${{ needs.vars.outputs.dockerfile-path }}
+    secrets:
+      slack-webhook-url: ${{ secrets.SLACK_FEED_DEPLOY_WEBHOOK_URL }}
+      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      github-token: ${{ secrets.INFRA_COMMON_REPO_TOKEN }}
+      docker-svc-username: ${{ secrets.DOCKER_SVC_USERNAME }}
+      docker-svc-pat: ${{ secrets.DOCKER_SVC_PAT }}
