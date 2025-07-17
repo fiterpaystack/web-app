@@ -9,7 +9,7 @@
     This content will be hidden for smaller screens.
   -->
 
-  <div class="flex-70 layout-column align-center align-items-center hide-lt-sm cover">
+  <!--<div class="flex-70 layout-column align-center align-items-center hide-lt-sm cover">
     <div class="cover-content">
       <h1 class="mat-display-1 cover-title">{{ 'APP_NAME' | translate }}</h1>
       <p class="mat-headline cover-description">
@@ -27,7 +27,7 @@
         >
       </p>
     </div>
-  </div>
+  </div>-->
 
   <!--
     Content in 30%: (TODO: Allow customization of Name, Logo and Contact Information by organization)
@@ -38,7 +38,7 @@
       Footer
   -->
 
-  <div class="layout-column flex-gt-sm-30 login-container">
+  <div class="layout-column flex-100 login-container">
     <!-- Language Selector to the extreme right -->
     <div class="layout-row-reverse flex-auto">
       <mifosx-language-selector class="p-r-10 p-t-10"></mifosx-language-selector>
@@ -51,11 +51,11 @@
 
     <!-- Logo with Organization Name -->
     <div class="layout-row align-center-center flex-auto">
-      <img src="assets/images/mifos_lg-logo.png" alt="{{ 'APP_NAME' | translate }} Logo" class="img-container" />
+      <img src="assets/images/paystack_logo_dark.png" alt="{{ 'APP_NAME' | translate }} Logo" class="img-container" />
     </div>
 
     <!-- Tenant Identifier Name -->
-    <mifosx-tenant-selector *ngIf="displayTenantSelector()"></mifosx-tenant-selector>
+    <!--<mifosx-tenant-selector *ngIf="displayTenantSelector()"></mifosx-tenant-selector>-->
 
     <!--
       Type of Form:
@@ -72,7 +72,7 @@
     </div>
     <div class="layout-row">
       <!-- Contact Information/Resources (hidden on smaller screens) -->
-      <mat-list class="information-list align-items-center custom-horizontal-list hide-lt-lg">
+      <!--<mat-list class="information-list align-items-center custom-horizontal-list hide-lt-lg">
         <mat-list-item
           ><button mat-button [matMenuTriggerFor]="resourcesMenu">
             {{ 'labels.links.Resources' | translate }}
@@ -88,11 +88,11 @@
             {{ 'labels.links.Contribute' | translate }}
           </button></mat-list-item
         >
-      </mat-list>
+      </mat-list>-->
     </div>
 
     <!-- Footer -->
-    <mifosx-footer [styleClass]="'m-t-90'"></mifosx-footer>
+    <!--<mifosx-footer [styleClass]="'m-t-90'"></mifosx-footer>-->
 
     <div class="layout-row m-b-20 m-r-10" align="end">
       <a (click)="reloadSettings()"><fa-icon icon="refresh"></fa-icon></a>
@@ -101,7 +101,7 @@
 </div>
 
 <!-- Contact Information/Resources Menus -->
-<mat-menu #resourcesMenu="matMenu">
+<!--<mat-menu #resourcesMenu="matMenu">
   <a href="https://mifosforge.jira.com/wiki/spaces/docs/pages/52035622/User+Manual" target="_blank" mat-menu-item>{{
     'labels.links.User Manual' | translate
   }}</a>
@@ -139,4 +139,4 @@
     'labels.links.Working with Code' | translate
   }}</a>
   <a href="https://mifos.org/donate/" target="_blank" mat-menu-item>{{ 'labels.links.Donate' | translate }}</a>
-</mat-menu>
+</mat-menu>-->

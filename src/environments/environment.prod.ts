@@ -42,7 +42,7 @@ export const environment = {
 
   defaultCharDelimiter: loadedEnv['defaultCharDelimiter'] || ',',
 
-  displayBackEndInfo: loadedEnv['displayBackEndInfo'] || 'true',
+  displayBackEndInfo: loadedEnv['displayBackEndInfo'] || 'false',
   displayTenantSelector: loadedEnv['displayTenantSelector'] || 'true',
   // Time in seconds, default 60 seconds
   waitTimeForNotifications: loadedEnv['waitTimeForNotifications'] || 60,
