@@ -10,6 +10,7 @@ import { Alert } from '../core/alert/alert.model';
 
 /** Custom Services */
 import { AlertService } from '../core/alert/alert.service';
+import { ThemingService } from '../shared/theme-toggle/theming.service';
 
 /** Environment Imports */
 import { environment } from '../../environments/environment';
@@ -62,6 +63,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   /** Subscription to alerts. */
   alert$: Subscription;
 
+  logoSrc = 'assets/images/paystack_logo_dark.png';
+
   /**
    * @param {AlertService} alertService Alert Service.
    * @param {Router} router Router for navigation.
@@ -69,7 +72,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(
     private alertService: AlertService,
     private settingsService: SettingsService,
-    private router: Router
+    private router: Router,
+    private themingService: ThemingService
   ) {}
 
   /**
@@ -89,6 +93,12 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.twoFactorAuthenticationRequired = false;
         this.router.navigate(['/'], { replaceUrl: true });
       }
+    });
+    this.themingService.theme.subscribe((currentTheme) => {
+      this.logoSrc =
+        currentTheme === 'light-theme'
+          ? 'assets/images/paystack_logo_dark.png'
+          : 'assets/images/paystack_logo_light.png';
     });
   }
 

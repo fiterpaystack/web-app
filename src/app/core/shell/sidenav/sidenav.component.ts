@@ -10,6 +10,7 @@ import { KeyboardShortcutsDialogComponent } from 'app/shared/keyboard-shortcuts-
 import { AuthenticationService } from '../../authentication/authentication.service';
 import { PopoverService } from '../../../configuration-wizard/popover/popover.service';
 import { ConfigurationWizardService } from '../../../configuration-wizard/configuration-wizard.service';
+import { ThemingService } from '../../../shared/theme-toggle/theming.service';
 
 /** Custom Imports */
 import { frequentActivities } from './frequent-activities';
@@ -68,6 +69,8 @@ export class SidenavComponent implements OnInit, AfterViewInit {
   /* Template for popover on chart of accounts */
   @ViewChild('templateChartOfAccounts') templateChartOfAccounts: TemplateRef<any>;
 
+  logoSrc = 'assets/images/paystack_logo_dark.png';
+
   /**
    * @param {Router} router Router for navigation.
    * @param {MatDialog} dialog Mat Dialog
@@ -82,7 +85,8 @@ export class SidenavComponent implements OnInit, AfterViewInit {
     private authenticationService: AuthenticationService,
     private settingsService: SettingsService,
     private configurationWizardService: ConfigurationWizardService,
-    private popoverService: PopoverService
+    private popoverService: PopoverService,
+    private themingService: ThemingService
   ) {
     this.userActivity = JSON.parse(localStorage.getItem('mifosXLocation'));
   }
@@ -94,6 +98,12 @@ export class SidenavComponent implements OnInit, AfterViewInit {
     const credentials = this.authenticationService.getCredentials();
     this.username = credentials.username;
     this.setMappedAcitivites();
+    this.themingService.theme.subscribe((currentTheme) => {
+      this.logoSrc =
+        currentTheme === 'light-theme'
+          ? 'assets/images/paystack_logo_dark.png'
+          : 'assets/images/paystack_logo_light.png';
+    });
   }
 
   /**

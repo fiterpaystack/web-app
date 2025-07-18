@@ -16,6 +16,7 @@ import { WarningDialogComponent } from './warning-dialog/warning-dialog.componen
 import { AuthenticationService } from '../core/authentication/authentication.service';
 import { PopoverService } from '../configuration-wizard/popover/popover.service';
 import { ConfigurationWizardService } from '../configuration-wizard/configuration-wizard.service';
+import { ThemingService } from '../shared/theme-toggle/theming.service';
 
 /** Custom Components */
 import { NextStepDialogComponent } from '../configuration-wizard/next-step-dialog/next-step-dialog.component';
@@ -64,6 +65,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
   /* Template for popover on search activity */
   @ViewChild('templateSearchActivity', { static: false }) templateSearchActivity: TemplateRef<any>;
 
+  logoSrc = 'assets/images/paystack_logo_dark.png';
+
   /**
    * @param {AuthenticationService} authenticationService Authentication Service.
    * @param {ActivatedRoute} activatedRoute ActivatedRoute.
@@ -78,7 +81,8 @@ export class HomeComponent implements OnInit, AfterViewInit {
     private router: Router,
     private dialog: MatDialog,
     private configurationWizardService: ConfigurationWizardService,
-    private popoverService: PopoverService
+    private popoverService: PopoverService,
+    private themingService: ThemingService
   ) {}
 
   /**
@@ -93,6 +97,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.dialog.open(WarningDialogComponent);
       this.authenticationService.showDialog();
     }
+    this.themingService.theme.subscribe((currentTheme) => {
+      this.logoSrc =
+        currentTheme === 'light-theme'
+          ? 'assets/images/paystack_logo_dark.png'
+          : 'assets/images/paystack_logo_light.png';
+    });
   }
 
   /**
