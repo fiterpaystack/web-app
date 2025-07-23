@@ -1,0 +1,76 @@
+name: Staging - Build and deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: eu-west-2
+  APP_NAME: web-app
+  NAMESPACE: fineract
+  AWS_ROLE_ARN: arn:aws:iam::719005871086:role/github-actions-role
+  DOCKERFILE_PATH: .
+
+jobs:
+  vars:
+    name: Set up environment variables
+    runs-on: ubuntu-latest
+    outputs:
+      aws-region: ${{ env.AWS_REGION }}
+      app-name: ${{ env.APP_NAME }}
+      dockerfile-path: ${{ env.DOCKERFILE_PATH }}
+      aws-role-arn: ${{ env.AWS_ROLE_ARN }}
+
+    steps:
+      - name: Exposing env vars as outputs
+        run: echo "Exposing env vars as outputs"
+
+  build-push-image:
+    name: Build and push docker image to ECR
+    uses: PaystackHQ/common-github-actions/.github/workflows/build-push-docker-image.yml@update-build-workflow-mfb
+    needs:
+      - vars
+    with:
+      application-name: ${{ needs.vars.outputs.app-name }}
+      aws-region: ${{ needs.vars.outputs.aws-region }}
+      dockerfile-path: ${{ needs.vars.outputs.dockerfile-path }}
+      aws-role-arn: ${{ needs.vars.outputs.aws-role-arn }}
+      docker-hub-login: false
+      slack-notification: false
+    secrets:
+      github-token: ${{ secrets.PAYSTACKHQ_GITHUB_PAT }}
+
+  deploy-app-workflow-helmfiles-apps:
+    runs-on: ubuntu-latest
+    needs: build-push-image
+    steps:
+      - name: Trigger deployment workflow in helmfiles-apps
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: Paystack-MFB/helmfiles-apps
+          workflow: mfb-staging-deploy-app.yml
+          ref: add-deploy-changes-workflow
+          inputs: |
+            {
+             "application-name": "${{ env.APP_NAME }}",
+             "namespace": "${{ env.NAMESPACE }}",
+             "version": "${{ needs.build-push-image.outputs.version }}"
+            }
+
+#      - name: Send deploy workflow started notification
+#        uses: someimportantcompany/github-actions-slack-message@v1
+#        with:
+#          webhook-url: ${{ secrets.slack-webhook-url }}
+#          color: good
+#          text: |
+#            :gear: *Deploy pipeline started for `${{ env.APP_NAME }}`.*
+#            - *Version* : `${{ steps.commit-details.outputs.version }}`
+#            - *Author* : `${{ steps.commit-details.outputs.author }}`
+#            - *PR Title* : `${{ steps.commit-details.outputs.pr-title }}`
