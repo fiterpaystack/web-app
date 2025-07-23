@@ -1,4 +1,4 @@
-name: Iris API - Build and deploy to staging
+name: WEB-APP - Build and deploy to staging
 
 on:
   workflow_dispatch:
