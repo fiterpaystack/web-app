@@ -56,7 +56,7 @@ jobs:
           repository: Paystack-MFB/helmfiles-apps
           workflow: mfb-staging-deploy-app.yml
           ref: main
-          inputs: '{"application-name":"web-app", "namespace":"web-app", "version":"${{ needs.build-push-image.outputs.version }}"}'
+          inputs: '{"application-name":"web-app", "namespace":"fineract", "version":"${{ needs.build-push-image.outputs.version }}"}'
 
 #      - name: Send deploy workflow started notification
 #        uses: someimportantcompany/github-actions-slack-message@v1
