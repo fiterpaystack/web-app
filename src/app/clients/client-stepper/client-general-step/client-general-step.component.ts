@@ -44,6 +44,9 @@ export class ClientGeneralStepComponent implements OnInit {
   /** Maximum date allowed. */
   maxDate = new Date();
 
+  /** Incorporation validity max 50 years date allowed. */
+  incorpValidityMaxDate = new Date(new Date().setFullYear(new Date().getFullYear() + 50));
+
   /** Client Template */
   @Input() clientTemplate: any;
   /** Create Client Form */
@@ -237,7 +240,10 @@ export class ClientGeneralStepComponent implements OnInit {
     if (generalDetails.clientNonPersonDetails && generalDetails.clientNonPersonDetails.incorpValidityTillDate) {
       generalDetails.clientNonPersonDetails = {
         ...generalDetails.clientNonPersonDetails,
-        incorpValidityTillDate: this.dateUtils.formatDate(generalDetails.dateOfBirth, dateFormat),
+        incorpValidityTillDate: this.dateUtils.formatDate(
+          generalDetails.clientNonPersonDetails.incorpValidityTillDate,
+          dateFormat
+        ),
         dateFormat,
         locale
       };
