@@ -106,7 +106,7 @@ export class ViewChargeComponent {
           locale
         };
         this.savingsService
-          .executeSavingsAccountChargesCommand(this.chargeData.accountId, 'pay', dataObject, this.chargeData.id)
+          .executeSavingsAccountChargesCommand(this.chargeData.accountId, 'paycharge', dataObject, this.chargeData.id)
           .subscribe(() => {
             this.reload();
           });
