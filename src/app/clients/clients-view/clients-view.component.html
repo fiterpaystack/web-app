@@ -381,16 +381,18 @@
         {{ 'labels.inputs.Notes' | translate }}
       </a>
       <ng-container *ngFor="let clientDatatable of clientDatatables">
-        <a
-          mat-tab-link
-          [routerLink]="['./datatables', clientDatatable.registeredTableName]"
-          routerLinkActive
-          #datatable="routerLinkActive"
-          [active]="datatable.isActive"
-          *mifosxHasPermission="'READ_' + clientDatatable.registeredTableName"
-        >
-          {{ clientDatatable.registeredTableName }}
-        </a>
+        <span *ngIf="clientDatatable.entitySubType == clientViewData.legalForm.value">
+          <a
+            mat-tab-link
+            [routerLink]="['./datatables', clientDatatable.registeredTableName]"
+            routerLinkActive
+            #datatable="routerLinkActive"
+            [active]="datatable.isActive"
+            *mifosxHasPermission="'READ_' + clientDatatable.registeredTableName"
+          >
+            {{ clientDatatable.registeredTableName }}
+          </a>
+        </span>
       </ng-container>
     </nav>
     <mat-tab-nav-panel #tabPanel>
