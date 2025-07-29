@@ -3,7 +3,7 @@ name: Build and push ECR image for web-app
 on:
   push:
     branches:
-      - sf/ecr-upload
+      - main
 jobs:
   build-push-ecr-image:
     runs-on: ubuntu-latest
