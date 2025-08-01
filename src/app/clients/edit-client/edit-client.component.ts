@@ -188,19 +188,28 @@ export class EditClientComponent implements OnInit {
           'clientNonPersonDetails',
           this.formBuilder.group({
             constitutionId: [
-              this.clientDataAndTemplate.clientNonPersonDetails.constitution &&
+              this.clientDataAndTemplate.clientNonPersonDetails &&
+                this.clientDataAndTemplate.clientNonPersonDetails.constitution &&
                 this.clientDataAndTemplate.clientNonPersonDetails.constitution.id,
               Validators.required
             ],
             incorpValidityTillDate: [
-              this.clientDataAndTemplate.clientNonPersonDetails.incorpValidityTillDate &&
+              this.clientDataAndTemplate.clientNonPersonDetails &&
+                this.clientDataAndTemplate.clientNonPersonDetails.incorpValidityTillDate &&
                 new Date(this.clientDataAndTemplate.clientNonPersonDetails.incorpValidityTillDate)],
-            incorpNumber: [this.clientDataAndTemplate.clientNonPersonDetails.incorpNumber],
+            incorpNumber: [
+              this.clientDataAndTemplate.clientNonPersonDetails &&
+                this.clientDataAndTemplate.clientNonPersonDetails.incorpNumber
+            ],
             mainBusinessLineId: [
-              this.clientDataAndTemplate.clientNonPersonDetails.mainBusinessLine &&
+              this.clientDataAndTemplate.clientNonPersonDetails &&
+                this.clientDataAndTemplate.clientNonPersonDetails.mainBusinessLine &&
                 this.clientDataAndTemplate.clientNonPersonDetails.mainBusinessLine.id
             ],
-            remarks: [this.clientDataAndTemplate.clientNonPersonDetails.remarks]
+            remarks: [
+              this.clientDataAndTemplate.clientNonPersonDetails &&
+                this.clientDataAndTemplate.clientNonPersonDetails.remarks
+            ]
           })
         );
       }
