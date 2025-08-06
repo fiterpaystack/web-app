@@ -112,14 +112,11 @@ export class SavingsAccountChargesStepComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit() {
-    if (this.savingsAccountTemplate) {
-      if (!this.isChargesPatched && this.savingsAccountTemplate.charges) {
-        this.chargesDataSource =
-          this.savingsAccountProductTemplate.charges.map((charge: any) => ({ ...charge, id: charge.chargeId })) || [];
-        this.isChargesPatched = true;
-      } else {
-        this.chargesDataSource = [];
-      }
+    if (this.savingsAccountTemplate && this.savingsAccountTemplate.charges) {
+      this.chargesDataSource =
+        this.savingsAccountTemplate.charges.map((charge: any) => ({ ...charge, id: charge.chargeId })) || [];
+    } else {
+      this.chargesDataSource = [];
     }
   }
 
@@ -128,6 +125,12 @@ export class SavingsAccountChargesStepComponent implements OnInit, OnChanges {
       this.chargeData = this.savingsAccountProductTemplate.chargeOptions;
       this.chargesDataSource =
         this.savingsAccountProductTemplate.charges.map((charge: any) => ({ ...charge, id: charge.chargeId })) || [];
+    }
+    if (this.savingsAccountTemplate && this.savingsAccountTemplate.charges) {
+      this.chargesDataSource =
+        this.savingsAccountTemplate.charges.map((charge: any) => ({ ...charge, id: charge.chargeId })) || [];
+    } else {
+      this.chargesDataSource = [];
     }
   }
 

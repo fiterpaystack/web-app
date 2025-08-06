@@ -87,6 +87,24 @@ export class SavingsAccountTermsStepComponent implements OnChanges, OnInit {
       });
       this.setOptions();
     }
+    if (this.savingsAccountTemplate) {
+      this.savingsAccountTermsForm.patchValue({
+        nominalAnnualInterestRate: this.savingsAccountTemplate.nominalAnnualInterestRate,
+        interestCompoundingPeriodType: this.savingsAccountTemplate.interestCompoundingPeriodType.id,
+        interestPostingPeriodType: this.savingsAccountTemplate.interestPostingPeriodType.id,
+        interestCalculationType: this.savingsAccountTemplate.interestCalculationType.id,
+        interestCalculationDaysInYearType: this.savingsAccountTemplate.interestCalculationDaysInYearType.id,
+        minRequiredOpeningBalance: this.savingsAccountTemplate.minRequiredOpeningBalance,
+        withdrawalFeeForTransfers: this.savingsAccountTemplate.withdrawalFeeForTransfers,
+        lockinPeriodFrequency: this.savingsAccountTemplate.lockinPeriodFrequency,
+        lockinPeriodFrequencyType:
+          this.savingsAccountTemplate.lockinPeriodFrequencyType &&
+          this.savingsAccountTemplate.lockinPeriodFrequencyType.id,
+        allowOverdraft: this.savingsAccountTemplate.allowOverdraft,
+        enforceMinRequiredBalance: this.savingsAccountTemplate.enforceMinRequiredBalance,
+        minRequiredBalance: this.savingsAccountTemplate.minRequiredBalance
+      });
+    }
   }
 
   ngOnInit() {
