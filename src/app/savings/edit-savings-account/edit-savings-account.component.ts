@@ -132,7 +132,7 @@ export class EditSavingsAccountComponent {
         chargeId: charge.id,
         amount: charge.amount,
         dueDate: this.dateUtils.formatDate(charge.dueDate, dateFormat),
-        feeOnMonthDay: this.dateUtils.formatDate(charge.feeOnMonthDay, dateFormat),
+        feeOnMonthDay: this.dateUtils.formatDate([2000].concat(charge.feeOnMonthDay), 'dd MMMM'),
         feeInterval: charge.feeInterval
       })),
       submittedOnDate: this.dateUtils.formatDate(this.savingsAccount.submittedOnDate, dateFormat),
