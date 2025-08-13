@@ -169,7 +169,11 @@
 
     <mat-form-field class="flex-48">
       <mat-label>{{ 'labels.inputs.Mobile No' | translate }}</mat-label>
-      <input matInput type="text" formControlName="mobileNo" />
+      <input matInput type="text" formControlName="mobileNo" required />
+      <mat-error *ngIf="createClientForm.controls.mobileNo.hasError('required')">
+        {{ 'labels.inputs.Mobile No' | translate }} {{ 'labels.commons.is' | translate }}
+        <strong>{{ 'labels.commons.required' | translate }}</strong>
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field class="flex-48">
