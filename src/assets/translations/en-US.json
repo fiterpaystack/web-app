@@ -274,7 +274,13 @@
     "validation.msg.savingsproduct.shortName.exceeds.max.length": "Short name cannot be over {{params[0].value}} characters long.",
     "validation.msg.savingsproduct.withdrawalFeeAmount.cannot.be.blank": "Withdrawal fee amount is mandatory.",
     "validation.msg.savingsproduct.withdrawalFeeAmount.not.zero.or.greater": "Withdrawal fee amount must be greater than or equal to zero if provided.",
-    "validation.msg.savingsproduct.withdrawalFeeType.is.not.one.of.expected.enumerations": "Withdrawal fee period type is mandatory."
+    "validation.msg.savingsproduct.withdrawalFeeType.is.not.one.of.expected.enumerations": "Withdrawal fee period type is mandatory.",
+    "validation.msg.client.mobileNo.required": "Client mobile number required.",
+    "validation.msg.savingsproduct.account.number.prefix.must.be.numeric": "Account number prefix must be numeric.",
+    "validation.msg.savingsproduct.account.number.prefix.must.be.exactly.two.digits": "Account number prefix must be two digits.",
+    "validation.msg.savingsproduct.number.cbn.institution.code.not.set": "CBN Institution Code is not set for the Savings Product.",
+    "validation.msg.savingsproduct.number.prefix.not.set": "Account Number Prefix is not set for the Savings Product.",
+    "validation.msg.savingsproduct.number.invalid.length": "NUBAN base length does not match weight array length"
   },
   "labels": {
     "accounting": {
@@ -2494,7 +2500,8 @@
       "Buy down fee income type": "Buy down fee income type",
       "Buy down fees": "Buy down fees",
       "Income from Buy down fees": "Income from Buy down fees",
-      "Buy down fee Expense": "Buy down fee Expense"
+      "Buy down fee Expense": "Buy down fee Expense",
+      "Account Number Prefix": "Account Number Prefix"
     },
     "links": {
       "Community": "Community",
@@ -3621,6 +3628,7 @@
     "Yes": "Yes",
     "loan product will be active and available to clients": "The date that the loan product will be active and available to clients. If blank, the loan product will be active as soon as it is created.",
     "loan product will become inactive and unavailable to clients": "The date that the loan product will become inactive and unavailable to clients. If blank, the load product will never become inactive.",
-    "Refund transactions where interest refund will automatically be calculated": "Refund transactions where interest refund will automatically be calculated"
+    "Refund transactions where interest refund will automatically be calculated": "Refund transactions where interest refund will automatically be calculated",
+    "A unique identifier for the savings account number": "A unique identifier for the savings account number"
   }
 }
