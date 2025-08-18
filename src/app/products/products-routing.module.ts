@@ -126,6 +126,12 @@ import { ShareProductDatatableTabComponent } from './share-products/view-share-p
 import { ShareProductDatatablesResolver } from './share-products/share-product-datatables.resolver';
 import { ShareProductDatatableResolver } from './share-products/share-product-datatable.resolver';
 import { GlobalConfigurationsResolver } from 'app/system/configurations/global-configurations-tab/global-configurations.resolver';
+import { CreateTransactionLimitComponent } from './transaction-limits/create-transaction-limit/create-transaction-limit.component';
+import { TransactionLimitsComponent } from './transaction-limits/transaction-limits.component';
+import { ViewTransactionLimitComponent } from './transaction-limits/view-transaction-limit/view-transaction-limit.component';
+import { TransactionLimitsResolver } from './transaction-limits/transaction-limits.resolver';
+import { EditTransactionLimitComponent } from './transaction-limits/edit-transaction-limit/edit-transaction-limit.component';
+import { TransactionLimitResolver } from './transaction-limits/transaction-limit.resolver';
 
 /** Products Routes */
 const routes: Routes = [
@@ -884,6 +890,48 @@ const routes: Routes = [
               ]
             }
           ]
+        },
+        {
+          path: 'transaction-limits',
+          data: { title: 'Transaction Limits', breadcrumb: 'Transaction Limits' },
+          children: [
+            {
+              path: 'create',
+              component: CreateTransactionLimitComponent,
+              data: { title: 'Create Transaction Limit', breadcrumb: 'Create Transaction Limit' }
+            },
+            {
+              path: '',
+              component: TransactionLimitsComponent,
+              resolve: {
+                transactionLimits: TransactionLimitsResolver
+              }
+            },
+            {
+              path: ':id',
+              data: { title: 'View Transaction Limit', routeParamBreadcrumb: 'id' },
+              resolve: {
+                transactionLimit: TransactionLimitResolver
+              },
+              children: [
+                {
+                  path: '',
+                  component: ViewTransactionLimitComponent,
+                  resolve: {
+                    transactionLimit: TransactionLimitResolver
+                  }
+                },
+                {
+                  path: 'edit',
+                  component: EditTransactionLimitComponent,
+                  data: { title: 'Edit Transaction Limit', breadcrumb: 'Edit', routeParamBreadcrumb: false },
+                  resolve: {
+                    transactionLimit: TransactionLimitResolver
+                  }
+                }
+              ]
+            }
+          ]
         }
       ]
     }
@@ -944,7 +992,9 @@ const routes: Routes = [
     CollateralsResolver,
     CollateralTemplateResolver,
     DelinquencyRangeComponentsResolver,
-    DelinquencyBucketComponentsResolver
+    DelinquencyBucketComponentsResolver,
+    TransactionLimitsResolver,
+    TransactionLimitResolver
   ]
 })
 export class ProductsRoutingModule {}

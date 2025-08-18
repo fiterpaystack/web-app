@@ -1168,7 +1168,8 @@
       "Grace On Principal": "Grace On Principal",
       "Insert Installment": "Insert Installment",
       "Interest Rate": "Interest Rate",
-      "Principal Amount": "Principal Amount"
+      "Principal Amount": "Principal Amount",
+      "Transaction Limits": "Transaction Limit"
     },
     "inputs": {
       "accounting": {
@@ -2494,7 +2495,19 @@
       "Buy down fee income type": "Buy down fee income type",
       "Buy down fees": "Buy down fees",
       "Income from Buy down fees": "Income from Buy down fees",
-      "Buy down fee Expense": "Buy down fee Expense"
+      "Buy down fee Expense": "Buy down fee Expense",
+      "transaction-limits": {
+        "Name": "Limit Name",
+        "Max Single Deposit Limit": "Max Single Deposit Limit Amount",
+        "Max Single Withdrawal Limit": "Max Single Withdrawal Limit Amount",
+        "Max Daily Withdrawal Limit": "Max Daily Withdrawal Limit Amount",
+        "Max Client Specific Daily Withdrawal Limit": "Max Client Specific Daily Withdrawal Limit Amount",
+        "Max Client Specific Single Withdrawal Limit": "Max Client Specific Single Withdrawal Limit Amount",
+        "Max Cumulative Balance On Hold": "Max Cumulative Balance On Hold Amount",
+        "Description": "Description",
+        "Is Active": "Is Active",
+        "Is Global Limit": "Is Global Limit"
+      }
     },
     "links": {
       "Community": "Community",
@@ -3403,7 +3416,15 @@
       "Mandatory": "Mandatory",
       "Voluntary": "Voluntary",
       "Write a note": "Write a note",
-      "“Maker-Checker” principle requires every tasks": "The “Maker-Checker” principle requires every tasks to be completed by two people to reduce the chance of errors and misuse. One person initiates the process and the second completes it."
+      "“Maker-Checker” principle requires every tasks": "The “Maker-Checker” principle requires every tasks to be completed by two people to reduce the chance of errors and misuse. One person initiates the process and the second completes it.",
+      "Create Limit": "Create Limit",
+      "Edit Limit": "Edit Limit",
+      "Limits for transactions in the system": "Define limits for transactions in the system",
+      "id": "Id",
+      "name": "Name",
+      "description": "Description",
+      "Is Active": "Is Active",
+      "Is Global Limit": "Is Global Limit"
     },
     "titles": {
       "Dashboard": "Dashboard",

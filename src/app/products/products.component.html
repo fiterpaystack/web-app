@@ -372,6 +372,14 @@
               </div>
             </div>
           </mat-list-item>
+
+          <mat-list-item [routerLink]="['transaction-limits']" *mifosxHasPermission="'READ_DELINQUENCY_BUCKET'">
+            <mat-icon matListIcon>
+              <fa-icon icon="balance-scale" size="sm"></fa-icon>
+            </mat-icon>
+            <h4 matLine>{{ 'labels.heading.Transaction Limits' | translate }}</h4>
+            <p matLine>{{ 'labels.text.Limits for transactions in the system' | translate }}</p>
+          </mat-list-item>
         </mat-nav-list>
       </div>
     </div>

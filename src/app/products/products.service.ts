@@ -592,4 +592,20 @@ export class ProductsService {
     const httpParams = new HttpParams().set('genericResultSet', 'true');
     return this.http.delete(`/datatables/${datatableName}/${productId}`, { params: httpParams });
   }
+
+  getTransactionLimits(): Observable<any> {
+    return this.http.get('/savings/transactionlimits');
+  }
+
+  getTransactionLimit(transactionLimitId: string): Observable<any> {
+    return this.http.get(`/savings/transactionlimits/${transactionLimitId}`);
+  }
+
+  updateTransactionLimit(transactionLimitId: string, body: string): Observable<any> {
+    return this.http.put(`/savings/transactionlimits/${transactionLimitId}`, body);
+  }
+
+  createTransactionLimit(body: string): Observable<any> {
+    return this.http.post('/savings/transactionlimits', body);
+  }
 }
