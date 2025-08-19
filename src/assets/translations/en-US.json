@@ -2503,7 +2503,7 @@
         "Max Daily Withdrawal Limit": "Max Daily Withdrawal Limit Amount",
         "Max Client Specific Daily Withdrawal Limit": "Max Client Specific Daily Withdrawal Limit Amount",
         "Max Client Specific Single Withdrawal Limit": "Max Client Specific Single Withdrawal Limit Amount",
-        "Max Cumulative Balance On Hold": "Max Cumulative Balance On Hold Amount",
+        "Max Cumulative Balance Limit": "Max Cumulative Balance Limit Amount",
         "Description": "Description",
         "Is Active": "Is Active",
         "Is Global Limit": "Is Global Limit"
@@ -3423,6 +3423,8 @@
       "id": "Id",
       "name": "Name",
       "description": "Description",
+      "Max Single Deposit Limit": "Max Single Deposit Limit Amount",
+      "Max Cumulative Balance Limit": "Max Cumulative Balance Limit Amount",
       "Is Active": "Is Active",
       "Is Global Limit": "Is Global Limit"
     },

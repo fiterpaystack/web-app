@@ -17,6 +17,7 @@ import {
 } from '@angular/material/table';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { YesnoPipe } from '../../pipes/yesno.pipe';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 @Component({
@@ -38,21 +39,23 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     MatHeaderRow,
     MatRowDef,
     MatRow,
-    MatPaginator
+    MatPaginator,
+    YesnoPipe
   ]
 })
 export class TransactionLimitsComponent implements OnInit {
-  /** Collateral Data */
-  collateralData: any;
+  /** Transaction Limit Data */
+  transactionLimitData: any;
+
   /** Columns to be displayed in the Collaterals Table */
   displayedColumns: string[] = [
     'name',
-    'quality',
-    'basePrice',
-    'basePercentage',
-    'unitType'
+    'isActive',
+    'description',
+    'maxSingleDepositAmount',
+    'balanceCumulative'
   ];
-  /** DataSource for the Collateral Table */
+  /** DataSource for the Transaction Limit Table */
   dataSource: MatTableDataSource<any>;
 
   /** Paginator for the Collateral Table */
@@ -60,13 +63,9 @@ export class TransactionLimitsComponent implements OnInit {
   /** Sorter for Collateral Table */
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-  /**
-   * Retrieves the Collaterals data from `resolve`.
-   * @param {ActivatedRoute} route Activated Route.
-   */
   constructor(private route: ActivatedRoute) {
-    this.route.data.subscribe((data: { collaterals: any }) => {
-      this.collateralData = data.collaterals;
+    this.route.data.subscribe((data: { transactionLimits: any }) => {
+      this.transactionLimitData = data.transactionLimits;
     });
   }
 
@@ -79,17 +78,17 @@ export class TransactionLimitsComponent implements OnInit {
   }
 
   /**
-   * Sets the collateral table.
+   * Sets the transaction limit table.
    */
   ngOnInit() {
-    this.setCollaterals();
+    this.setTransactionLimitDataSource();
   }
 
   /**
-   * Initializes the data source, paginator and sorter for collateral table.
+   * Initializes the data source, paginator and sorter for transaction limit table.
    */
-  setCollaterals() {
-    this.dataSource = new MatTableDataSource(this.collateralData);
+  setTransactionLimitDataSource() {
+    this.dataSource = new MatTableDataSource(this.transactionLimitData);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }

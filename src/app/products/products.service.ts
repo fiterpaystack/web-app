@@ -594,18 +594,18 @@ export class ProductsService {
   }
 
   getTransactionLimits(): Observable<any> {
-    return this.http.get('/savings/transactionlimits');
+    return this.http.get('/savingsaccount/transactionlimits');
   }
 
   getTransactionLimit(transactionLimitId: string): Observable<any> {
-    return this.http.get(`/savings/transactionlimits/${transactionLimitId}`);
+    return this.http.get(`/savingsaccount/transactionlimits/${transactionLimitId}`);
   }
 
   updateTransactionLimit(transactionLimitId: string, body: string): Observable<any> {
-    return this.http.put(`/savings/transactionlimits/${transactionLimitId}`, body);
+    return this.http.put(`/savingsaccount/transactionlimits/${transactionLimitId}`, body);
   }
 
   createTransactionLimit(body: string): Observable<any> {
-    return this.http.post('/savings/transactionlimits', body);
+    return this.http.post('/savingsaccount/transactionlimits', body);
   }
 }

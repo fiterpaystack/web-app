@@ -23,6 +23,6 @@ export class TransactionLimitsResolver {
    * @returns {Observable<any>}
    */
   resolve(): Observable<any> {
-    return this.productsService.getCollaterals();
+    return this.productsService.getTransactionLimits();
   }
 }

@@ -23,7 +23,7 @@ export class TransactionLimitResolver {
    * @returns {Observable<any>}
    */
   resolve(route: ActivatedRouteSnapshot): Observable<any> {
-    const collateralId = route.paramMap.get('id');
-    return this.productsService.getCollateral(collateralId);
+    const limitId = route.paramMap.get('id');
+    return this.productsService.getTransactionLimit(limitId);
   }
 }
