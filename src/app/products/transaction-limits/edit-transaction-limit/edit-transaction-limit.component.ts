@@ -7,87 +7,80 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductsService } from 'app/products/products.service';
 import { SettingsService } from 'app/settings/settings.service';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 @Component({
   selector: 'mifosx-edit-transaction-limit',
   templateUrl: './edit-transaction-limit.component.html',
   styleUrls: ['./edit-transaction-limit.component.scss'],
   imports: [
+    MatCheckbox,
     ...STANDALONE_SHARED_IMPORTS
   ]
 })
 export class EditTransactionLimitComponent implements OnInit {
-  /** Colalteral Data */
-  collateralData: any;
-  /** Collateral Template */
-  collateralTemplateData: any;
-  /** Collateral Form */
-  collateralForm: UntypedFormGroup;
+  transactionLimitForm: UntypedFormGroup;
+  transactionLimitData: any;
 
-  /**
-   * Retrieves the Collateral Data from `resolve`
-   * @param {ProductsService} productsService Products Service.
-   * @param {FormBuilder} formBuilder Form Builder.
-   * @param {ActivatedRoute} route Activated Route.
-   * @param {Router} router Router for navigation.
-   * @param {SettingsService} settingsService Settings Service.
-   */
   constructor(
-    private productsService: ProductsService,
     private formBuilder: UntypedFormBuilder,
-    private route: ActivatedRoute,
+    private productsService: ProductsService,
     private router: Router,
+    private route: ActivatedRoute,
     private settingsService: SettingsService
   ) {
-    this.route.data.subscribe((data: { collateral: any; collateralTemplate: any }) => {
-      this.collateralData = data.collateral;
-      this.collateralTemplateData = data.collateralTemplate;
+    this.route.data.subscribe((data: { transactionLimit: any }) => {
+      this.transactionLimitData = data.transactionLimit;
     });
   }
 
   ngOnInit(): void {
-    this.editCollateralForm();
+    this.createTransactoinLimitForm();
   }
 
   /**
-   * Edit Collateral Form
+   * Create the transactionLimit Form
    */
-  editCollateralForm() {
-    this.collateralForm = this.formBuilder.group({
+  createTransactoinLimitForm() {
+    this.transactionLimitForm = this.formBuilder.group({
       name: [
-        this.collateralData.name,
+        this.transactionLimitData.name,
         Validators.required
       ],
-      quality: [
-        this.collateralData.quality,
+      maxSingleDepositAmount: [
+        this.transactionLimitData.maxSingleDepositAmount,
+        [
+          Validators.required,
+          Validators.min(0)]
+      ],
+      balanceCumulative: [
+        this.transactionLimitData.balanceCumulative,
+        [
+          Validators.required,
+          Validators.min(0)]
+      ],
+      isActive: [
+        this.transactionLimitData.isActive,
         Validators.required
       ],
-      unitType: [
-        this.collateralData.unitType,
-        Validators.required
-      ],
-      basePrice: [
-        this.collateralData.basePrice,
-        Validators.required
-      ],
-      pctToBase: [
-        this.collateralData.pctToBase,
-        Validators.required
-      ],
-      currency: [
-        this.collateralData.currency,
+      description: [
+        this.transactionLimitData.description,
         Validators.required
       ]
     });
   }
 
   /**
-   * Submits the updated Collateral Form
+   * Submit a new transactionLimit form
    */
   submit() {
-    const collateral = this.collateralForm.value;
-    collateral.locale = this.settingsService.language.code;
-    this.productsService.updateCollateral(this.collateralData.id.toString(), collateral).subscribe((response: any) => {
+    const transactionLimitFormData = this.transactionLimitForm.value;
+    const locale = this.settingsService.language.code;
+    const data = {
+      ...transactionLimitFormData,
+      locale
+    };
+    this.productsService.updateTransactionLimit(this.transactionLimitData.id, data).subscribe((response: any) => {
       this.router.navigate(['../'], { relativeTo: this.route });
     });
   }
