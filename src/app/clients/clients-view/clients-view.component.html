@@ -391,7 +391,7 @@
         {{ 'labels.inputs.Custom Charges' | translate }}
       </a>
       <ng-container *ngFor="let clientDatatable of clientDatatables">
-        <span *ngIf="clientDatatable.entitySubType == clientViewData.legalForm.value">
+        <span *ngIf="clientDatatable.entitySubType === clientViewData.legalForm.value">
           <a
             mat-tab-link
             [routerLink]="['./datatables', clientDatatable.registeredTableName]"
