@@ -1,0 +1,73 @@
+.tab-container {
+  padding: 1%;
+  margin: 1%;
+
+  .header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  h3 {
+    margin: 0;
+  }
+
+  table {
+    width: 100%;
+
+    .fee-action-button {
+      min-width: 26px;
+      padding: 0 6px;
+      margin: 4px;
+      line-height: 25px;
+    }
+  }
+}
+
+.charge-name-link {
+  cursor: pointer;
+  color: #1976d2;
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: #1565c0;
+    text-decoration: underline;
+  }
+}
+
+.charge-type-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.calculation-type {
+  font-weight: 500;
+  color: #424242;
+}
+
+.amount-value {
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.status-text {
+  margin-left: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+// Toggle styling
+mat-slide-toggle {
+  .mdc-switch {
+    --mdc-switch-selected-track-color: #1976d2;
+    --mdc-switch-selected-handle-color: #fff;
+    --mdc-switch-unselected-track-color: #e0e0e0;
+    --mdc-switch-unselected-handle-color: #fff;
+  }
+}

@@ -380,6 +380,16 @@
       >
         {{ 'labels.inputs.Notes' | translate }}
       </a>
+      <a
+        mat-tab-link
+        [routerLink]="['./client-fee-configuration']"
+        routerLinkActive
+        #clientFeeConfiguration="routerLinkActive"
+        [active]="clientFeeConfiguration.isActive"
+        *mifosxHasPermission="'READ_CLIENT'"
+      >
+        {{ 'labels.inputs.Custom Charges' | translate }}
+      </a>
       <ng-container *ngFor="let clientDatatable of clientDatatables">
         <span *ngIf="clientDatatable.entitySubType == clientViewData.legalForm.value">
           <a
