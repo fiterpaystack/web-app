@@ -132,6 +132,9 @@ import { ViewTransactionLimitComponent } from './transaction-limits/view-transac
 import { TransactionLimitsResolver } from './transaction-limits/transaction-limits.resolver';
 import { EditTransactionLimitComponent } from './transaction-limits/edit-transaction-limit/edit-transaction-limit.component';
 import { TransactionLimitResolver } from './transaction-limits/transaction-limit.resolver';
+import { ManageTransactionLimitConfigurationsComponent } from './manage-transaction-limit-configurations/manage-transaction-limit-configurations.component';
+import { ManageLimitsAndClassificationMappingResolver } from './manage-limits-and-classification-mapping/manage-limits-and-classification-mapping.resolver';
+import { ManageLimitsAndClassificationMappingComponent } from './manage-limits-and-classification-mapping/manage-limits-and-classification-mapping.component';
 
 /** Products Routes */
 const routes: Routes = [
@@ -893,43 +896,61 @@ const routes: Routes = [
         },
         {
           path: 'transaction-limits',
-          data: { title: 'Transaction Limits', breadcrumb: 'Transaction Limits' },
+          data: { title: 'Manage Transaction Limits', breadcrumb: 'Manage Transaction Limits' },
           children: [
             {
-              path: 'create',
-              component: CreateTransactionLimitComponent,
-              data: { title: 'Create Transaction Limit', breadcrumb: 'Create Transaction Limit' }
-            },
-            {
               path: '',
-              component: TransactionLimitsComponent,
-              resolve: {
-                transactionLimits: TransactionLimitsResolver
-              }
+              component: ManageTransactionLimitConfigurationsComponent
             },
             {
-              path: ':id',
-              data: { title: 'View Transaction Limit', routeParamBreadcrumb: 'id' },
-              resolve: {
-                transactionLimit: TransactionLimitResolver
-              },
+              path: 'configure-transaction-limits',
+              data: { title: 'Transaction Limits', breadcrumb: 'Transaction Limits Configuration' },
               children: [
                 {
+                  path: 'create',
+                  component: CreateTransactionLimitComponent,
+                  data: { title: 'Create Transaction Limit', breadcrumb: 'Create Transaction Limit' }
+                },
+                {
                   path: '',
-                  component: ViewTransactionLimitComponent,
+                  component: TransactionLimitsComponent,
                   resolve: {
-                    transactionLimit: TransactionLimitResolver
+                    transactionLimits: TransactionLimitsResolver
                   }
                 },
                 {
-                  path: 'edit',
-                  component: EditTransactionLimitComponent,
-                  data: { title: 'Edit Transaction Limit', breadcrumb: 'Edit', routeParamBreadcrumb: false },
+                  path: ':id',
+                  data: { title: 'View Transaction Limit', routeParamBreadcrumb: 'id' },
                   resolve: {
                     transactionLimit: TransactionLimitResolver
-                  }
+                  },
+                  children: [
+                    {
+                      path: '',
+                      component: ViewTransactionLimitComponent,
+                      resolve: {
+                        transactionLimit: TransactionLimitResolver
+                      }
+                    },
+                    {
+                      path: 'edit',
+                      component: EditTransactionLimitComponent,
+                      data: { title: 'Edit Transaction Limit', breadcrumb: 'Edit', routeParamBreadcrumb: false },
+                      resolve: {
+                        transactionLimit: TransactionLimitResolver
+                      }
+                    }
+                  ]
                 }
               ]
+            },
+            {
+              path: 'configure-classification-mapping',
+              component: ManageLimitsAndClassificationMappingComponent,
+              data: { title: 'Mananage Limits Classificaiton', breadcrumb: 'View Limits Classification' },
+              resolve: {
+                limitsMapping: ManageLimitsAndClassificationMappingResolver
+              }
             }
           ]
         }
@@ -994,7 +1015,8 @@ const routes: Routes = [
     DelinquencyRangeComponentsResolver,
     DelinquencyBucketComponentsResolver,
     TransactionLimitsResolver,
-    TransactionLimitResolver
+    TransactionLimitResolver,
+    ManageLimitsAndClassificationMappingResolver
   ]
 })
 export class ProductsRoutingModule {}
