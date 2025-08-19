@@ -8,6 +8,7 @@ import { ProductsService } from '../../products.service';
 import { SettingsService } from 'app/settings/settings.service';
 import { Dates } from 'app/core/utils/dates';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 /**
  * Create Collateral component.
@@ -17,68 +18,52 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
   templateUrl: './create-transaction-limit.component.html',
   styleUrls: ['./create-transaction-limit.component.scss'],
   imports: [
+    MatCheckbox,
     ...STANDALONE_SHARED_IMPORTS
   ]
 })
 export class CreateTransactionLimitComponent implements OnInit {
-  /** Collateral form */
-  collateralForm: UntypedFormGroup;
-  /** Charges Template data */
-  collateralTemplateData: any;
+  /** Transaction Limit Form */
+  transactionLimitForm: UntypedFormGroup;
 
-  /**
-   * Retrieves the collateral template data
-   * @param {FormBuilder} formBuilder Form Builder
-   * @param {ProductsService} productsService Products Service.
-   * @param {ActivatedRoute} route Activated Route.
-   * @param {Router} router Router for navigation.
-   * @param {SettingsService} settingsService Settings Service
-   */
   constructor(
     private formBuilder: UntypedFormBuilder,
     private productsService: ProductsService,
-    private route: ActivatedRoute,
     private router: Router,
+    private route: ActivatedRoute,
     private settingsService: SettingsService
-  ) {
-    this.route.data.subscribe((data: { collateralTemplate: any }) => {
-      this.collateralTemplateData = data.collateralTemplate;
-    });
-  }
+  ) {}
 
-  /**
-   * Create and sets Collateral Form
-   */
   ngOnInit(): void {
-    this.createCollateralForm();
+    this.createTransactoinLimitForm();
   }
 
   /**
-   * Create the Collateral Form
+   * Create the transactionLimit Form
    */
-  createCollateralForm() {
-    this.collateralForm = this.formBuilder.group({
+  createTransactoinLimitForm() {
+    this.transactionLimitForm = this.formBuilder.group({
       name: [
         '',
         Validators.required
       ],
-      unitType: [
+      maxSingleDepositAmount: [
         '',
+        [
+          Validators.required,
+          Validators.min(0)]
+      ],
+      balanceCumulative: [
+        '',
+        [
+          Validators.required,
+          Validators.min(0)]
+      ],
+      isActive: [
+        true,
         Validators.required
       ],
-      basePrice: [
-        '',
-        Validators.required
-      ],
-      pctToBase: [
-        '',
-        Validators.required
-      ],
-      currency: [
-        '',
-        Validators.required
-      ],
-      quality: [
+      description: [
         '',
         Validators.required
       ]
@@ -86,16 +71,16 @@ export class CreateTransactionLimitComponent implements OnInit {
   }
 
   /**
-   * Submit a new collateral Product form
+   * Submit a new transactionLimit form
    */
   submit() {
-    const collateralFormData = this.collateralForm.value;
+    const transactionLimitFormData = this.transactionLimitForm.value;
     const locale = this.settingsService.language.code;
     const data = {
-      ...collateralFormData,
+      ...transactionLimitFormData,
       locale
     };
-    this.productsService.createCollateral(data).subscribe((response: any) => {
+    this.productsService.createTransactionLimit(data).subscribe((response: any) => {
       this.router.navigate(['../'], { relativeTo: this.route });
     });
   }

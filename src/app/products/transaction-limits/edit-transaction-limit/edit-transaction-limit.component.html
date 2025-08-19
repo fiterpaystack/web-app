@@ -42,20 +42,14 @@
             </mat-error>
           </mat-form-field>
 
-          <!--<div fxFlex="10%">
+          <div fxFlex="10%">
             <mat-checkbox labelPosition="after" formControlName="isActive">
-              {{"labels.inputs.transaction-limits.Is Active" | translate}}
-            </mat-checkbox>
-            <mat-error *ngIf="transactionLimitForm.controls.isActive.hasError('required')">
-              {{"labels.inputs.transaction-limits.Is Active" | translate}} {{"labels.commons.is" | translate}}
-              <strong>{{"labels.commons.required" | translate}}</strong>
-            </mat-error>
-          </div>-->
-
-          <div class="checkbox-wrapper flex-15">
-            <mat-checkbox formControlName="isActive" class="checkbox" labelPosition="before">
               {{ 'labels.inputs.transaction-limits.Is Active' | translate }}
             </mat-checkbox>
+            <mat-error *ngIf="transactionLimitForm.controls.isActive.hasError('required')">
+              {{ 'labels.inputs.transaction-limits.Is Active' | translate }} {{ 'labels.commons.is' | translate }}
+              <strong>{{ 'labels.commons.required' | translate }}</strong>
+            </mat-error>
           </div>
 
           <mat-form-field fxFlex="96%">
