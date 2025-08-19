@@ -135,6 +135,9 @@ import { TransactionLimitResolver } from './transaction-limits/transaction-limit
 import { ManageTransactionLimitConfigurationsComponent } from './manage-transaction-limit-configurations/manage-transaction-limit-configurations.component';
 import { ManageLimitsAndClassificationMappingResolver } from './manage-limits-and-classification-mapping/manage-limits-and-classification-mapping.resolver';
 import { ManageLimitsAndClassificationMappingComponent } from './manage-limits-and-classification-mapping/manage-limits-and-classification-mapping.component';
+import { ViewLimitsAndClassificationMappingComponent } from './manage-limits-and-classification-mapping/view-limits-and-classification-mapping/view-limits-and-classification-mapping.component';
+//import { EditLimitsAndClassificationMappingComponent } from './manage-limits-and-classification-mapping/edit-limits-and-classification-mapping/edit-limits-and-classification-mapping.component';
+import { LimitAndClassificationMappingResolver } from './manage-limits-and-classification-mapping/limit-and-classification-mapping.resolver';
 
 /** Products Routes */
 const routes: Routes = [
@@ -946,11 +949,32 @@ const routes: Routes = [
             },
             {
               path: 'configure-classification-mapping',
-              component: ManageLimitsAndClassificationMappingComponent,
               data: { title: 'Mananage Limits Classificaiton', breadcrumb: 'View Limits Classification' },
-              resolve: {
-                limitsMapping: ManageLimitsAndClassificationMappingResolver
-              }
+              children: [
+                {
+                  path: '',
+                  component: ManageLimitsAndClassificationMappingComponent,
+                  resolve: {
+                    limitsMapping: ManageLimitsAndClassificationMappingResolver
+                  }
+                },
+                {
+                  path: ':id',
+                  data: { title: 'View Limit Classificaiton Mapping', routeParamBreadcrumb: 'id' },
+                  resolve: {
+                    limitsMapping: LimitAndClassificationMappingResolver
+                  },
+                  children: [
+                    {
+                      path: '',
+                      component: ViewLimitsAndClassificationMappingComponent,
+                      resolve: {
+                        limitsMapping: LimitAndClassificationMappingResolver
+                      }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -1016,7 +1040,8 @@ const routes: Routes = [
     DelinquencyBucketComponentsResolver,
     TransactionLimitsResolver,
     TransactionLimitResolver,
-    ManageLimitsAndClassificationMappingResolver
+    ManageLimitsAndClassificationMappingResolver,
+    LimitAndClassificationMappingResolver
   ]
 })
 export class ProductsRoutingModule {}

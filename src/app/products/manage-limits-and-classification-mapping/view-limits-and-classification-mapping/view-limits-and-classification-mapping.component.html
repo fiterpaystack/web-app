@@ -1,0 +1,28 @@
+<div fxLayout="row" fxLayoutAlign="end" fxLayoutGap="2%" fxLayout.lt-md="column" class="container m-b-20">
+  <button mat-raised-button color="primary" [routerLink]="['edit']">
+    <fa-icon icon="edit" class="m-r-10"></fa-icon>
+    {{ 'labels.heading.Edit' | translate }}
+  </button>
+</div>
+
+<div class="container">
+  <mat-card>
+    <mat-card-content>
+      <div fxLayout="row wrap" class="content">
+        <div fxFlex="50%" class="mat-body-strong">
+          {{ 'labels.text.name' | translate }}
+        </div>
+        <div fxFlex="50%">
+          {{ classificationMappingData.classificationName }}
+        </div>
+
+        <div fxFlex="50%" class="mat-body-strong">
+          {{ 'labels.text.Is Active' | translate }}
+        </div>
+        <div fxFlex="50%">
+          {{ classificationMappingData.limitName }}
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
