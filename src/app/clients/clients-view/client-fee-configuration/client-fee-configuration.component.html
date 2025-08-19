@@ -20,7 +20,7 @@
       <td mat-cell *matCellDef="let element">
         <span
           (click)="viewChargeDetails(element)"
-          style="cursor: pointer"
+          class="charge-name-link"
           matTooltip="{{ 'tooltips.Click to view details' | translate }}"
         >
           {{ element.name || 'N/A' }}
