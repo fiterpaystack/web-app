@@ -24,6 +24,6 @@ export class LimitAndClassificationMappingResolver {
    */
   resolve(route: ActivatedRouteSnapshot): Observable<any> {
     const limitId = route.paramMap.get('id');
-    return this.productsService.getTransactionLimitToClassificationMapping(limitId);
+    return this.productsService.getTransactionLimitToClassificationMapping(limitId, 'false');
   }
 }
