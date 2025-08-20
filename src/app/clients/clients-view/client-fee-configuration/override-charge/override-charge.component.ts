@@ -173,8 +173,14 @@ export class OverrideChargeComponent implements OnInit {
           Validators.required,
           Validators.min(0)]
       ],
-      minCap: [''],
-      maxCap: [''],
+      minCap: [
+        '',
+        [Validators.min(0)]
+      ],
+      maxCap: [
+        '',
+        [Validators.min(0)]
+      ],
       feeFrequency: [{ value: '', disabled: true }],
       feeInterval: [{ value: '', disabled: true }],
       feeOnMonthDay: [{ value: '', disabled: true }],
@@ -182,6 +188,9 @@ export class OverrideChargeComponent implements OnInit {
       active: [true],
       penalty: [{ value: false, disabled: true }]
     });
+
+    // Add cross-validation for min/max cap
+    this.addMinMaxCapValidation();
   }
 
   /**
@@ -254,11 +263,25 @@ export class OverrideChargeComponent implements OnInit {
     }
 
     if (this.overrideChargeForm.valid && this.selectedCharge) {
-      const overrideChargeData = {
+      const overrideChargeData: any = {
         chargeId: this.selectedCharge.chargeId || this.selectedCharge.id,
         amount: this.overrideChargeForm.get('amount')?.value,
         active: this.overrideChargeForm.get('active')?.value
       };
+
+      // Include min/max cap values if they are available and form shows them
+      if (this.showMinMaxCap()) {
+        const minCapValue = this.overrideChargeForm.get('minCap')?.value;
+        const maxCapValue = this.overrideChargeForm.get('maxCap')?.value;
+
+        if (minCapValue !== null && minCapValue !== undefined && minCapValue !== '') {
+          overrideChargeData.minCap = minCapValue;
+        }
+
+        if (maxCapValue !== null && maxCapValue !== undefined && maxCapValue !== '') {
+          overrideChargeData.maxCap = maxCapValue;
+        }
+      }
 
       // Choose the appropriate API call based on mode
       let apiCall: Observable<any>;
@@ -345,9 +368,9 @@ export class OverrideChargeComponent implements OnInit {
         chargeTimeType: this.existingChargeData.chargeTimeType?.value || '',
         chargeCalculationType: this.existingChargeData.chargeCalculationType?.value || '',
         chargePaymentMode: this.existingChargeData.chargePaymentMode?.value || '',
-        amount: amountValue || '',
-        minCap: minCapValue || '',
-        maxCap: maxCapValue || '',
+        amount: amountValue !== null && amountValue !== undefined ? amountValue : '',
+        minCap: minCapValue !== null && minCapValue !== undefined ? minCapValue : '',
+        maxCap: maxCapValue !== null && maxCapValue !== undefined ? maxCapValue : '',
         penalty: this.existingChargeData.penalty || false,
         active: this.existingChargeData.overrideActive !== false,
         taxGroupId: this.existingChargeData.incomeAccount?.name || ''
@@ -383,6 +406,8 @@ export class OverrideChargeComponent implements OnInit {
             chargeCalculationType: chargeDetails.chargeCalculationType?.value || '',
             chargePaymentMode: chargeDetails.chargePaymentMode?.value || '',
             amount: chargeDetails.amount || '',
+            minCap: chargeDetails.minCap !== null && chargeDetails.minCap !== undefined ? chargeDetails.minCap : '',
+            maxCap: chargeDetails.maxCap !== null && chargeDetails.maxCap !== undefined ? chargeDetails.maxCap : '',
             penalty: chargeDetails.penalty || false,
             taxGroupId: chargeDetails.taxGroup?.name || ''
           });
@@ -440,35 +465,67 @@ export class OverrideChargeComponent implements OnInit {
   showMinMaxCap(): boolean {
     if (!this.selectedCharge) return false;
 
-    const chargeAppliesTo = this.selectedCharge.chargeAppliesTo?.id;
-    const chargeCalculationType = this.selectedCharge.chargeCalculationType?.value;
-    const chargeTimeType = this.selectedCharge.chargeTimeType?.value;
+    const chargeCalculationType = this.selectedCharge.chargeCalculationType?.value || '';
 
-    // Show for loan charges with percentage calculations
-    if (chargeAppliesTo === 1 && chargeCalculationType && chargeCalculationType.includes('Percentage')) {
-      return true;
+    // Show min/max cap fields for percentage-based calculations
+    return (
+      chargeCalculationType.toLowerCase().includes('percent') ||
+      chargeCalculationType.toLowerCase().includes('%') ||
+      chargeCalculationType.toLowerCase().includes('percentage')
+    );
+  }
+
+  /**
+   * Adds cross-validation for min/max cap fields.
+   */
+  addMinMaxCapValidation(): void {
+    const minCapControl = this.overrideChargeForm.get('minCap');
+    const maxCapControl = this.overrideChargeForm.get('maxCap');
+
+    if (minCapControl && maxCapControl) {
+      // Add validation when min cap changes
+      minCapControl.valueChanges.subscribe(() => {
+        this.validateMinMaxCap();
+      });
+
+      // Add validation when max cap changes
+      maxCapControl.valueChanges.subscribe(() => {
+        this.validateMinMaxCap();
+      });
     }
+  }
 
-    // Show for savings withdrawal fees with percentage calculations
-    if (
-      chargeAppliesTo === 2 &&
-      chargeTimeType === 'Withdrawal Fee' &&
-      chargeCalculationType &&
-      chargeCalculationType.includes('Percentage')
-    ) {
-      return true;
+  /**
+   * Validates that min cap is not greater than max cap.
+   */
+  validateMinMaxCap(): void {
+    const minCapControl = this.overrideChargeForm.get('minCap');
+    const maxCapControl = this.overrideChargeForm.get('maxCap');
+
+    if (minCapControl && maxCapControl) {
+      const minCapValue = parseFloat(minCapControl.value);
+      const maxCapValue = parseFloat(maxCapControl.value);
+
+      // Clear previous errors
+      if (minCapControl.hasError('maxValue')) {
+        delete minCapControl.errors!['maxValue'];
+        if (Object.keys(minCapControl.errors || {}).length === 0) {
+          minCapControl.setErrors(null);
+        }
+      }
+
+      if (maxCapControl.hasError('minValue')) {
+        delete maxCapControl.errors!['minValue'];
+        if (Object.keys(maxCapControl.errors || {}).length === 0) {
+          maxCapControl.setErrors(null);
+        }
+      }
+
+      // Validate if both values are present and valid numbers
+      if (!isNaN(minCapValue) && !isNaN(maxCapValue) && minCapValue > maxCapValue) {
+        minCapControl.setErrors({ ...minCapControl.errors, maxValue: true });
+        maxCapControl.setErrors({ ...maxCapControl.errors, minValue: true });
+      }
     }
-
-    // Show for shares purchase/redeem with percentage calculations
-    if (
-      chargeAppliesTo === 3 &&
-      (chargeTimeType === 'SHARE_PURCHASE' || chargeTimeType === 'SHARE_REDEEM') &&
-      chargeCalculationType &&
-      chargeCalculationType.includes('Percentage')
-    ) {
-      return true;
-    }
-
-    return false;
   }
 }
