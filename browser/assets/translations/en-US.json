@@ -2,7 +2,12 @@
   "APP_NAME": "Mifos X",
   "Logged in as": "Logged in as",
   "Remember me": "Remember me",
+  "placeholders": {
+    "Type to search charges...": "Type to search charges...",
+    "Charge selected for editing": "Charge selected for editing"
+  },
   "errors": {
+    "Charge selection is required": "Charge selection is required",
     "Capitalized Income amount adjusted already adjusted": "Capitalized Income amount already adjusted",
     "Capitalized Income Adjustment amount must be lower or equal to": "Capitalized Income Adjustment amount must be lower or equal to",
     "Buy Down Fee amount already adjusted": "Buy Down Fee amount already adjusted",
@@ -302,6 +307,9 @@
       "Home": "Home"
     },
     "buttons": {
+      "View Details": "View Details",
+      "Update Charge": "Update Charge",
+      "Override Charge": "New Custom Charge",
       "Accept Transfer": "Accept Transfer",
       "Actions": "Actions",
       "Activate": "Activate",
@@ -808,6 +816,12 @@
       "Password validation": "Password should contain minimum {{minchar}} characters, that should income 1 uppercase, lowercase and special character and should not consists of repeated characters or white-spaces"
     },
     "heading": {
+      "Edit Charge": "Edit Charge",
+      "Override Configuration": "Override Configuration",
+      "Charge Details": "Charge Details",
+      "Charge Selection": "Charge Selection",
+      "Customize Charge": "Customize Charge",
+      "List of Custom Charges": "List of Custom Charges",
       "Account Linked Financial": "List of accounts linked to different financial activities. To know more click:",
       "Account Name": "Account Name",
       "Account Number Preferences": "Account Number Preferences",
@@ -1177,6 +1191,16 @@
       "Principal Amount": "Principal Amount"
     },
     "inputs": {
+      "Payment Mode": "Payment Mode",
+      "Custom Amount": "Custom Amount",
+      "Original Amount": "Original Amount",
+      "Custom Minimum Cap": "Custom Minimum Cap",
+      "Original Minimum Cap": "Original Minimum Cap",
+      "Custom Maximum Cap": "Custom Maximum Cap",
+      "Original Maximum Cap": "Original Maximum Cap",
+      "Custom Charges": "Custom Charges",
+      "Search and Select Charge": "Search and Select Charge",
+      "Amount/Percentage": "Amount/Percentage",
       "accounting": {
         "ASSET": "ASSET",
         "LIABILITY": "LIABILITY",
@@ -2655,6 +2679,8 @@
       "Withdrawn": "Withdrawn"
     },
     "dialogContext": {
+      "This action cannot be undone": "This action cannot be undone! ",
+      "Are you sure you want to delete charge": "Are you sure you want to delete charge?",
       "Are you sure you want Unassign Staff": "Are you sure you want Unassign Staff",
       "Are you sure you want to calculate interest ?": "Are you sure you want to calculate interest ?",
       "Are you sure you want to post interest ?": "Are you sure you want to post interest ?",
@@ -2684,6 +2710,7 @@
       "the Transaction Type": "the Transaction Type"
     },
     "text": {
+      "Custom Charges": "Custom Charges",
       "A": "A",
       "Ability to manage holidays for individual offices": "The ability to manage holidays for individual offices is a very useful tool for an organization spanning multiple locations.Use this option to customize holidays for each office of your organization.",
       "Account Detail": "Account Detail",
@@ -3435,6 +3462,7 @@
   },
   "not_found_subtitle": "Oops.. Looks like this page doesn't exist.",
   "tooltips": {
+    "Click to view details": "Click to view details",
     "A borrower loan counter (cycle)": "A borrower loan counter (cycle) is used for tracking how many time the client has taken this particular product.",
     "A loan is in arrears once the number of days": "A loan is in arrears once the number of days entered into this field is exceeded. If this field is blank, the loan will be in arrears the day after a scheduled payment is missed.",
     "A period of time during which a fixed deposit account": "A period of time during which a fixed deposit account based on this fixed deposit product will be locked-in after it is opened.",
