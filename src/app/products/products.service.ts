@@ -621,7 +621,14 @@ export class ProductsService {
     return this.http.put(`/savingsaccount/transactionlimits/classificationmapping/${mappingId}`, body);
   }
 
-  getTransactionLimitToClassificationMapping(transactionLimitId: string): Observable<any> {
-    return this.http.get(`/savingsaccount/transactionlimits/classificationmapping/${transactionLimitId}`);
+  getTransactionLimitToClassificationMapping(transactionLimitId: string, template: string): Observable<any> {
+    const httpParams = new HttpParams().set('template', template);
+    return this.http.get(`/savingsaccount/transactionlimits/classificationmapping/${transactionLimitId}`, {
+      params: httpParams
+    });
+  }
+
+  searchLimits(searchText: string): Observable<any> {
+    return this.http.get(`/savingsaccount/transactionlimits/search/${searchText}`);
   }
 }

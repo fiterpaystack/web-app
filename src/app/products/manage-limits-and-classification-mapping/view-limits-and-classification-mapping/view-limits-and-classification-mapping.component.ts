@@ -37,7 +37,7 @@ export class ViewLimitsAndClassificationMappingComponent {
 
   /* ngOnInit(): void {} */
 
-  /* editLimitsAndClassificationMapping() {
+  editLimitsAndClassificationMapping() {
     this.router.navigate(['edit'], { relativeTo: this.route });
-  } */
+  }
 }

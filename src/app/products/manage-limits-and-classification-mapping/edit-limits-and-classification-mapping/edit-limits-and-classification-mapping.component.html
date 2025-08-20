@@ -1,0 +1,43 @@
+<div class="container">
+  <mat-card>
+    <form [formGroup]="limitAndClassificationMappingForm" (ngSubmit)="submit()">
+      <mat-card-content>
+        <div>
+          <mat-form-field fxFlex="48%">
+            <mat-label>{{ 'labels.inputs.transaction-limits.Name' | translate }}</mat-label>
+            <input matInput required formControlName="name" readonly />
+            <mat-error *ngIf="limitAndClassificationMappingForm.controls.name.hasError('required')">
+              {{ 'labels.inputs.transaction-limits.Name' | translate }} {{ 'labels.commons.is' | translate }}
+              <strong>{{ 'labels.commons.required' | translate }}</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div>
+          <mat-form-field class="flex-48">
+            <mat-label>{{ 'labels.inputs.Gender' | translate }}</mat-label>
+            <mat-select formControlName="globalLimitId">
+              <mat-option *ngFor="let transactionLimit of transactionLimitOptions" [value]="transactionLimit.id">
+                {{ transactionLimit.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions fxLayout="row" fxLayout.xs="column" fxLayoutAlign="center" fxLayoutGap="5px">
+        <button type="button" mat-raised-button [routerLink]="['../']">
+          {{ 'labels.buttons.Cancel' | translate }}
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="!limitAndClassificationMappingForm.valid"
+          *mifosxHasPermission="'=UPDATE_TRANSACTIONLIMIT'"
+        >
+          {{ 'labels.buttons.Submit' | translate }}
+        </button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+</div>

@@ -136,7 +136,8 @@ import { ManageTransactionLimitConfigurationsComponent } from './manage-transact
 import { ManageLimitsAndClassificationMappingResolver } from './manage-limits-and-classification-mapping/manage-limits-and-classification-mapping.resolver';
 import { ManageLimitsAndClassificationMappingComponent } from './manage-limits-and-classification-mapping/manage-limits-and-classification-mapping.component';
 import { ViewLimitsAndClassificationMappingComponent } from './manage-limits-and-classification-mapping/view-limits-and-classification-mapping/view-limits-and-classification-mapping.component';
-//import { EditLimitsAndClassificationMappingComponent } from './manage-limits-and-classification-mapping/edit-limits-and-classification-mapping/edit-limits-and-classification-mapping.component';
+import { EditLimitsAndClassificationMappingComponent } from './manage-limits-and-classification-mapping/edit-limits-and-classification-mapping/edit-limits-and-classification-mapping.component';
+import { EditLimitAndClassificationMappingResolver } from './manage-limits-and-classification-mapping/edit-limits-and-classification-mapping/edit-limits-and-classification-mapping-resolver';
 import { LimitAndClassificationMappingResolver } from './manage-limits-and-classification-mapping/limit-and-classification-mapping.resolver';
 
 /** Products Routes */
@@ -971,6 +972,18 @@ const routes: Routes = [
                       resolve: {
                         limitsMapping: LimitAndClassificationMappingResolver
                       }
+                    },
+                    {
+                      path: 'edit',
+                      component: EditLimitsAndClassificationMappingComponent,
+                      data: {
+                        title: 'Edit Limit Classificaiton Mapping',
+                        breadcrumb: 'Edit',
+                        routeParamBreadcrumb: false
+                      },
+                      resolve: {
+                        limitsMapping: EditLimitAndClassificationMappingResolver
+                      }
                     }
                   ]
                 }
@@ -1041,7 +1054,8 @@ const routes: Routes = [
     TransactionLimitsResolver,
     TransactionLimitResolver,
     ManageLimitsAndClassificationMappingResolver,
-    LimitAndClassificationMappingResolver
+    LimitAndClassificationMappingResolver,
+    EditLimitAndClassificationMappingResolver
   ]
 })
 export class ProductsRoutingModule {}
