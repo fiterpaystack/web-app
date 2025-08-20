@@ -33,7 +33,8 @@ export class SavingProductDetailsStepComponent implements OnInit {
       this.savingProductDetailsForm.patchValue({
         name: this.savingProductsTemplate.name,
         shortName: this.savingProductsTemplate.shortName,
-        description: this.savingProductsTemplate.description
+        description: this.savingProductsTemplate.description,
+        accountNumberPrefix: this.savingProductsTemplate.accountNumberPrefix
       });
     }
   }
@@ -48,7 +49,11 @@ export class SavingProductDetailsStepComponent implements OnInit {
         '',
         Validators.required
       ],
-      description: ['']
+      description: [''],
+      accountNumberPrefix: [
+        '',
+        Validators.required
+      ]
     });
   }
 
