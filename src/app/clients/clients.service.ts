@@ -126,6 +126,26 @@ export class ClientsService {
   }
 
   /**
+   * Get extended client charges with pagination
+   * @param clientId Client ID
+   * @param limit Number of records to fetch (optional)
+   * @param offset Starting record offset (optional)
+   * @returns Observable with extended charge data including overrides
+   */
+  getExtendedClientCharges(clientId: string, limit?: number, offset?: number): Observable<any> {
+    let httpParams = new HttpParams();
+
+    if (limit !== undefined) {
+      httpParams = httpParams.set('limit', limit.toString());
+    }
+    if (offset !== undefined) {
+      httpParams = httpParams.set('offset', offset.toString());
+    }
+
+    return this.http.get(`/clients/${clientId}/charges/extended`, { params: httpParams });
+  }
+
+  /**
    * @param transactionData Transaction Data to be undone.
    */
   undoTransaction(transactionData: any) {
@@ -325,8 +345,55 @@ export class ClientsService {
     return this.http.get(`/charges/${chargeId}`, { params: httpParams });
   }
 
+  /**
+   * Search charges by name for a client
+   * @param clientId Client ID
+   * @param name Search term for charge name
+   * @returns Observable array of charges with chargeId and name
+   */
+  searchClientCharges(clientId: string, name: string): Observable<any> {
+    const httpParams = new HttpParams().set('name', name);
+    return this.http.get(`/clients/${clientId}/charges/extended/template`, { params: httpParams });
+  }
+
+  /**
+   * Get charge details with template data for override
+   * @param chargeId Charge ID
+   * @returns Observable with charge details and template
+   */
+  getChargeDetailsForOverride(chargeId: string): Observable<any> {
+    const httpParams = new HttpParams().set('template', 'true');
+    return this.http.get(`/charges/${chargeId}`, { params: httpParams });
+  }
+
+  /**
+   * Get extended client charge detail
+   * @param clientId Client ID
+   * @param chargeId Charge ID
+   * @returns Observable with extended charge detail
+   */
+  getExtendedClientChargeDetail(clientId: string, chargeId: string): Observable<any> {
+    return this.http.get(`/clients/${clientId}/charges/extended/${chargeId}`);
+  }
+
+  createExtendedClientCharge(clientId: any, charge: any) {
+    return this.http.post(`/clients/${clientId}/charges/extended`, charge);
+  }
+
+  updateExtendedClientCharge(clientId: any, chargeId: any, charge: any) {
+    return this.http.put(`/clients/${clientId}/charges/extended/${chargeId}`, charge);
+  }
+
+  deleteExtendedClientCharge(clientId: any, chargeId: any) {
+    return this.http.delete(`/clients/${clientId}/charges/extended/${chargeId}`);
+  }
+
   createClientCharge(clientId: any, charge: any) {
     return this.http.post(`/clients/${clientId}/charges`, charge);
+  }
+
+  updateClientCharge(clientId: any, chargeId: any, charge: any) {
+    return this.http.put(`/clients/${clientId}/charges/${chargeId}`, charge);
   }
 
   getClientReportTemplates() {

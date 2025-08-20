@@ -1,0 +1,122 @@
+<div class="tab-container mat-typography">
+  <h3>{{ 'labels.heading.List of Custom Charges' | translate }}</h3>
+
+  <div class="layout-row align-flex-end">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="navigateToOverrideCharge()"
+      matTooltip="{{ 'tooltips.Override default Fineract charges' | translate }}"
+    >
+      <fa-icon icon="plus" class="m-r-10"></fa-icon>
+      {{ 'labels.buttons.Override Charge' | translate }}
+    </button>
+  </div>
+
+  <table mat-table [dataSource]="dataSource" [ngStyle]="{ 'margin-top': '3%' }">
+    <!-- Charge Name Column -->
+    <ng-container matColumnDef="chargeName">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Charge Name' | translate }}</th>
+      <td mat-cell *matCellDef="let element">
+        <span
+          (click)="viewChargeDetails(element)"
+          class="charge-name-link"
+          matTooltip="{{ 'tooltips.Click to view details' | translate }}"
+        >
+          {{ element.name || 'N/A' }}
+        </span>
+      </td>
+    </ng-container>
+
+    <!-- Charge Type Column -->
+    <ng-container matColumnDef="chargeType">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Charge Type' | translate }}</th>
+      <td mat-cell *matCellDef="let element">
+        <span class="charge-type-badge">{{ getChargeTypeDisplay(element) }}</span>
+      </td>
+    </ng-container>
+
+    <!-- Calculation Type Column -->
+    <ng-container matColumnDef="calculationType">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Calculation Type' | translate }}</th>
+      <td mat-cell *matCellDef="let element">
+        <span class="calculation-type">{{ getCalculationTypeDisplay(element) }}</span>
+      </td>
+    </ng-container>
+
+    <!-- Amount/Percentage Column -->
+    <ng-container matColumnDef="amountPercentage">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Amount/Percentage' | translate }}</th>
+      <td mat-cell *matCellDef="let element">
+        <span class="amount-value" *ngIf="getAmountValue(element) !== null">
+          <span *ngIf="!isPercentageAmount(element)"
+            >{{ getCurrencySymbol(element) }}{{ getAmountValue(element) | formatNumber }}</span
+          >
+          <span *ngIf="isPercentageAmount(element)">{{ getAmountValue(element) | formatNumber }}%</span>
+        </span>
+        <span *ngIf="getAmountValue(element) === null">N/A</span>
+      </td>
+    </ng-container>
+
+    <!-- Active Status Column -->
+    <ng-container matColumnDef="activeStatus">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Active Status' | translate }}</th>
+      <td mat-cell *matCellDef="let element">
+        <mat-slide-toggle
+          [checked]="element.overrideActive !== false"
+          (change)="toggleActiveStatus(element, $event)"
+          [color]="'primary'"
+          matTooltip="{{ element.overrideActive !== false ? 'Active' : 'Inactive' }}"
+        >
+          <span class="status-text">{{ element.overrideActive !== false ? 'Active' : 'Inactive' }}</span>
+        </mat-slide-toggle>
+      </td>
+    </ng-container>
+
+    <!-- Actions Column -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Actions' | translate }}</th>
+      <td mat-cell *matCellDef="let element">
+        <button
+          class="fee-action-button"
+          mat-raised-button
+          color="primary"
+          (click)="editCharge(element)"
+          matTooltip="{{ 'labels.buttons.Edit' | translate }}"
+        >
+          <fa-icon icon="edit"></fa-icon>
+        </button>
+        <button
+          class="fee-action-button"
+          mat-raised-button
+          color="accent"
+          (click)="viewChargeDetails(element)"
+          matTooltip="{{ 'labels.buttons.View Details' | translate }}"
+        >
+          <fa-icon icon="eye"></fa-icon>
+        </button>
+        <button
+          class="fee-action-button"
+          mat-raised-button
+          color="warn"
+          (click)="deleteCharge(element)"
+          matTooltip="{{ 'labels.buttons.Delete' | translate }}"
+        >
+          <fa-icon icon="trash"></fa-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  <mat-paginator
+    [pageSizeOptions]="[5, 10, 20, 25]"
+    [length]="totalFilteredRecords"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    showFirstLastButtons
+  >
+  </mat-paginator>
+</div>

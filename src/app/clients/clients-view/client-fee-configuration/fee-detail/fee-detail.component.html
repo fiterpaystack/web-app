@@ -1,0 +1,193 @@
+<div class="tab-container mat-typography">
+  <!-- Page Heading -->
+  <h3 *ngIf="feeData">
+    <b>{{ 'labels.heading.Charge Details' | translate }}:</b> {{ feeData.name }}
+  </h3>
+
+  <div class="container">
+    <mat-card *ngIf="feeData">
+      <mat-card-content>
+        <div class="layout-row-wrap">
+          <div class="flex-50 mat-body-strong">
+            {{ 'labels.inputs.Charge Name' | translate }}
+          </div>
+          <div class="flex-50">
+            {{ feeData.name || 'N/A' }}
+          </div>
+
+          <div class="flex-50 mat-body-strong">
+            {{ 'labels.inputs.Description' | translate }}
+          </div>
+          <div class="flex-50">
+            {{ feeData.description || 'N/A' }}
+          </div>
+
+          <div class="flex-50 mat-body-strong">
+            <strong>{{ 'labels.inputs.Status' | translate }}</strong>
+          </div>
+          <div class="flex-50">
+            <strong>{{ feeData.overrideActive ? 'Active' : 'Inactive' }}</strong>
+          </div>
+
+          <div class="flex-50 mat-body-strong">
+            {{ 'labels.inputs.Penalty' | translate }}
+          </div>
+          <div class="flex-50">
+            {{ feeData.penalty ? 'Yes' : 'No' }}
+          </div>
+
+          <div class="flex-50 mat-body-strong">
+            {{ 'labels.inputs.Charge Type' | translate }}
+          </div>
+          <div class="flex-50">
+            {{ getChargeTypeDisplay() }}
+          </div>
+
+          <div class="flex-50 mat-body-strong">
+            {{ 'labels.inputs.Calculation Type' | translate }}
+          </div>
+          <div class="flex-50">
+            {{ getCalculationTypeDisplay() }}
+          </div>
+
+          <div class="flex-50 mat-body-strong">
+            {{ 'labels.inputs.Original Amount' | translate }}
+          </div>
+          <div class="flex-50" *ngIf="getAmountValue() !== null">
+            <span *ngIf="!isPercentageAmount()">{{ getCurrencySymbol() }}{{ getAmountValue() | formatNumber }}</span>
+            <span *ngIf="isPercentageAmount()">{{ getAmountValue() | formatNumber }}%</span>
+          </div>
+          <div class="flex-50" *ngIf="getAmountValue() === null">N/A</div>
+
+          <div class="flex-50 mat-body-strong">
+            <strong>{{ 'labels.inputs.Custom Amount' | translate }}</strong>
+          </div>
+          <div class="flex-50" *ngIf="getCustomAmountValue() !== null">
+            <strong>
+              <span *ngIf="!isPercentageAmount()"
+                >{{ getCurrencySymbol() }}{{ getCustomAmountValue() | formatNumber }}</span
+              >
+              <span *ngIf="isPercentageAmount()">{{ getCustomAmountValue() | formatNumber }}%</span>
+            </strong>
+          </div>
+          <div class="flex-50" *ngIf="getCustomAmountValue() === null">N/A</div>
+
+          <div class="flex-50 mat-body-strong">
+            {{ 'labels.inputs.Currency' | translate }}
+          </div>
+          <div class="flex-50">{{ feeData.currency?.name || 'N/A' }} ({{ feeData.currency?.code || 'N/A' }})</div>
+
+          <div class="flex-50 mat-body-strong">
+            {{ 'labels.inputs.Payment Mode' | translate }}
+          </div>
+          <div class="flex-50">
+            {{ feeData.chargePaymentMode?.value || 'N/A' }}
+          </div>
+
+          <div class="flex-50 mat-body-strong">
+            {{ 'labels.inputs.Applies To' | translate }}
+          </div>
+          <div class="flex-50">
+            {{ getChargeAppliesToDisplay() }}
+          </div>
+
+          <div class="flex-50 mat-body-strong" *ngIf="feeData.taxGroup">
+            {{ 'labels.inputs.Tax Group' | translate }}
+          </div>
+          <div class="flex-50" *ngIf="feeData.taxGroup">
+            {{ getTaxGroupDisplay() }}
+          </div>
+
+          <!-- Amount Limits Section -->
+          <div class="flex-50 mat-body-strong" *ngIf="feeData.minCap">
+            {{ 'labels.inputs. Original Minimum Cap' | translate }}
+          </div>
+          <div class="flex-50" *ngIf="feeData.minCap">
+            {{ feeData.currency?.displaySymbol || feeData.currency?.code }}{{ feeData.minCap | formatNumber }}
+          </div>
+
+          <div class="flex-50 mat-body-strong" *ngIf="feeData.overrideMinCap">
+            <strong>{{ 'labels.inputs.Custom Minimum Cap' | translate }}</strong>
+          </div>
+          <div class="flex-50" *ngIf="feeData.overrideMinCap">
+            <strong
+              >{{ feeData.currency?.displaySymbol || feeData.currency?.code
+              }}{{ feeData.overrideMinCap | formatNumber }}</strong
+            >
+          </div>
+
+          <div class="flex-50 mat-body-strong" *ngIf="feeData.maxCap">
+            {{ 'labels.inputs.Original Maximum Cap' | translate }}
+          </div>
+          <div class="flex-50" *ngIf="feeData.maxCap">
+            {{ feeData.currency?.displaySymbol || feeData.currency?.code }}{{ feeData.maxCap | formatNumber }}
+          </div>
+
+          <div class="flex-50 mat-body-strong" *ngIf="feeData.overrideMaxCap">
+            <strong>{{ 'labels.inputs.Custom Maximum Cap' | translate }}</strong>
+          </div>
+          <div class="flex-50" *ngIf="feeData.overrideMaxCap">
+            <strong
+              >{{ feeData.currency?.displaySymbol || feeData.currency?.code
+              }}{{ feeData.overrideMaxCap | formatNumber }}</strong
+            >
+          </div>
+
+          <!-- Frequency Configuration -->
+          <div class="flex-50 mat-body-strong" *ngIf="feeData.feeFrequency">
+            {{ 'labels.inputs.Fee Frequency' | translate }}
+          </div>
+          <div class="flex-50" *ngIf="feeData.feeFrequency">
+            {{ feeData.feeFrequency.value || 'N/A' }}
+          </div>
+
+          <div class="flex-50 mat-body-strong" *ngIf="feeData.feeInterval">
+            {{ 'labels.inputs.Fee Interval' | translate }}
+          </div>
+          <div class="flex-50" *ngIf="feeData.feeInterval">
+            {{ feeData.feeInterval || 'N/A' }}
+          </div>
+
+          <!-- Accounting Information -->
+          <div class="flex-50 mat-body-strong">
+            {{ 'labels.inputs.Income Account' | translate }}
+          </div>
+          <div class="flex-50">
+            {{ feeData.incomeAccount?.name || 'N/A' }}
+            <span *ngIf="feeData.incomeAccount?.glCode">({{ feeData.incomeAccount.glCode }})</span>
+          </div>
+
+          <!-- Audit Information -->
+          <div class="flex-50 mat-body-strong">
+            {{ 'labels.inputs.Created At' | translate }}
+          </div>
+          <div class="flex-50">
+            {{ formatDate(feeData.createdDate) }}
+          </div>
+
+          <div class="flex-50 mat-body-strong">
+            {{ 'labels.inputs.Updated on' | translate }}
+          </div>
+          <div class="flex-50">
+            {{ formatDate(feeData.lastModifiedDate) }}
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- No Data Message -->
+    <div *ngIf="!feeData" class="layout-column layout-align-center-center m-t-20">
+      <fa-icon icon="exclamation-triangle" size="3x" class="text-warn"></fa-icon>
+      <div class="mat-title m-t-10">{{ 'messages.No fee data available' | translate }}</div>
+      <p class="mat-body-1">{{ 'messages.Unable to load fee details. Please try again.' | translate }}</p>
+    </div>
+
+    <!-- Action Buttons at Bottom -->
+    <div class="m-t-20 layout-row align-end">
+      <button mat-raised-button color="primary" (click)="editFee()" *ngIf="feeData">
+        <fa-icon icon="edit" class="m-r-10"></fa-icon>
+        {{ 'labels.buttons.Edit' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

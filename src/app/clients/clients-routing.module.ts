@@ -46,6 +46,11 @@ import { ClientChargeViewResolver } from './common-resolvers/client-charge-view.
 import { ClientTransactionPayResolver } from './common-resolvers/client-transaction-pay.resolver';
 import { ClientDataAndTemplateResolver } from './common-resolvers/client-and-template.resolver';
 import { ClientCollateralResolver } from './common-resolvers/client-collateral.resolver';
+import { ClientFeeConfigurationComponent } from './clients-view/client-fee-configuration/client-fee-configuration.component';
+import { ClientFeeConfigurationResolver } from './clients-view/client-fee-configuration/client-fee-configuration.resolver';
+import { OverrideChargeComponent } from './clients-view/client-fee-configuration/override-charge/override-charge.component';
+import { FeeDetailComponent } from './clients-view/client-fee-configuration/fee-detail/fee-detail.component';
+import { FeeDetailResolver } from './clients-view/client-fee-configuration/fee-detail/fee-detail.resolver';
 
 const routes: Routes = [
   Route.withShell([
@@ -160,6 +165,27 @@ const routes: Routes = [
               resolve: {
                 clientNotes: ClientNotesResolver
               }
+            },
+            {
+              path: 'client-fee-configuration',
+              component: ClientFeeConfigurationComponent,
+              data: { title: 'Custom Charges', breadcrumb: 'Custom Charges', routeParamBreadcrumb: false },
+              resolve: {
+                clientFeeConfigurationData: ClientFeeConfigurationResolver
+              }
+            },
+            {
+              path: 'client-fee-configuration/detail/:feeId',
+              component: FeeDetailComponent,
+              data: { title: 'Charge Details', breadcrumb: 'Charge Details', routeParamBreadcrumb: false },
+              resolve: {
+                feeDetailData: FeeDetailResolver
+              }
+            },
+            {
+              path: 'client-fee-configuration/override-charge',
+              component: OverrideChargeComponent,
+              data: { title: 'Override Charge', breadcrumb: 'Override Charge', routeParamBreadcrumb: false }
             },
             {
               path: 'datatables',
@@ -305,7 +331,8 @@ const routes: Routes = [
     ClientChargeViewResolver,
     ClientTransactionPayResolver,
     ClientDataAndTemplateResolver,
-    ClientCollateralResolver
+    ClientCollateralResolver,
+    ClientFeeConfigurationResolver
   ]
 })
 export class ClientsRoutingModule {}
