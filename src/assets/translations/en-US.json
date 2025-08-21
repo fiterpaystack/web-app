@@ -3431,7 +3431,9 @@
       "Max Single Deposit Limit": "Max Single Deposit Limit Amount",
       "Max Cumulative Balance Limit": "Max Cumulative Balance Limit Amount",
       "Is Active": "Is Active",
-      "Is Global Limit": "Is Global Limit"
+      "Is Global Limit": "Is Global Limit",
+      "Client Classification": "Client Classification",
+      "Transaction Limit": "Transaction Limit"
     },
     "titles": {
       "Dashboard": "Dashboard",
