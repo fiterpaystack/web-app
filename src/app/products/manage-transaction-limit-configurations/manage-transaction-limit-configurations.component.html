@@ -15,7 +15,10 @@
 
       <div fxFlex="50%">
         <mat-nav-list>
-          <mat-list-item [routerLink]="['configure-classification-mapping']" *mifosxHasPermission="'READ_TAXGROUP'">
+          <mat-list-item
+            [routerLink]="['configure-classification-mapping']"
+            *mifosxHasPermission="'READ_TRANSACTIONLIMITCLASSIFICATION'"
+          >
             <mat-icon matListIcon>
               <fa-icon icon="building" size="sm"></fa-icon>
             </mat-icon>

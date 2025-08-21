@@ -1169,7 +1169,12 @@
       "Insert Installment": "Insert Installment",
       "Interest Rate": "Interest Rate",
       "Principal Amount": "Principal Amount",
-      "Transaction Limits": "Transaction Limit"
+      "Transaction Limits": "Transaction Limit",
+      "Manage Transaction Limits": "Manage Transaction Limits",
+      "Define ManageTransaction Limits": "Configure and modify transaction limits",
+      "Define Limits and Classification Mapping": "Assign transaction limits to classification",
+      "Limits and Classification Mapping": "Manage Classification Mapping",
+      "Transaction Limit Mapping": "Transaction Limit Mapping"
     },
     "inputs": {
       "accounting": {
