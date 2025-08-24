@@ -91,7 +91,7 @@ export class ExportTransactionsComponent implements OnInit {
         this.settingsService.dateFormat
       ),
       R_endDate: this.dateUtils.formatDate(this.transactionsReportForm.value.toDate, this.settingsService.dateFormat),
-      R_savingsAccountId: this.savingsAccountId
+      R_accountNo: this.savingsAccountId
     };
     this.reportsService
       .getPentahoRunReportData(
