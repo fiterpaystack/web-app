@@ -10,13 +10,14 @@ import { MatCard, MatCardTitle, MatCardContent, MatCardActions } from '@angular/
 import { InputAmountComponent } from '../../../shared/input-amount/input-amount.component';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
-type TransactionCommandType = 'holdamount' | 'blockaccount' | 'blockdeposit' | 'blockwithdrawal';
+type TransactionCommandType = 'holdamount' | 'blockaccount' | 'blockdeposit' | 'blockwithdrawal' | 'unblockwithdrawal';
 
 interface TransactionType {
   holdamount: boolean;
   blockaccount: boolean;
   blockdeposit: boolean;
   blockwithdrawal: boolean;
+  unblockwithdrawal: boolean;
 }
 
 @Component({
@@ -47,7 +48,8 @@ export class ManageSavingsAccountComponent implements OnInit {
     holdamount: false,
     blockaccount: false,
     blockdeposit: false,
-    blockwithdrawal: false
+    blockwithdrawal: false,
+    unblockwithdrawal: false
   };
 
   /**
@@ -82,7 +84,8 @@ export class ManageSavingsAccountComponent implements OnInit {
       this.transactionType.holdamount ||
       this.transactionType.blockaccount ||
       this.transactionType.blockdeposit ||
-      this.transactionType.blockwithdrawal
+      this.transactionType.blockwithdrawal ||
+      this.transactionType.unblockwithdrawal
     ) {
       this.getCodeValues();
     }
@@ -130,6 +133,12 @@ export class ManageSavingsAccountComponent implements OnInit {
           Validators.required
         ]
       });
+    } else if (this.transactionType.unblockwithdrawal) {
+      this.manageSavingsAccountForm = this.formBuilder.group({
+        note: [
+          ''
+        ]
+      });
     } else {
       this.manageSavingsAccountForm = this.formBuilder.group({
         reasonForBlock: [
@@ -174,6 +183,8 @@ export class ManageSavingsAccountComponent implements OnInit {
         command = 'blockCredit';
       } else if (this.transactionType.blockwithdrawal) {
         command = 'blockDebit';
+      } else if (this.transactionType.unblockwithdrawal) {
+        command = 'unblockDebit';
       }
 
       this.savingsService
