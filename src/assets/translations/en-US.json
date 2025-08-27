@@ -2,7 +2,12 @@
   "APP_NAME": "Mifos X",
   "Logged in as": "Logged in as",
   "Remember me": "Remember me",
+  "placeholders": {
+    "Type to search charges...": "Type to search charges...",
+    "Charge selected for editing": "Charge selected for editing"
+  },
   "errors": {
+    "Charge selection is required": "Charge selection is required",
     "Capitalized Income amount adjusted already adjusted": "Capitalized Income amount already adjusted",
     "Capitalized Income Adjustment amount must be lower or equal to": "Capitalized Income Adjustment amount must be lower or equal to",
     "Buy Down Fee amount already adjusted": "Buy Down Fee amount already adjusted",
@@ -274,7 +279,13 @@
     "validation.msg.savingsproduct.shortName.exceeds.max.length": "Short name cannot be over {{params[0].value}} characters long.",
     "validation.msg.savingsproduct.withdrawalFeeAmount.cannot.be.blank": "Withdrawal fee amount is mandatory.",
     "validation.msg.savingsproduct.withdrawalFeeAmount.not.zero.or.greater": "Withdrawal fee amount must be greater than or equal to zero if provided.",
-    "validation.msg.savingsproduct.withdrawalFeeType.is.not.one.of.expected.enumerations": "Withdrawal fee period type is mandatory."
+    "validation.msg.savingsproduct.withdrawalFeeType.is.not.one.of.expected.enumerations": "Withdrawal fee period type is mandatory.",
+    "validation.msg.client.mobileNo.required": "Client mobile number required.",
+    "validation.msg.savingsproduct.account.number.prefix.must.be.numeric": "Account number prefix must be numeric.",
+    "validation.msg.savingsproduct.account.number.prefix.must.be.exactly.two.digits": "Account number prefix must be two digits.",
+    "validation.msg.savingsproduct.number.cbn.institution.code.not.set": "CBN Institution Code is not set for the Savings Product.",
+    "validation.msg.savingsproduct.number.prefix.not.set": "Account Number Prefix is not set for the Savings Product.",
+    "validation.msg.savingsproduct.number.invalid.length": "NUBAN base length does not match weight array length"
   },
   "labels": {
     "accounting": {
@@ -296,6 +307,9 @@
       "Home": "Home"
     },
     "buttons": {
+      "View Details": "View Details",
+      "Update Charge": "Update Charge",
+      "Override Charge": "New Custom Charge",
       "Accept Transfer": "Accept Transfer",
       "Actions": "Actions",
       "Activate": "Activate",
@@ -802,6 +816,12 @@
       "Password validation": "Password should contain minimum {{minchar}} characters, that should income 1 uppercase, lowercase and special character and should not consists of repeated characters or white-spaces"
     },
     "heading": {
+      "Edit Charge": "Edit Charge",
+      "Override Configuration": "Override Configuration",
+      "Charge Details": "Charge Details",
+      "Charge Selection": "Charge Selection",
+      "Customize Charge": "Customize Charge",
+      "List of Custom Charges": "List of Custom Charges",
       "Account Linked Financial": "List of accounts linked to different financial activities. To know more click:",
       "Account Name": "Account Name",
       "Account Number Preferences": "Account Number Preferences",
@@ -1177,6 +1197,16 @@
       "Transaction Limit Mapping": "Transaction Limit Mapping"
     },
     "inputs": {
+      "Payment Mode": "Payment Mode",
+      "Custom Amount": "Custom Amount",
+      "Original Amount": "Original Amount",
+      "Custom Minimum Cap": "Custom Minimum Cap",
+      "Original Minimum Cap": "Original Minimum Cap",
+      "Custom Maximum Cap": "Custom Maximum Cap",
+      "Original Maximum Cap": "Original Maximum Cap",
+      "Custom Charges": "Custom Charges",
+      "Search and Select Charge": "Search and Select Charge",
+      "Amount/Percentage": "Amount/Percentage",
       "accounting": {
         "ASSET": "ASSET",
         "LIABILITY": "LIABILITY",
@@ -2501,6 +2531,8 @@
       "Buy down fees": "Buy down fees",
       "Income from Buy down fees": "Income from Buy down fees",
       "Buy down fee Expense": "Buy down fee Expense",
+      "Account Number Prefix": "Account Number Prefix",
+      "Narration": "Narration",
       "transaction-limits": {
         "Name": "Limit Name",
         "Max Single Deposit Limit": "Max Single Deposit Limit Amount",
@@ -2512,7 +2544,7 @@
         "Description": "Description",
         "Is Active": "Is Active",
         "Is Global Limit": "Is Global Limit"
-      }
+      }      
     },
     "links": {
       "Community": "Community",
@@ -2666,6 +2698,8 @@
       "Withdrawn": "Withdrawn"
     },
     "dialogContext": {
+      "This action cannot be undone": "This action cannot be undone! ",
+      "Are you sure you want to delete charge": "Are you sure you want to delete charge?",
       "Are you sure you want Unassign Staff": "Are you sure you want Unassign Staff",
       "Are you sure you want to calculate interest ?": "Are you sure you want to calculate interest ?",
       "Are you sure you want to post interest ?": "Are you sure you want to post interest ?",
@@ -2695,6 +2729,7 @@
       "the Transaction Type": "the Transaction Type"
     },
     "text": {
+      "Custom Charges": "Custom Charges",
       "A": "A",
       "Ability to manage holidays for individual offices": "The ability to manage holidays for individual offices is a very useful tool for an organization spanning multiple locations.Use this option to customize holidays for each office of your organization.",
       "Account Detail": "Account Detail",
@@ -3458,6 +3493,7 @@
   },
   "not_found_subtitle": "Oops.. Looks like this page doesn't exist.",
   "tooltips": {
+    "Click to view details": "Click to view details",
     "A borrower loan counter (cycle)": "A borrower loan counter (cycle) is used for tracking how many time the client has taken this particular product.",
     "A loan is in arrears once the number of days": "A loan is in arrears once the number of days entered into this field is exceeded. If this field is blank, the loan will be in arrears the day after a scheduled payment is missed.",
     "A period of time during which a fixed deposit account": "A period of time during which a fixed deposit account based on this fixed deposit product will be locked-in after it is opened.",
@@ -3651,6 +3687,7 @@
     "Yes": "Yes",
     "loan product will be active and available to clients": "The date that the loan product will be active and available to clients. If blank, the loan product will be active as soon as it is created.",
     "loan product will become inactive and unavailable to clients": "The date that the loan product will become inactive and unavailable to clients. If blank, the load product will never become inactive.",
-    "Refund transactions where interest refund will automatically be calculated": "Refund transactions where interest refund will automatically be calculated"
+    "Refund transactions where interest refund will automatically be calculated": "Refund transactions where interest refund will automatically be calculated",
+    "A unique identifier for the savings account number": "A unique identifier for the savings account number"
   }
 }

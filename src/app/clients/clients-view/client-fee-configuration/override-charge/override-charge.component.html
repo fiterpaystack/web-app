@@ -1,0 +1,166 @@
+<div class="tab-container mat-typography">
+  <h3>
+    {{ isEditMode ? ('labels.heading.Edit Charge' | translate) : ('labels.heading.Customize Charge' | translate) }}
+  </h3>
+
+  <form [formGroup]="overrideChargeForm" (ngSubmit)="submit()">
+    <!-- Charge Selection Section -->
+    <div class="form-section">
+      <h4>{{ 'labels.heading.Charge Selection' | translate }}</h4>
+
+      <div class="layout-row-wrap gap-2px responsive-column">
+        <mat-form-field class="flex-100">
+          <mat-label>{{ 'labels.inputs.Search and Select Charge' | translate }}</mat-label>
+          <input
+            matInput
+            formControlName="chargeSearch"
+            [matAutocomplete]="chargeAuto"
+            [readonly]="isEditMode"
+            placeholder="{{
+              isEditMode ? 'Charge selected for editing' : ('placeholders.Type to search charges...' | translate)
+            }}"
+          />
+          <mat-autocomplete
+            #chargeAuto="matAutocomplete"
+            [displayWith]="displayChargeName"
+            (optionSelected)="onChargeSelected($event.option.value)"
+            class="charge-autocomplete"
+          >
+            <mat-option *ngFor="let charge of filteredCharges | async" [value]="charge" class="charge-option">
+              <div class="charge-option-content">
+                <div class="charge-name">{{ charge.name }}</div>
+                <div class="charge-description">{{ charge.description }}</div>
+              </div>
+            </mat-option>
+            <mat-option *ngIf="isLoadingCharges" disabled>
+              <div class="loading-option">
+                <fa-icon icon="spinner" [spin]="true"></fa-icon>
+                <span>Searching charges...</span>
+              </div>
+            </mat-option>
+          </mat-autocomplete>
+          <mat-error *ngIf="hasError('chargeSearch', 'required')">
+            {{ 'errors.Charge selection is required' | translate }}
+          </mat-error>
+          <mat-hint>{{
+            isEditMode
+              ? 'Charge cannot be changed in edit mode'
+              : 'Type at least 2 characters to search available charges'
+          }}</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <mat-divider [inset]="true" *ngIf="selectedCharge"></mat-divider>
+    </div>
+
+    <!-- Charge Details Section (Read-only) -->
+    <div *ngIf="selectedCharge" class="form-section">
+      <h4>{{ 'labels.heading.Charge Details' | translate }}</h4>
+
+      <div class="layout-row-wrap gap-2percent layout-lt-md-column">
+        <mat-form-field class="flex-48">
+          <mat-label>{{ 'labels.inputs.Charge Name' | translate }}</mat-label>
+          <input matInput formControlName="chargeName" readonly />
+        </mat-form-field>
+
+        <mat-form-field class="flex-48">
+          <mat-label>{{ 'labels.inputs.Charge Applies To' | translate }}</mat-label>
+          <input matInput formControlName="chargeAppliesTo" readonly />
+        </mat-form-field>
+
+        <mat-form-field class="flex-48">
+          <mat-label>{{ 'labels.inputs.Currency' | translate }}</mat-label>
+          <input matInput formControlName="currencyCode" readonly />
+        </mat-form-field>
+
+        <mat-form-field class="flex-48">
+          <mat-label>{{ 'labels.inputs.Charge Time Type' | translate }}</mat-label>
+          <input matInput formControlName="chargeTimeType" readonly />
+        </mat-form-field>
+
+        <mat-form-field class="flex-48">
+          <mat-label>{{ 'labels.inputs.Charge Calculation Type' | translate }}</mat-label>
+          <input matInput formControlName="chargeCalculationType" readonly />
+        </mat-form-field>
+
+        <mat-form-field *ngIf="selectedCharge.chargeAppliesTo?.id === 1" class="flex-48">
+          <mat-label>{{ 'labels.inputs.Charge Payment Mode' | translate }}</mat-label>
+          <input matInput formControlName="chargePaymentMode" readonly />
+        </mat-form-field>
+
+        <mat-form-field class="flex-48">
+          <mat-label>{{ 'labels.inputs.Tax Group' | translate }}</mat-label>
+          <input matInput formControlName="taxGroupId" readonly />
+        </mat-form-field>
+
+        <div class="flex-48 layout-row gap-2percent layout-lt-md-column">
+          <div class="flex-50 penalty-wrapper">
+            <mat-checkbox formControlName="penalty" disabled>
+              {{ 'labels.commons.Is' | translate }} {{ 'labels.inputs.Penalty' | translate }}
+            </mat-checkbox>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Override Configuration Section (Editable) -->
+    <div *ngIf="selectedCharge" class="form-section">
+      <h4>{{ 'labels.heading.Override Configuration' | translate }}</h4>
+
+      <div class="layout-row-wrap gap-2percent layout-lt-md-column">
+        <mat-form-field class="flex-48">
+          <mat-label>{{ 'labels.inputs.Amount' | translate }}</mat-label>
+          <input matInput type="number" formControlName="amount" min="0" step="0.01" required />
+          <mat-error *ngIf="hasError('amount', 'required')">
+            {{ 'labels.inputs.Amount' | translate }} {{ 'labels.commons.is' | translate }}
+            <strong>{{ 'labels.commons.required' | translate }}</strong>
+          </mat-error>
+          <mat-error *ngIf="hasError('amount', 'min')">
+            {{ 'errors.Amount must be greater than or equal to 0' | translate }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="flex-48" *ngIf="showMinMaxCap()">
+          <mat-label>{{ 'labels.inputs.Minimum Charge Cap' | translate }}</mat-label>
+          <input matInput type="number" formControlName="minCap" min="0" step="0.01" />
+          <mat-error *ngIf="hasError('minCap', 'maxValue')">
+            {{ 'errors.validation.msg.loanproduct.minimumGap.not.greater.than.specified.number' | translate }} ({{
+              overrideChargeForm.controls['maxCap'].value
+            }})
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="flex-48" *ngIf="showMinMaxCap()">
+          <mat-label>{{ 'labels.inputs.Maximum Charge Cap' | translate }}</mat-label>
+          <input matInput type="number" formControlName="maxCap" min="0" step="0.01" />
+          <mat-error *ngIf="hasError('maxCap', 'minValue')">
+            {{ 'errors.validation.msg.loanproduct.maximumGap.not.greater.than.specified.number' | translate }} ({{
+              overrideChargeForm.controls['minCap'].value
+            }})
+          </mat-error>
+        </mat-form-field>
+
+        <div class="flex-48 layout-row gap-2percent layout-lt-md-column">
+          <div class="flex-50 active-wrapper">
+            <mat-checkbox formControlName="active">
+              {{ 'labels.status.Active' | translate }}
+            </mat-checkbox>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="m-t-20 layout-row align-end gap-20px">
+      <button mat-button type="button" (click)="cancel()">
+        <fa-icon icon="times" class="m-r-10"></fa-icon>
+        {{ 'labels.buttons.Cancel' | translate }}
+      </button>
+
+      <button mat-raised-button color="primary" type="submit" [disabled]="!overrideChargeForm.valid || !selectedCharge">
+        <fa-icon icon="save" class="m-r-10"></fa-icon>
+        {{ isEditMode ? ('labels.buttons.Update Charge' | translate) : ('labels.buttons.Save Changes' | translate) }}
+      </button>
+    </div>
+  </form>
+</div>
