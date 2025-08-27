@@ -372,6 +372,36 @@
               </div>
             </div>
           </mat-list-item>
+
+          <mat-list-item [routerLink]="['transaction-limits']" *mifosxHasPermission="'READ_TRANSACTIONLIMIT'">
+            <div class="menu-list-item-content">
+              <div class="menu-left-section" [routerLink]="['transaction-limits']">
+                <mat-icon matListIcon>
+                  <fa-icon icon="balance-scale" size="sm"></fa-icon>
+                </mat-icon>
+                <div matLine>
+                  {{ 'labels.heading.Transaction Limits' | translate }}
+                  <p matLine *ngIf="arrowBooleans[10]" [routerLink]="['transaction-limits']">
+                    {{ 'labels.text.Limits for transactions in the system' | translate }}
+                  </p>
+                </div>
+              </div>
+              <div class="menu-right-section">
+                <fa-icon
+                  (click)="arrowBooleansToggle(10); $event.stopPropagation()"
+                  *ngIf="!arrowBooleans[10]"
+                  icon="arrow-down"
+                  size="md"
+                ></fa-icon>
+                <fa-icon
+                  (click)="arrowBooleansToggle(10); $event.stopPropagation()"
+                  *ngIf="arrowBooleans[10]"
+                  icon="arrow-up"
+                  size="md"
+                ></fa-icon>
+              </div>
+            </div>
+          </mat-list-item>
         </mat-nav-list>
       </div>
     </div>

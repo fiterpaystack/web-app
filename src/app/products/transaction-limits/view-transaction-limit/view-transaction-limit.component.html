@@ -1,0 +1,54 @@
+<div fxLayout="row" fxLayoutAlign="end" fxLayoutGap="2%" fxLayout.lt-md="column" class="container m-b-20">
+  <button mat-raised-button color="primary" [routerLink]="['edit']">
+    <fa-icon icon="edit" class="m-r-10"></fa-icon>
+    {{ 'labels.heading.Edit' | translate }}
+  </button>
+</div>
+
+<div class="container">
+  <mat-card>
+    <mat-card-content>
+      <div fxLayout="row wrap" class="content">
+        <div fxFlex="50%" class="mat-body-strong">
+          {{ 'labels.inputs.transaction-limits.Name' | translate }}
+        </div>
+
+        <div fxFlex="50%">
+          {{ transactionLimitData.name }}
+        </div>
+
+        <div fxFlex="50%" class="mat-body-strong">
+          {{ 'labels.inputs.transaction-limits.Max Single Deposit Limit' | translate }}
+        </div>
+
+        <div fxFlex="50%">
+          {{ transactionLimitData.maxSingleDepositAmount }}
+        </div>
+
+        <div fxFlex="50%" class="mat-body-strong">
+          {{ 'labels.inputs.transaction-limits.Max Cumulative Balance Limit' | translate }}
+        </div>
+
+        <div fxFlex="50%">
+          {{ transactionLimitData.balanceCumulative }}
+        </div>
+
+        <div fxFlex="50%" class="mat-body-strong">
+          {{ 'labels.inputs.transaction-limits.Is Active' | translate }}
+        </div>
+
+        <div fxFlex="50%">
+          {{ transactionLimitData.isActive | yesNo }}
+        </div>
+
+        <div fxFlex="50%" class="mat-body-strong">
+          {{ 'labels.inputs.transaction-limits.Description' | translate }}
+        </div>
+
+        <div fxFlex="50%">
+          {{ transactionLimitData.description }}
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

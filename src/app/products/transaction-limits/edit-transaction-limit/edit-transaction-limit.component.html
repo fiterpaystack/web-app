@@ -1,0 +1,81 @@
+<div class="container">
+  <mat-card>
+    <form [formGroup]="transactionLimitForm" (ngSubmit)="submit()">
+      <mat-card-content>
+        <div fxLayout="row wrap" fxLayoutGap="2%" fxLayout.lt-md="column">
+          <mat-form-field fxFlex="48%">
+            <mat-label>{{ 'labels.inputs.transaction-limits.Name' | translate }}</mat-label>
+            <input matInput required formControlName="name" />
+            <mat-error *ngIf="transactionLimitForm.controls.name.hasError('required')">
+              {{ 'labels.inputs.transaction-limits.Name' | translate }} {{ 'labels.commons.is' | translate }}
+              <strong>{{ 'labels.commons.required' | translate }}</strong>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlex="48%">
+            <mat-label>{{ 'labels.inputs.transaction-limits.Max Single Deposit Limit' | translate }}</mat-label>
+            <input matInput required formControlName="maxSingleDepositAmount" type="number" />
+
+            <mat-error *ngIf="transactionLimitForm.controls.maxSingleDepositAmount.hasError('min')">
+              {{ 'labels.inputs.transaction-limits.Max Single Deposit Limit' | translate }}
+              <strong>{{ 'labels.commons.Minimum Value must be' | translate }} 0</strong>
+            </mat-error>
+            <mat-error *ngIf="transactionLimitForm.controls.maxSingleDepositAmount.hasError('required')">
+              {{ 'labels.inputs.transaction-limits.Max Single Deposit Limit' | translate }}
+              {{ 'labels.commons.is' | translate }}
+              <strong>{{ 'labels.commons.required' | translate }}</strong>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field fxFlex="48%">
+            <mat-label>{{ 'labels.inputs.transaction-limits.Max Cumulative Balance Limit' | translate }}</mat-label>
+            <input matInput required formControlName="balanceCumulative" type="number" />
+
+            <mat-error *ngIf="transactionLimitForm.controls.balanceCumulative.hasError('min')">
+              {{ 'labels.inputs.transaction-limits.Max Cumulative Balance Limit' | translate }}
+              <strong>{{ 'labels.commons.Minimum Value must be' | translate }} 0</strong>
+            </mat-error>
+            <mat-error *ngIf="transactionLimitForm.controls.balanceCumulative.hasError('required')">
+              {{ 'labels.inputs.transaction-limits.Max Cumulative Balance Limit' | translate }}
+              {{ 'labels.commons.is' | translate }}
+              <strong>{{ 'labels.commons.required' | translate }}</strong>
+            </mat-error>
+          </mat-form-field>
+
+          <div fxFlex="10%">
+            <mat-checkbox labelPosition="after" formControlName="isActive">
+              {{ 'labels.inputs.transaction-limits.Is Active' | translate }}
+            </mat-checkbox>
+            <mat-error *ngIf="transactionLimitForm.controls.isActive.hasError('required')">
+              {{ 'labels.inputs.transaction-limits.Is Active' | translate }} {{ 'labels.commons.is' | translate }}
+              <strong>{{ 'labels.commons.required' | translate }}</strong>
+            </mat-error>
+          </div>
+
+          <mat-form-field fxFlex="96%">
+            <mat-label>{{ 'labels.inputs.transaction-limits.Description' | translate }}</mat-label>
+            <input matInput required formControlName="description" />
+            <mat-error *ngIf="transactionLimitForm.controls.description.hasError('required')">
+              {{ 'labels.inputs.transaction-limits.Description' | translate }} {{ 'labels.commons.is' | translate }}
+              <strong>{{ 'labels.commons.required' | translate }}</strong>
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions fxLayout="row" fxLayout.xs="column" fxLayoutAlign="center" fxLayoutGap="5px">
+        <button type="button" mat-raised-button [routerLink]="['../']">
+          {{ 'labels.buttons.Cancel' | translate }}
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="!transactionLimitForm.valid"
+          *mifosxHasPermission="'=UPDATE_TRANSACTIONLIMIT'"
+        >
+          {{ 'labels.buttons.Submit' | translate }}
+        </button>
+      </mat-card-actions>
+    </form>
+  </mat-card>
+</div>
