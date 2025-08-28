@@ -121,6 +121,110 @@
       <span class="flex-60">{{ savingProduct.withHoldTax | yesNo }}</span>
     </div>
 
+    <div class="flex-fill layout-row">
+      <span class="flex-40">Enable EMT Levy for Deposit:</span>
+      <span class="flex-60">{{
+        savingProduct.additionalAttributes &&
+        savingProduct.additionalAttributes.isEmtLevyApplicableForDeposit !== undefined
+          ? savingProduct.additionalAttributes.isEmtLevyApplicableForDeposit
+            ? 'Yes'
+            : 'No'
+          : savingProduct.isEmtLevyApplicableForDeposit
+            ? 'Yes'
+            : 'No'
+      }}</span>
+    </div>
+
+    <div class="flex-fill layout-row">
+      <span class="flex-40">Enable EMT Levy for Withdraw:</span>
+      <span class="flex-60">{{
+        savingProduct.additionalAttributes &&
+        savingProduct.additionalAttributes.isEmtLevyApplicableForWithdraw !== undefined
+          ? savingProduct.additionalAttributes.isEmtLevyApplicableForWithdraw
+            ? 'Yes'
+            : 'No'
+          : savingProduct.isEmtLevyApplicableForWithdraw
+            ? 'Yes'
+            : 'No'
+      }}</span>
+    </div>
+
+    <div
+      class="flex-fill layout-row"
+      *ngIf="
+        (savingProduct.additionalAttributes &&
+        savingProduct.additionalAttributes.isEmtLevyApplicableForDeposit !== undefined
+          ? savingProduct.additionalAttributes.isEmtLevyApplicableForDeposit
+          : savingProduct.isEmtLevyApplicableForDeposit) ||
+        (savingProduct.additionalAttributes &&
+        savingProduct.additionalAttributes.isEmtLevyApplicableForWithdraw !== undefined
+          ? savingProduct.additionalAttributes.isEmtLevyApplicableForWithdraw
+          : savingProduct.isEmtLevyApplicableForWithdraw)
+      "
+    >
+      <span class="flex-40">{{ 'labels.inputs.Override global EMT levy Setting' | translate }}:</span>
+      <span class="flex-60">{{
+        savingProduct.additionalAttributes &&
+        savingProduct.additionalAttributes.overrideGlobalEmtLevySetting !== undefined
+          ? savingProduct.additionalAttributes.overrideGlobalEmtLevySetting
+            ? 'Yes'
+            : 'No'
+          : savingProduct.overrideGlobalEmtLevySetting
+            ? 'Yes'
+            : 'No'
+      }}</span>
+    </div>
+
+    <div
+      *ngIf="
+        ((savingProduct.additionalAttributes &&
+        savingProduct.additionalAttributes.isEmtLevyApplicableForDeposit !== undefined
+          ? savingProduct.additionalAttributes.isEmtLevyApplicableForDeposit
+          : savingProduct.isEmtLevyApplicableForDeposit) ||
+          (savingProduct.additionalAttributes &&
+          savingProduct.additionalAttributes.isEmtLevyApplicableForWithdraw !== undefined
+            ? savingProduct.additionalAttributes.isEmtLevyApplicableForWithdraw
+            : savingProduct.isEmtLevyApplicableForWithdraw)) &&
+        (savingProduct.additionalAttributes &&
+        savingProduct.additionalAttributes.overrideGlobalEmtLevySetting !== undefined
+          ? savingProduct.additionalAttributes.overrideGlobalEmtLevySetting
+          : savingProduct.overrideGlobalEmtLevySetting)
+      "
+      class="layout-row-wrap responsive-column flex-fill"
+    >
+      <span class="flex-40">{{ 'labels.inputs.EMT Levy Amount' | translate }}:</span>
+      <span class="flex-60">{{
+        savingProduct.additionalAttributes && savingProduct.additionalAttributes.emtLevyAmount !== undefined
+          ? (savingProduct.additionalAttributes.emtLevyAmount | formatNumber)
+          : (savingProduct.emtLevyAmount | formatNumber)
+      }}</span>
+    </div>
+
+    <div
+      *ngIf="
+        ((savingProduct.additionalAttributes &&
+        savingProduct.additionalAttributes.isEmtLevyApplicableForDeposit !== undefined
+          ? savingProduct.additionalAttributes.isEmtLevyApplicableForDeposit
+          : savingProduct.isEmtLevyApplicableForDeposit) ||
+          (savingProduct.additionalAttributes &&
+          savingProduct.additionalAttributes.isEmtLevyApplicableForWithdraw !== undefined
+            ? savingProduct.additionalAttributes.isEmtLevyApplicableForWithdraw
+            : savingProduct.isEmtLevyApplicableForWithdraw)) &&
+        (savingProduct.additionalAttributes &&
+        savingProduct.additionalAttributes.overrideGlobalEmtLevySetting !== undefined
+          ? savingProduct.additionalAttributes.overrideGlobalEmtLevySetting
+          : savingProduct.overrideGlobalEmtLevySetting)
+      "
+      class="layout-row-wrap responsive-column flex-fill"
+    >
+      <span class="flex-40">{{ 'labels.inputs.EMT Levy Threshold' | translate }}:</span>
+      <span class="flex-60">{{
+        savingProduct.additionalAttributes && savingProduct.additionalAttributes.emtLevyThreshold !== undefined
+          ? (savingProduct.additionalAttributes.emtLevyThreshold | formatNumber)
+          : (savingProduct.emtLevyThreshold | formatNumber)
+      }}</span>
+    </div>
+
     <div class="flex-fill layout-row" *ngIf="savingProduct.withHoldTax">
       <span class="flex-40">{{ 'labels.inputs.Tax Group' | translate }}:</span>
       <span class="flex-60">{{ savingProduct.taxGroup.name }}</span>

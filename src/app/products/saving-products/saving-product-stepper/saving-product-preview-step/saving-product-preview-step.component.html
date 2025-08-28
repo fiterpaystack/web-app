@@ -31,70 +31,92 @@
   </div>
 
   <div class="flex-100 layout-row">
-    <span class="flex-40">{{ 'labels.inputs.Currency in multiples of' | translate }}:</span>
-    <span class="flex-60">{{ savingProduct.inMultiplesOf }}</span>
-  </div>
-
-  <h3 class="mat-h3 flex-100">{{ 'labels.inputs.Terms' | translate }}</h3>
-
-  <mat-divider class="flex-100"></mat-divider>
-  <div class="flex-100 layout-row">
-    <span class="flex-40">{{ 'labels.inputs.Nominal Annual Interest' | translate }}:</span>
-    <span class="flex-60">{{ savingProduct.nominalAnnualInterestRate | formatNumber }} %</span>
-  </div>
-
-  <div class="flex-100 layout-row">
-    <span class="flex-40">{{ 'labels.inputs.Interest Compounding Period' | translate }}:</span>
+    <span class="flex-40">Enable EMT Levy for Deposit:</span>
     <span class="flex-60">{{
-      savingProduct.interestCompoundingPeriodType
-        | find: savingProductsTemplate.interestCompoundingPeriodTypeOptions : 'id' : 'value'
-        | translateKey: 'catalogs'
+      (
+        savingProduct.additionalParameters &&
+        savingProduct.additionalParameters.isEmtLevyApplicableForDeposit !== undefined
+          ? savingProduct.additionalParameters.isEmtLevyApplicableForDeposit
+          : savingProduct.isEmtLevyApplicableForDeposit
+      )
+        ? 'Yes'
+        : 'No'
     }}</span>
   </div>
 
   <div class="flex-100 layout-row">
-    <span class="flex-40">{{ 'labels.inputs.Interest Posting Period' | translate }}:</span>
+    <span class="flex-40">Enable EMT Levy for Withdraw:</span>
     <span class="flex-60">{{
-      savingProduct.interestPostingPeriodType
-        | find: savingProductsTemplate.interestPostingPeriodTypeOptions : 'id' : 'value'
-        | translateKey: 'catalogs'
+      (
+        savingProduct.additionalParameters &&
+        savingProduct.additionalParameters.isEmtLevyApplicableForWithdraw !== undefined
+          ? savingProduct.additionalParameters.isEmtLevyApplicableForWithdraw
+          : savingProduct.isEmtLevyApplicableForWithdraw
+      )
+        ? 'Yes'
+        : 'No'
     }}</span>
   </div>
 
-  <div class="flex-100 layout-row">
-    <span class="flex-40">{{ 'labels.inputs.Interest Calculated using' | translate }}:</span>
+  <div
+    class="flex-100 layout-row"
+    *ngIf="
+      (savingProduct.additionalParameters &&
+      savingProduct.additionalParameters.isEmtLevyApplicableForDeposit !== undefined
+        ? savingProduct.additionalParameters.isEmtLevyApplicableForDeposit
+        : savingProduct.isEmtLevyApplicableForDeposit) ||
+      (savingProduct.additionalParameters &&
+      savingProduct.additionalParameters.isEmtLevyApplicableForWithdraw !== undefined
+        ? savingProduct.additionalParameters.isEmtLevyApplicableForWithdraw
+        : savingProduct.isEmtLevyApplicableForWithdraw)
+    "
+  >
+    <span class="flex-40">{{ 'labels.inputs.Override global EMT levy Setting' | translate }}:</span>
     <span class="flex-60">{{
-      savingProduct.interestCalculationType
-        | find: savingProductsTemplate.interestCalculationTypeOptions : 'id' : 'value'
-        | translateKey: 'catalogs'
+      savingProduct.additionalParameters &&
+      savingProduct.additionalParameters.overrideGlobalEmtLevySetting !== undefined
+        ? savingProduct.additionalParameters.overrideGlobalEmtLevySetting
+          ? 'Yes'
+          : 'No'
+        : savingProduct.overrideGlobalEmtLevySetting
+          ? 'Yes'
+          : 'No'
     }}</span>
   </div>
 
-  <div class="flex-100 layout-row">
-    <span class="flex-40">{{ 'labels.inputs.Days in Year' | translate }}:</span>
-    <span class="flex-60">{{
-      savingProduct.interestCalculationDaysInYearType
-        | find: savingProductsTemplate.interestCalculationDaysInYearTypeOptions : 'id' : 'value'
-        | translateKey: 'catalogs'
-    }}</span>
-  </div>
-
-  <h3 class="mat-h3 flex-100">{{ 'labels.inputs.Settings' | translate }}</h3>
-
-  <mat-divider class="flex-100"></mat-divider>
-  <div class="flex-100 layout-row" *ngIf="savingProduct.minRequiredOpeningBalance">
-    <span class="flex-40">{{ 'labels.inputs.Minimum Opening Balance' | translate }}:</span>
-    <span class="flex-60">{{ savingProduct.minRequiredOpeningBalance | formatNumber }}</span>
-  </div>
-
-  <div class="flex-100 layout-row" *ngIf="savingProduct.lockinPeriodFrequency">
-    <span class="flex-40">{{ 'labels.inputs.Lock-in Period' | translate }}:</span>
-    <span class="flex-60">{{
-      savingProduct.lockinPeriodFrequency +
-        ' ' +
-        (savingProduct.lockinPeriodFrequencyType
-          | find: savingProductsTemplate.lockinPeriodFrequencyTypeOptions : 'id' : 'value') | translateKey: 'catalogs'
-    }}</span>
+  <div
+    *ngIf="
+      ((savingProduct.additionalParameters &&
+      savingProduct.additionalParameters.isEmtLevyApplicableForDeposit !== undefined
+        ? savingProduct.additionalParameters.isEmtLevyApplicableForDeposit
+        : savingProduct.isEmtLevyApplicableForDeposit) ||
+        (savingProduct.additionalParameters &&
+        savingProduct.additionalParameters.isEmtLevyApplicableForWithdraw !== undefined
+          ? savingProduct.additionalParameters.isEmtLevyApplicableForWithdraw
+          : savingProduct.isEmtLevyApplicableForWithdraw)) &&
+      (savingProduct.additionalParameters &&
+      savingProduct.additionalParameters.overrideGlobalEmtLevySetting !== undefined
+        ? savingProduct.additionalParameters.overrideGlobalEmtLevySetting
+        : savingProduct.overrideGlobalEmtLevySetting)
+    "
+    class="layout-row-wrap responsive-column flex-100"
+  >
+    <div class="layout-row-wrap responsive-column flex-100">
+      <span class="flex-40">{{ 'labels.inputs.EMT Levy Amount' | translate }}:</span>
+      <span class="flex-60">{{
+        savingProduct.additionalParameters && savingProduct.additionalParameters.emtLevyAmount !== undefined
+          ? (savingProduct.additionalParameters.emtLevyAmount | formatNumber)
+          : (savingProduct.emtLevyAmount | formatNumber)
+      }}</span>
+    </div>
+    <div class="layout-row-wrap responsive-column flex-100">
+      <span class="flex-40">{{ 'labels.inputs.EMT Levy Threshold' | translate }}:</span>
+      <span class="flex-60">{{
+        savingProduct.additionalParameters && savingProduct.additionalParameters.emtLevyThreshold !== undefined
+          ? (savingProduct.additionalParameters.emtLevyThreshold | formatNumber)
+          : (savingProduct.emtLevyThreshold | formatNumber)
+      }}</span>
+    </div>
   </div>
 
   <div class="flex-100 layout-row">
@@ -126,6 +148,32 @@
     <span class="flex-40">{{ 'labels.inputs.Tax Group' | translate }}:</span>
     <span class="flex-60">{{
       savingProduct.taxGroupId | find: savingProductsTemplate.taxGroupOptions : 'id' : 'name'
+    }}</span>
+  </div>
+
+  <div
+    class="flex-100 layout-row"
+    *ngIf="
+      (savingProduct.additionalParameters &&
+      savingProduct.additionalParameters.isEmtLevyApplicableForDeposit !== undefined
+        ? savingProduct.additionalParameters.isEmtLevyApplicableForDeposit
+        : savingProduct.isEmtLevyApplicableForDeposit) ||
+      (savingProduct.additionalParameters &&
+      savingProduct.additionalParameters.isEmtLevyApplicableForWithdraw !== undefined
+        ? savingProduct.additionalParameters.isEmtLevyApplicableForWithdraw
+        : savingProduct.isEmtLevyApplicableForWithdraw)
+    "
+  >
+    <span class="flex-40">{{ 'labels.inputs.Override global EMT levy Setting' | translate }}:</span>
+    <span class="flex-60">{{
+      (
+        savingProduct.additionalParameters &&
+        savingProduct.additionalParameters.overrideGlobalEmtLevySetting !== undefined
+          ? savingProduct.additionalParameters.overrideGlobalEmtLevySetting
+          : savingProduct.overrideGlobalEmtLevySetting
+      )
+        ? 'Yes'
+        : 'No'
     }}</span>
   </div>
 
