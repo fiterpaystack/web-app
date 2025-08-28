@@ -7,7 +7,20 @@
 
     <form [formGroup]="manageSavingsAccountForm" (ngSubmit)="submit()">
       <mat-card-content class="layout-row">
-        <mat-form-field class="flex-100">
+        <mat-form-field fxFlex="flex-100" *ngIf="transactionType.unblockwithdrawal">
+          <mat-label>{{ 'labels.inputs.Note' | translate }}</mat-label>
+          <input matInput formControlName="note" />
+        </mat-form-field>
+
+        <mat-form-field
+          class="flex-100"
+          *ngIf="
+            transactionType.blockaccount ||
+            transactionType.holdamount ||
+            transactionType.blockwithdrawal ||
+            this.transactionType.blockdeposit
+          "
+        >
           <mat-label>{{ 'labels.inputs.Reason' | translate }}</mat-label>
           <mat-select required formControlName="reasonForBlock">
             <mat-option *ngFor="let codeValue of reasonOptions" [value]="codeValue.id">
