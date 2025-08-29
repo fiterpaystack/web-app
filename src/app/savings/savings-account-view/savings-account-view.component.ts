@@ -203,6 +203,7 @@ export class SavingsAccountViewComponent implements OnInit {
       case 'Block Account':
       case 'Block Deposit':
       case 'Block Withdrawal':
+      case 'Unblock Withdrawal':
       case 'Unassign Staff':
       case 'Withdrawn by Client':
       case 'Apply Annual Fees':
@@ -252,7 +253,6 @@ export class SavingsAccountViewComponent implements OnInit {
       }
       case 'Unblock Account':
       case 'Unblock Deposit':
-      case 'Unblock Withdrawal':
         this.unblockSavingsAccount(name);
         break;
     }
@@ -358,9 +358,6 @@ export class SavingsAccountViewComponent implements OnInit {
     let command = 'unblock';
     if (action === 'Unblock Deposit') {
       command = 'unblockCredit';
-    }
-    if (action === 'Unblock Withdrawal') {
-      command = 'unblockDebit';
     }
     unblockSavingsAccountDialogRef.afterClosed().subscribe((response: { confirm: any }) => {
       if (response.confirm) {

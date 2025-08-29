@@ -87,6 +87,7 @@ export class TransactionsTabComponent implements OnInit {
     'date',
     'externalId',
     'transactionType',
+    'narration',
     'debit',
     'credit',
     'balance',

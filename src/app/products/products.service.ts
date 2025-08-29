@@ -598,6 +598,49 @@ export class ProductsService {
   }
 
   // ========================================
+  // TRANSACTION LIMIT METHODS
+  // ========================================
+
+  getTransactionLimits(): Observable<any> {
+    return this.http.get('/savingsaccount/transactionlimits');
+  }
+
+  getTransactionLimit(transactionLimitId: string): Observable<any> {
+    return this.http.get(`/savingsaccount/transactionlimits/${transactionLimitId}`);
+  }
+
+  updateTransactionLimit(transactionLimitId: string, body: string): Observable<any> {
+    return this.http.put(`/savingsaccount/transactionlimits/${transactionLimitId}`, body);
+  }
+
+  createTransactionLimit(body: string): Observable<any> {
+    return this.http.post('/savingsaccount/transactionlimits', body);
+  }
+
+  getTransacitonLimitToClassificationMapping() {
+    return this.http.get('/savingsaccount/transactionlimits/classificationmapping');
+  }
+
+  createTransactionLimitToClassificationMapping(body: any): Observable<any> {
+    return this.http.post('/savingsaccount/transactionlimits/classificationmapping', body);
+  }
+
+  updateTransactionLimitToClassificationMapping(mappingId: string, body: any): Observable<any> {
+    return this.http.put(`/savingsaccount/transactionlimits/classificationmapping/${mappingId}`, body);
+  }
+
+  getTransactionLimitToClassificationMapping(transactionLimitId: string, template: string): Observable<any> {
+    const httpParams = new HttpParams().set('template', template);
+    return this.http.get(`/savingsaccount/transactionlimits/classificationmapping/${transactionLimitId}`, {
+      params: httpParams
+    });
+  }
+
+  searchLimits(searchText: string): Observable<any> {
+    return this.http.get(`/savingsaccount/transactionlimits/search/${searchText}`);
+  }
+
+  // ========================================
   // FEE SPLIT MANAGEMENT METHODS
   // ========================================
 

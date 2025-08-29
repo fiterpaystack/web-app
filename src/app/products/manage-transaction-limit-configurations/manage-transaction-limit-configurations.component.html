@@ -1,0 +1,32 @@
+<div class="container">
+  <mat-card>
+    <div fxLayout="row" fxLayout.lt-md="column">
+      <div fxFlex="50%">
+        <mat-nav-list>
+          <mat-list-item [routerLink]="['configure-transaction-limits']" *mifosxHasPermission="'READ_TRANSACTIONLIMIT'">
+            <mat-icon matListIcon>
+              <fa-icon icon="building" size="sm"></fa-icon>
+            </mat-icon>
+            <h4 matLine>{{ 'labels.heading.Manage Transaction Limits' | translate }}</h4>
+            <p matLine>{{ 'labels.heading.Define ManageTransaction Limits' | translate }}</p>
+          </mat-list-item>
+        </mat-nav-list>
+      </div>
+
+      <div fxFlex="50%">
+        <mat-nav-list>
+          <mat-list-item
+            [routerLink]="['configure-classification-mapping']"
+            *mifosxHasPermission="'READ_TRANSACTIONLIMITCLASSIFICATION'"
+          >
+            <mat-icon matListIcon>
+              <fa-icon icon="building" size="sm"></fa-icon>
+            </mat-icon>
+            <h4 matLine>{{ 'labels.heading.Limits and Classification Mapping' | translate }}</h4>
+            <p matLine>{{ 'labels.heading.Define Limits and Classification Mapping' | translate }}</p>
+          </mat-list-item>
+        </mat-nav-list>
+      </div>
+    </div>
+  </mat-card>
+</div>

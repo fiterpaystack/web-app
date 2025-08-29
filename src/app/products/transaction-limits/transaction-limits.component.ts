@@ -1,0 +1,95 @@
+/** Angular Imports */
+import { Component, ViewChild, OnInit } from '@angular/core';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort, MatSortHeader } from '@angular/material/sort';
+import {
+  MatTableDataSource,
+  MatTable,
+  MatColumnDef,
+  MatHeaderCellDef,
+  MatHeaderCell,
+  MatCellDef,
+  MatCell,
+  MatHeaderRowDef,
+  MatHeaderRow,
+  MatRowDef,
+  MatRow
+} from '@angular/material/table';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { FaIconComponent } from '@fortawesome/angular-fontawesome';
+import { YesnoPipe } from '../../pipes/yesno.pipe';
+import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+
+@Component({
+  selector: 'mifosx-transaction-limits',
+  templateUrl: './transaction-limits.component.html',
+  styleUrls: ['./transaction-limits.component.scss'],
+  imports: [
+    ...STANDALONE_SHARED_IMPORTS,
+    FaIconComponent,
+    MatTable,
+    MatSort,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatSortHeader,
+    MatCellDef,
+    MatCell,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    MatPaginator,
+    YesnoPipe
+  ]
+})
+export class TransactionLimitsComponent implements OnInit {
+  /** Transaction Limit Data */
+  transactionLimitData: any;
+
+  /** Columns to be displayed in the Collaterals Table */
+  displayedColumns: string[] = [
+    'name',
+    'isActive',
+    'description',
+    'maxSingleDepositAmount',
+    'balanceCumulative'
+  ];
+  /** DataSource for the Transaction Limit Table */
+  dataSource: MatTableDataSource<any>;
+
+  /** Paginator for the Collateral Table */
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+  /** Sorter for Collateral Table */
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
+
+  constructor(private route: ActivatedRoute) {
+    this.route.data.subscribe((data: { transactionLimits: any }) => {
+      this.transactionLimitData = data.transactionLimits;
+    });
+  }
+
+  /**
+   * Filters data in collateral table based on passed value.
+   * @param {string} filterValue Value to filter data.
+   */
+  applyFilter(filterValue: string) {
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+  /**
+   * Sets the transaction limit table.
+   */
+  ngOnInit() {
+    this.setTransactionLimitDataSource();
+  }
+
+  /**
+   * Initializes the data source, paginator and sorter for transaction limit table.
+   */
+  setTransactionLimitDataSource() {
+    this.dataSource = new MatTableDataSource(this.transactionLimitData);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+}
