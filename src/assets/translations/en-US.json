@@ -307,6 +307,7 @@
       "Home": "Home"
     },
     "buttons": {
+      "Add Stakeholder": "Add Stakeholder",
       "View Details": "View Details",
       "Update Charge": "Update Charge",
       "Override Charge": "New Custom Charge",
@@ -816,6 +817,7 @@
       "Password validation": "Password should contain minimum {{minchar}} characters, that should income 1 uppercase, lowercase and special character and should not consists of repeated characters or white-spaces"
     },
     "heading": {
+      "Fee Split Configuration": "Fee Split Configuration",
       "Edit Charge": "Edit Charge",
       "Override Configuration": "Override Configuration",
       "Charge Details": "Charge Details",
@@ -1191,6 +1193,10 @@
       "Principal Amount": "Principal Amount"
     },
     "inputs": {
+      "GL Account": "GL Account",
+      "Journal Entry": "Journal Entry",
+      "Fee Split Audit History": "Fee Split Audit History",
+      "Enable Fee Split": "Enable Fee Split",
       "Payment Mode": "Payment Mode",
       "Custom Amount": "Custom Amount",
       "Original Amount": "Original Amount",
@@ -1696,6 +1702,14 @@
       "Full Day": "Full Day",
       "Full Day/Time": "Full Day/Time",
       "Fund": "Fund",
+      "Split Value": "Split Value",
+      "Split Type": "Split Type",
+      "Fee Split Details": "Fee Split Details",
+      "Total Splits": "Total Splits",
+      "Split Amount": "Split Amount",
+      "Total Percentage": "Total Percentage",
+      "Fee Split Configuration": "Fee Split Configuration",
+      "Stakeholder": "Stakeholder",
       "Fund Source": "Fund Source",
       "Fund source": "Fund source",
       "Future Installment Allocation Rule": "Future Installment Allocation Rule",

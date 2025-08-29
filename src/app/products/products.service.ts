@@ -4,9 +4,13 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 
 /** rxjs Imports */
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 /** Custom Services */
 import { SettingsService } from 'app/settings/settings.service';
+
+/** Custom Models */
+import { ChargeStakeholderSplit, FeeSplitRequest } from './charges/models/fee-split.model';
 
 /**
  * Products service.
@@ -591,5 +595,152 @@ export class ProductsService {
   deleteDatatableContent(productId: string, datatableName: string) {
     const httpParams = new HttpParams().set('genericResultSet', 'true');
     return this.http.delete(`/datatables/${datatableName}/${productId}`, { params: httpParams });
+  }
+
+  // ========================================
+  // FEE SPLIT MANAGEMENT METHODS
+  // ========================================
+
+  /**
+   * Get all stakeholder splits for a charge
+   * @param {number} chargeId Charge ID
+   * @returns {Observable<ChargeStakeholderSplit[]>} List of stakeholder splits
+   */
+  getChargeStakeholderSplits(chargeId: number): Observable<ChargeStakeholderSplit[]> {
+    return this.http
+      .get<any[]>(`/charges/${chargeId}/splits`)
+      .pipe(map((splits) => splits.map((split) => this.transformSplitResponse(split))));
+  }
+
+  /**
+   * Transform flat API response to nested format for frontend compatibility
+   * @param {any} split Flat API response split
+   * @returns {ChargeStakeholderSplit} Transformed split with nested properties
+   */
+  private transformSplitResponse(split: any): ChargeStakeholderSplit {
+    return {
+      ...split,
+      charge: {
+        id: split.chargeId,
+        name: split.chargeName
+      },
+      fund: {
+        id: split.fundId,
+        name: split.fundName
+      },
+      glAccount: {
+        id: split.glAccountId,
+        name: split.glAccountName,
+        glCode: split.glAccountCode,
+        hierarchy: split.glAccountHierarchy
+      },
+      percentageSplit: split.splitType === 'PERCENTAGE',
+      flatAmountSplit: split.splitType === 'FLAT_AMOUNT'
+    };
+  }
+
+  /**
+   * Create a new stakeholder split for a charge
+   * @param {number} chargeId Charge ID
+   * @param {FeeSplitRequest} splitData Split configuration data
+   * @returns {Observable<any>} Created split data
+   */
+  createChargeStakeholderSplit(chargeId: number, splitData: FeeSplitRequest): Observable<any> {
+    return this.http.post(`/charges/${chargeId}/splits`, splitData);
+  }
+
+  /**
+   * Update an existing stakeholder split
+   * @param {number} chargeId Charge ID
+   * @param {number} splitId Split ID
+   * @param {FeeSplitRequest} splitData Updated split configuration data
+   * @returns {Observable<any>} Updated split data
+   */
+  updateChargeStakeholderSplit(chargeId: number, splitId: number, splitData: FeeSplitRequest): Observable<any> {
+    return this.http.put(`/charges/${chargeId}/splits/${splitId}`, splitData);
+  }
+
+  /**
+   * Delete a stakeholder split
+   * @param {number} chargeId Charge ID
+   * @param {number} splitId Split ID
+   * @returns {Observable<any>} Deletion result
+   */
+  deleteChargeStakeholderSplit(chargeId: number, splitId: number): Observable<any> {
+    return this.http.delete(`/charges/${chargeId}/splits/${splitId}`);
+  }
+
+  /**
+   * Get all splits for a specific fund
+   * @param {number} fundId Fund ID
+   * @returns {Observable<ChargeStakeholderSplit[]>} List of splits for the fund
+   */
+  getStakeholderSplitsByFund(fundId: number): Observable<ChargeStakeholderSplit[]> {
+    return this.http.get<ChargeStakeholderSplit[]>(`/charges/splits/funds/${fundId}`);
+  }
+
+  // ========================================
+  // FEE SPLIT AUDIT METHODS
+  // ========================================
+
+  /**
+   * Get all fee split audits with pagination and filters
+   * @param {any} params Query parameters for filtering and pagination
+   * @returns {Observable<any>} Paginated list of fee split audits
+   */
+  getFeeSplitAudits(params?: any): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params) {
+      Object.keys(params).forEach((key) => {
+        if (params[key] !== null && params[key] !== undefined) {
+          httpParams = httpParams.set(key, params[key].toString());
+        }
+      });
+    }
+    return this.http.get('/fee-split-audits', { params: httpParams });
+  }
+
+  /**
+   * Get a specific fee split audit by ID
+   * @param {number} auditId Audit ID
+   * @returns {Observable<any>} Fee split audit details
+   */
+  getFeeSplitAudit(auditId: number): Observable<any> {
+    return this.http.get(`/fee-split-audits/${auditId}`);
+  }
+
+  /**
+   * Get fee split audit details for a specific audit
+   * @param {number} auditId Audit ID
+   * @returns {Observable<any[]>} List of fee split details
+   */
+  getFeeSplitAuditDetails(auditId: number): Observable<any[]> {
+    return this.http.get<any[]>(`/fee-split-audits/${auditId}/details`);
+  }
+
+  /**
+   * Get fee split audits for a specific charge
+   * @param {number} chargeId Charge ID
+   * @returns {Observable<any[]>} List of fee split audits for the charge
+   */
+  getFeeSplitAuditsByCharge(chargeId: number): Observable<any[]> {
+    return this.http.get<any[]>(`/fee-split-audits/charges/${chargeId}`);
+  }
+
+  /**
+   * Get fee split summary statistics
+   * @param {any} params Query parameters for filtering
+   * @returns {Observable<any>} Fee split summary statistics
+   */
+  getFeeSplitSummary(params?: any): Observable<any> {
+    let httpParams = new HttpParams();
+    if (params) {
+      Object.keys(params).forEach((key) => {
+        if (params[key] !== null && params[key] !== undefined) {
+          httpParams = httpParams.set(key, params[key].toString());
+        }
+      });
+    }
+    return this.http.get('/fee-split-audits/summary', { params: httpParams });
   }
 }
