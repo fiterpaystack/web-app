@@ -79,6 +79,64 @@
     >
       {{ 'labels.inputs.Is Withhold Tax Applicable' | translate }}
     </mat-checkbox>
+    <mat-divider class="flex-98"></mat-divider>
+
+    <h3 class="mat-h3 flex-23">EMT Levy</h3>
+
+    <mat-checkbox
+      class="flex-100 margin-b"
+      labelPosition="before"
+      matTooltip="EMT levy applicable for deposit transactions"
+      formControlName="isEmtLevyApplicableForDeposit"
+    >
+      {{ 'labels.inputs.Enable EMT Levy for Deposit' | translate }}
+    </mat-checkbox>
+
+    <mat-checkbox
+      class="flex-100 margin-b"
+      labelPosition="before"
+      matTooltip="EMT levy applicable for withdraw transactions"
+      formControlName="isEmtLevyApplicableForWithdraw"
+    >
+      {{ 'labels.inputs.Enable EMT Levy for Withdraw' | translate }}
+    </mat-checkbox>
+
+    <div
+      *ngIf="
+        savingProductSettingsForm.value.isEmtLevyApplicableForDeposit ||
+        savingProductSettingsForm.value.isEmtLevyApplicableForWithdraw
+      "
+      class="flex-fill layout-row-wrap gap-2percent responsive-column"
+    >
+      <mat-checkbox class="flex-73 margin-b" labelPosition="before" formControlName="overrideGlobalEmtLevySetting">
+        {{ 'labels.inputs.Override global EMT levy Setting' | translate }}
+      </mat-checkbox>
+
+      <div
+        *ngIf="savingProductSettingsForm.value.overrideGlobalEmtLevySetting"
+        class="flex-fill layout-row-wrap gap-2percent responsive-column"
+      >
+        <mat-form-field class="flex-48">
+          <mat-label>{{ 'labels.inputs.EMT Levy Amount' | translate }}</mat-label>
+          <input
+            type="number"
+            matInput
+            formControlName="emtLevyAmount"
+            matTooltip="{{ 'tooltips.Sets the EMT levy amount' | translate }}"
+          />
+        </mat-form-field>
+
+        <mat-form-field class="flex-48">
+          <mat-label>{{ 'labels.inputs.EMT Levy Threshold' | translate }}</mat-label>
+          <input
+            type="number"
+            matInput
+            formControlName="emtLevyThreshold"
+            matTooltip="{{ 'tooltips.Sets the EMT levy threshold' | translate }}"
+          />
+        </mat-form-field>
+      </div>
+    </div>
 
     <mat-form-field class="flex-48" *ngIf="savingProductSettingsForm.value.withHoldTax">
       <mat-label>{{ 'labels.inputs.Tax Group' | translate }}</mat-label>

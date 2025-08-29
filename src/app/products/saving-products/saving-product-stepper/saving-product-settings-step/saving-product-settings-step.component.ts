@@ -44,6 +44,19 @@ export class SavingProductSettingsStepComponent implements OnInit {
     this.lockinPeriodFrequencyTypeData = this.savingProductsTemplate.lockinPeriodFrequencyTypeOptions;
     this.taxGroupData = this.savingProductsTemplate.taxGroupOptions;
 
+    // handle resolver shapes: some endpoints return product merged, others return { product, template }
+    const productData =
+      this.savingProductsTemplate && (this.savingProductsTemplate.product || this.savingProductsTemplate.savingProduct)
+        ? this.savingProductsTemplate.product || this.savingProductsTemplate.savingProduct
+        : this.savingProductsTemplate || {};
+    // API may return EMT fields under additionalParameters or additionalAttributes depending on endpoint/version
+    const ap =
+      productData.additionalParameters ||
+      productData.additionalAttributes ||
+      (this.savingProductsTemplate &&
+        (this.savingProductsTemplate.additionalParameters || this.savingProductsTemplate.additionalAttributes)) ||
+      {};
+
     this.savingProductSettingsForm.patchValue({
       minRequiredOpeningBalance: this.savingProductsTemplate.minRequiredOpeningBalance,
       lockinPeriodFrequency: this.savingProductsTemplate.lockinPeriodFrequency,
@@ -58,6 +71,18 @@ export class SavingProductSettingsStepComponent implements OnInit {
       minOverdraftForInterestCalculation: this.savingProductsTemplate.minOverdraftForInterestCalculation,
       nominalAnnualInterestRateOverdraft: this.savingProductsTemplate.nominalAnnualInterestRateOverdraft,
       overdraftLimit: this.savingProductsTemplate.overdraftLimit,
+      isEmtLevyApplicableForDeposit:
+        ap.isEmtLevyApplicableForDeposit !== undefined
+          ? ap.isEmtLevyApplicableForDeposit
+          : productData.isEmtLevyApplicableForDeposit !== undefined
+            ? productData.isEmtLevyApplicableForDeposit
+            : false,
+      isEmtLevyApplicableForWithdraw:
+        ap.isEmtLevyApplicableForWithdraw !== undefined
+          ? ap.isEmtLevyApplicableForWithdraw
+          : productData.isEmtLevyApplicableForWithdraw !== undefined
+            ? productData.isEmtLevyApplicableForWithdraw
+            : false,
       withHoldTax: this.savingProductsTemplate.withHoldTax,
       taxGroupId: this.savingProductsTemplate.taxGroup && this.savingProductsTemplate.taxGroup.id,
       isDormancyTrackingActive: this.savingProductsTemplate.isDormancyTrackingActive,
@@ -65,6 +90,49 @@ export class SavingProductSettingsStepComponent implements OnInit {
       daysToDormancy: this.savingProductsTemplate.daysToDormancy,
       daysToEscheat: this.savingProductsTemplate.daysToEscheat
     });
+
+    // initialize override and EMT fields if template provides them
+    if (
+      ap.isEmtLevyApplicableForDeposit ||
+      ap.isEmtLevyApplicableForWithdraw ||
+      productData.isEmtLevyApplicableForDeposit ||
+      productData.isEmtLevyApplicableForWithdraw
+    ) {
+      // ensure override control exists
+      if (!this.savingProductSettingsForm.get('overrideGlobalEmtLevySetting')) {
+        this.savingProductSettingsForm.addControl('overrideGlobalEmtLevySetting', new UntypedFormControl(false));
+      }
+      const overrideValue =
+        ap.overrideGlobalEmtLevySetting !== undefined
+          ? ap.overrideGlobalEmtLevySetting
+          : productData.overrideGlobalEmtLevySetting !== undefined
+            ? productData.overrideGlobalEmtLevySetting
+            : this.savingProductsTemplate.overrideGlobalEmtLevySetting;
+      if (overrideValue) {
+        this.savingProductSettingsForm.get('overrideGlobalEmtLevySetting').setValue(overrideValue);
+        // add emt amount/threshold controls
+        if (!this.savingProductSettingsForm.get('emtLevyAmount')) {
+          this.savingProductSettingsForm.addControl('emtLevyAmount', new UntypedFormControl(''));
+        }
+        if (!this.savingProductSettingsForm.get('emtLevyThreshold')) {
+          this.savingProductSettingsForm.addControl('emtLevyThreshold', new UntypedFormControl(''));
+        }
+        const amount =
+          ap.emtLevyAmount !== undefined
+            ? ap.emtLevyAmount
+            : productData.emtLevyAmount !== undefined
+              ? productData.emtLevyAmount
+              : this.savingProductsTemplate.emtLevyAmount;
+        const threshold =
+          ap.emtLevyThreshold !== undefined
+            ? ap.emtLevyThreshold
+            : productData.emtLevyThreshold !== undefined
+              ? productData.emtLevyThreshold
+              : this.savingProductsTemplate.emtLevyThreshold;
+        this.savingProductSettingsForm.get('emtLevyAmount').setValue(amount);
+        this.savingProductSettingsForm.get('emtLevyThreshold').setValue(threshold);
+      }
+    }
   }
 
   createSavingProductSettingsForm() {
@@ -77,6 +145,9 @@ export class SavingProductSettingsStepComponent implements OnInit {
       enforceMinRequiredBalance: [false],
       minRequiredBalance: [''],
       allowOverdraft: [false],
+      // EMT levy related controls (separate flags)
+      isEmtLevyApplicableForDeposit: [false],
+      isEmtLevyApplicableForWithdraw: [false],
       withHoldTax: [false],
       isDormancyTrackingActive: [false]
     });
@@ -103,6 +174,55 @@ export class SavingProductSettingsStepComponent implements OnInit {
       }
     });
 
+    // EMT levy conditional controls
+    // watch either deposit or withdraw EMT applicability
+    const watchEmt = () => {
+      const deposit = this.savingProductSettingsForm.get('isEmtLevyApplicableForDeposit')
+        ? this.savingProductSettingsForm.get('isEmtLevyApplicableForDeposit').value
+        : false;
+      const withdraw = this.savingProductSettingsForm.get('isEmtLevyApplicableForWithdraw')
+        ? this.savingProductSettingsForm.get('isEmtLevyApplicableForWithdraw').value
+        : false;
+      if (deposit || withdraw) {
+        if (!this.savingProductSettingsForm.get('overrideGlobalEmtLevySetting')) {
+          this.savingProductSettingsForm.addControl('overrideGlobalEmtLevySetting', new UntypedFormControl(false));
+        }
+      } else {
+        // remove override and any related fields
+        if (this.savingProductSettingsForm.get('overrideGlobalEmtLevySetting')) {
+          this.savingProductSettingsForm.removeControl('overrideGlobalEmtLevySetting');
+        }
+        if (this.savingProductSettingsForm.get('emtLevyAmount')) {
+          this.savingProductSettingsForm.removeControl('emtLevyAmount');
+        }
+        if (this.savingProductSettingsForm.get('emtLevyThreshold')) {
+          this.savingProductSettingsForm.removeControl('emtLevyThreshold');
+        }
+      }
+    };
+
+    // subscribe to value changes to handle dynamic add/remove
+    this.savingProductSettingsForm.valueChanges.subscribe(() => watchEmt());
+
+    // react to override checkbox if present
+    // use safe getter since control may not exist yet
+    const watchOverride = () => {
+      const overrideControl = this.savingProductSettingsForm.get('overrideGlobalEmtLevySetting');
+      if (!overrideControl) return;
+      overrideControl.valueChanges.subscribe((override: any) => {
+        if (override) {
+          this.savingProductSettingsForm.addControl('emtLevyAmount', new UntypedFormControl(''));
+          this.savingProductSettingsForm.addControl('emtLevyThreshold', new UntypedFormControl(''));
+        } else {
+          this.savingProductSettingsForm.removeControl('emtLevyAmount');
+          this.savingProductSettingsForm.removeControl('emtLevyThreshold');
+        }
+      });
+    };
+
+    // subscribe once when override control is added/removed by listening to form changes
+    this.savingProductSettingsForm.valueChanges.subscribe(() => watchOverride());
+
     this.savingProductSettingsForm
       .get('isDormancyTrackingActive')
       .valueChanges.subscribe((isDormancyTrackingActive: any) => {
@@ -119,6 +239,35 @@ export class SavingProductSettingsStepComponent implements OnInit {
   }
 
   get savingProductSettings() {
-    return this.savingProductSettingsForm.value;
+    const value = this.savingProductSettingsForm.value || {};
+    // ensure EMT fields are always present even if controls were added/removed dynamically
+    const isEmtLevyApplicableForDeposit = this.savingProductSettingsForm.get('isEmtLevyApplicableForDeposit')
+      ? this.savingProductSettingsForm.get('isEmtLevyApplicableForDeposit').value
+      : value.isEmtLevyApplicableForDeposit !== undefined
+        ? value.isEmtLevyApplicableForDeposit
+        : false;
+    const isEmtLevyApplicableForWithdraw = this.savingProductSettingsForm.get('isEmtLevyApplicableForWithdraw')
+      ? this.savingProductSettingsForm.get('isEmtLevyApplicableForWithdraw').value
+      : value.isEmtLevyApplicableForWithdraw !== undefined
+        ? value.isEmtLevyApplicableForWithdraw
+        : false;
+    const overrideGlobalEmtLevySetting = this.savingProductSettingsForm.get('overrideGlobalEmtLevySetting')
+      ? this.savingProductSettingsForm.get('overrideGlobalEmtLevySetting').value
+      : value.overrideGlobalEmtLevySetting;
+    const emtLevyAmount = this.savingProductSettingsForm.get('emtLevyAmount')
+      ? this.savingProductSettingsForm.get('emtLevyAmount').value
+      : value.emtLevyAmount;
+    const emtLevyThreshold = this.savingProductSettingsForm.get('emtLevyThreshold')
+      ? this.savingProductSettingsForm.get('emtLevyThreshold').value
+      : value.emtLevyThreshold;
+
+    return {
+      ...value,
+      isEmtLevyApplicableForDeposit,
+      isEmtLevyApplicableForWithdraw,
+      overrideGlobalEmtLevySetting,
+      emtLevyAmount,
+      emtLevyThreshold
+    };
   }
 }

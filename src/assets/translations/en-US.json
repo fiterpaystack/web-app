@@ -300,7 +300,8 @@
         "fundSource": "Fund Source",
         "liabilityTransfer": "Liability Transfer",
         "openingBalancesTransferContra": "Opening Balances Transfer Contra",
-        "payableDividends": "Payable Dividends"
+        "payableDividends": "Payable Dividends",
+        "emtLevy": "EMT Levy"
       }
     },
     "breadcrumbs": {
@@ -1197,6 +1198,13 @@
       "Transaction Limit Mapping": "Transaction Limit Mapping"
     },
     "inputs": {
+      "Enable EMT Levy for Deposit": "Enable EMT Levy for Deposit",
+      "Enable EMT Levy for Withdraw": "Enable EMT Levy for Withdraw",
+      "EMT Levy Amount": "EMT Levy Amount",
+      "EMT Levy Threshold": "EMT Levy Threshold",
+      "EMT levy Applicable": "EMT Levy Applicable",
+      "Is EMT levy Applicable": "Is EMT Levy Applicable",
+      "Override global EMT levy Setting": "Override global EMT Levy Setting",
       "Payment Mode": "Payment Mode",
       "Custom Amount": "Custom Amount",
       "Original Amount": "Original Amount",
@@ -2257,6 +2265,7 @@
       "s3_bucket_name": "s3_bucket_name",
       "s3_secret_key": "s3_secret_key",
       "SETTINGS": "SETTINGS",
+      "Settings": "Settings",
       "SMS Provider": "SMS Provider",
       "SMS Provider Account ID": "SMS Provider Account ID",
       "SMS Provider Token": "SMS Provider Token",
@@ -2345,6 +2354,7 @@
       "Survey Name": "Survey Name",
       "System Defined": "System Defined",
       "TERMS": "TERMS",
+      "Terms": "Terms and Conditions",
       "TODO": "TODO",
       "Table Affected": "Table Affected",
       "Table Fields": "Table Fields",
@@ -2729,6 +2739,7 @@
       "the Transaction Type": "the Transaction Type"
     },
     "text": {
+      "Create Saving Product": "Create Savings Product",
       "Custom Charges": "Custom Charges",
       "A": "A",
       "Ability to manage holidays for individual offices": "The ability to manage holidays for individual offices is a very useful tool for an organization spanning multiple locations.Use this option to customize holidays for each office of your organization.",
@@ -3493,6 +3504,8 @@
   },
   "not_found_subtitle": "Oops.. Looks like this page doesn't exist.",
   "tooltips": {
+    "Sets the EMT levy amount": "Sets the EMT levy amount that will be charged",
+    "Sets the EMT levy threshold": "Sets the EMT levy threshold that will be applied (Amount after which levy is applicable)",
     "Click to view details": "Click to view details",
     "A borrower loan counter (cycle)": "A borrower loan counter (cycle) is used for tracking how many time the client has taken this particular product.",
     "A loan is in arrears once the number of days": "A loan is in arrears once the number of days entered into this field is exceeded. If this field is blank, the loan will be in arrears the day after a scheduled payment is missed.",
