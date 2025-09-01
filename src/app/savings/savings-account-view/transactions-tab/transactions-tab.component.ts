@@ -144,7 +144,8 @@ export class TransactionsTabComponent implements OnInit {
       transactionType.feeDeduction === true ||
       transactionType.overdraftInterest === true ||
       transactionType.withholdTax === true ||
-      transactionType.vat === true
+      transactionType.vat === true ||
+      transactionType.emtLevy === true
     );
   }
 
