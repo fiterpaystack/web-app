@@ -1199,6 +1199,7 @@
       "Transaction Limit Mapping": "Transaction Limit Mapping"
     },
     "inputs": {
+      "Flat Amount": "Flat Amount",
       "GL Account": "GL Account",
       "Journal Entry": "Journal Entry",
       "Fee Split Audit History": "Fee Split Audit History",
