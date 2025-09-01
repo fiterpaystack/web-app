@@ -45,6 +45,7 @@ export interface SavingsAccountTransactionType {
   amountRelease: boolean;
   accrual: boolean;
   vat: boolean;
+  emtLevy: boolean;
 }
 
 export interface Transfer {

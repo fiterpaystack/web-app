@@ -11,21 +11,30 @@ import {
   UntypedFormBuilder,
   UntypedFormControl,
   Validators,
-  ReactiveFormsModule
+  ReactiveFormsModule,
+  ValidationErrors
 } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
+
+/** rxjs Imports */
+import { forkJoin } from 'rxjs';
 
 /** Custom Services */
 import { ProductsService } from '../../products.service';
 import { SettingsService } from 'app/settings/settings.service';
+import { OrganizationService } from 'app/organization/organization.service';
 import { Dates } from 'app/core/utils/dates';
 import { minNumberValueValidator } from 'app/shared/validators/min-number-value.validator';
 import { maxNumberValueValidator } from 'app/shared/validators/max-number-value.validator';
 import { MatDivider } from '@angular/material/divider';
 import { MatCheckbox } from '@angular/material/checkbox';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ValidateOnFocusDirective } from '../../../directives/validate-on-focus.directive';
 import { GlAccountSelectorComponent } from '../../../shared/accounting/gl-account-selector/gl-account-selector.component';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+
+/** Custom Models */
+import { FeeSplitRequest } from '../models/fee-split.model';
 
 /**
  * Create charge component.
@@ -38,6 +47,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     ...STANDALONE_SHARED_IMPORTS,
     MatDivider,
     MatCheckbox,
+    MatProgressSpinner,
     ValidateOnFocusDirective,
     GlAccountSelectorComponent,
     MatTableModule,
@@ -64,6 +74,14 @@ export class CreateChargeComponent implements OnInit {
   repeatEveryLabel: string;
   /** Currency decimal places */
   currencyDecimalPlaces: number;
+  /** Available funds for stakeholder selection */
+  availableFunds: any[] = [];
+  /** Available GL accounts for fee split */
+  glAccounts: any[] = [];
+  /** Track if funds have been loaded */
+  private fundsLoaded = false;
+  /** Loading state for charge creation */
+  loading = false;
 
   showChart: boolean = false;
   dataSource = new MatTableDataSource<UntypedFormGroup>();
@@ -83,7 +101,8 @@ export class CreateChargeComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private dateUtils: Dates,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private organizationService: OrganizationService
   ) {
     this.route.data.subscribe((data: { chargesTemplate: any }) => {
       this.chargesTemplateData = data.chargesTemplate;
@@ -95,6 +114,9 @@ export class CreateChargeComponent implements OnInit {
       } else {
         this.incomeAndLiabilityAccountData = data.chargesTemplate.incomeOrLiabilityAccountOptions.incomeAccountOptions;
       }
+
+      // Setup fee split data loading after template data is available
+      this.setupFeeSplitDataLoading();
     });
   }
 
@@ -106,6 +128,9 @@ export class CreateChargeComponent implements OnInit {
     this.dataSource.data = this.chartSlabs.controls as FormGroup[];
     this.setChargeForm();
     this.setConditionalControls();
+    // in case the route data was already loaded before ngOnInit
+    this.setupFeeSplitDataLoading();
+
     this.chargeForm.get('enableSlabs')?.valueChanges.subscribe((checked: boolean) => {
       const amountControl = this.chargeForm.get('amount');
       if (checked) {
@@ -126,49 +151,55 @@ export class CreateChargeComponent implements OnInit {
    * Creates the charge form.
    */
   createChargeForm() {
-    this.chargeForm = this.formBuilder.group({
-      chargeAppliesTo: [
-        '',
-        Validators.required
-      ],
-      name: [
-        '',
-        Validators.required
-      ],
-      currencyCode: [
-        '',
-        Validators.required
-      ],
-      chargeTimeType: [
-        '',
-        Validators.required
-      ],
-      chargeCalculationType: [
-        '',
-        Validators.required
-      ],
-      amount: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern('^\\s*(?=.*[1-9])\\d*(?:\\.\\d+)?\\s*$')]
-      ],
-      active: [false],
-      penalty: [false],
-      taxGroupId: [null],
-      minCap: [
-        null,
-        [maxNumberValueValidator('maxCap')]
-      ],
-      maxCap: [
-        null,
-        [minNumberValueValidator('minCap')]
-      ],
-      /** New chart group */
+    this.chargeForm = this.formBuilder.group(
+      {
+        chargeAppliesTo: [
+          '',
+          Validators.required
+        ],
+        name: [
+          '',
+          Validators.required
+        ],
+        currencyCode: [
+          '',
+          Validators.required
+        ],
+        chargeTimeType: [
+          '',
+          Validators.required
+        ],
+        chargeCalculationType: [
+          '',
+          Validators.required
+        ],
+        amount: [
+          '',
+          [
+            Validators.required,
+            Validators.pattern('^\\s*(?=.*[1-9])\\d*(?:\\.\\d+)?\\s*$')]
+        ],
+        active: [false],
+        penalty: [false],
+        taxGroupId: [null],
+        minCap: [
+          null,
+          [maxNumberValueValidator('maxCap')]
+        ],
+        maxCap: [
+          null,
+          [minNumberValueValidator('minCap')]
+        ],
+        /** New chart group */
 
-      enableSlabs: [false],
-      chartSlabs: this.formBuilder.array([]) // <-- IMPORTANT
-    });
+        enableSlabs: [false],
+        chartSlabs: this.formBuilder.array([]), // <-- IMPORTANT
+
+        enableFeeSplit: [false],
+        stakeholderSplits: this.formBuilder.array([])
+      },
+      { validators: this.validateFeeSplitTotals }
+    );
   }
 
   displayedColumns: string[] = [
@@ -415,13 +446,20 @@ export class CreateChargeComponent implements OnInit {
    * if successful redirects to charges.
    */
   submit() {
+    if (this.loading) {
+      return; // Prevent multiple submissions
+    }
+
+    this.loading = true;
     const chargeFormData = this.chargeForm.value;
     const locale = this.settingsService.language.code;
     const prevFeeOnMonthDay: Date = this.chargeForm.value.feeOnMonthDay;
     const monthDayFormat = 'dd MMM';
+
     if (chargeFormData.feeOnMonthDay instanceof Date) {
       chargeFormData.feeOnMonthDay = this.dateUtils.formatDate(prevFeeOnMonthDay, monthDayFormat);
     }
+
     const data = {
       ...chargeFormData,
       monthDayFormat,
@@ -430,6 +468,8 @@ export class CreateChargeComponent implements OnInit {
         chartSlabs: chargeFormData.chartSlabs || []
       }
     };
+
+    // Clean up form data
     delete data.addFeeFrequency;
     if (!data.taxGroupId) {
       delete data.taxGroupId;
@@ -441,8 +481,192 @@ export class CreateChargeComponent implements OnInit {
       delete data.maxCap;
     }
     delete (data as any).chartSlabs;
-    this.productsService.createCharge(data).subscribe((response: any) => {
-      this.router.navigate(['../'], { relativeTo: this.route });
+
+    // Extract fee split data before removing it from charge payload
+    const stakeholderSplits = data.stakeholderSplits;
+    const enableFeeSplit = data.enableFeeSplit;
+
+    if (!enableFeeSplit) {
+      delete data.enableFeeSplit;
+      delete data.stakeholderSplits;
+    } else {
+      delete data.stakeholderSplits; // Remove from charge payload
+    }
+
+    // Create charge first
+    this.productsService.createCharge(data).subscribe({
+      next: (response: any) => {
+        const chargeId = response.resourceId;
+
+        // Create fee splits if enabled and splits are provided
+        if (enableFeeSplit && stakeholderSplits && stakeholderSplits.length > 0) {
+          this.createFeeSplits(chargeId, stakeholderSplits);
+        } else {
+          this.loading = false;
+          this.router.navigate(['../'], { relativeTo: this.route });
+        }
+      },
+      error: (error) => {
+        console.error('Error creating charge:', error);
+        this.loading = false;
+        // TODO: Show error notification to user
+      }
+    });
+  }
+
+  /**
+   * Create fee splits for the newly created charge
+   */
+  private createFeeSplits(chargeId: number, splits: any[]) {
+    const splitPromises = splits.map((split) => {
+      const splitData: FeeSplitRequest = {
+        fundId: split.fundId,
+        splitType: split.splitType,
+        splitValue: split.splitValue,
+        glAccountId: split.glAccountId,
+        active: true
+      };
+      return this.productsService.createChargeStakeholderSplit(chargeId, splitData);
+    });
+
+    forkJoin(splitPromises).subscribe({
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['../'], { relativeTo: this.route });
+        // TODO: Show success notification
+      },
+      error: (error) => {
+        console.error('Error creating fee splits:', error);
+        this.loading = false;
+        // TODO: Show error notification and potentially rollback charge creation
+        // For now, navigate back but charge exists without splits
+        this.router.navigate(['../'], { relativeTo: this.route });
+      }
+    });
+  }
+
+  /**
+   * Getter for stakeholder splits form array
+   */
+  get stakeholderSplits(): UntypedFormArray {
+    return this.chargeForm.get('stakeholderSplits') as UntypedFormArray;
+  }
+
+  /**
+   * Add a new stakeholder split
+   */
+  addStakeholderSplit(): void {
+    const splitForm = this.formBuilder.group({
+      fundId: [
+        '',
+        Validators.required
+      ],
+      splitType: [
+        'PERCENTAGE',
+        Validators.required
+      ],
+      splitValue: [
+        '',
+        [
+          Validators.required,
+          Validators.min(0)]
+      ],
+      glAccountId: [
+        '',
+        Validators.required
+      ]
+    });
+    this.stakeholderSplits.push(splitForm);
+  }
+
+  /**
+   * Remove a stakeholder split
+   */
+  removeStakeholderSplit(index: number): void {
+    this.stakeholderSplits.removeAt(index);
+  }
+
+  /**
+   * Validator for fee split totals
+   */
+  validateFeeSplitTotals(group: UntypedFormGroup): ValidationErrors | null {
+    const enableFeeSplit = group.get('enableFeeSplit')?.value;
+    if (!enableFeeSplit) {
+      return null;
+    }
+
+    const stakeholderSplits = group.get('stakeholderSplits') as UntypedFormArray;
+    let totalPercentage = 0;
+
+    for (let i = 0; i < stakeholderSplits.length; i++) {
+      const split = stakeholderSplits.at(i);
+      const splitType = split.get('splitType')?.value;
+      const splitValue = parseFloat(split.get('splitValue')?.value || '0');
+
+      if (splitType === 'PERCENTAGE') {
+        totalPercentage += splitValue;
+      }
+    }
+
+    if (totalPercentage > 100) {
+      return { totalPercentageExceeded: true };
+    }
+
+    return null;
+  }
+
+  /**
+   * Setup fee split data loading with lazy loading approach
+   */
+  setupFeeSplitDataLoading(): void {
+    // Use existing GL accounts from template data
+    if (this.chargesTemplateData?.incomeOrLiabilityAccountOptions) {
+      const incomeAccounts = this.chargesTemplateData.incomeOrLiabilityAccountOptions.incomeAccountOptions || [];
+      const liabilityAccounts = this.chargesTemplateData.incomeOrLiabilityAccountOptions.liabilityAccountOptions || [];
+
+      this.glAccounts = [
+        ...incomeAccounts,
+        ...liabilityAccounts
+      ];
+    } else {
+      this.glAccounts = [];
+    }
+
+    // Check if form is available before setting up subscriptions
+    if (!this.chargeForm) {
+      return;
+    }
+
+    // Check initial state and load funds if fee split is already enabled
+    const initialFeeSplitState = this.chargeForm.get('enableFeeSplit')?.value;
+
+    if (initialFeeSplitState && !this.fundsLoaded) {
+      this.loadFunds();
+    }
+
+    // Load funds when fee split is enabled (handles both initial state and changes)
+    this.chargeForm.get('enableFeeSplit')?.valueChanges.subscribe((enabled) => {
+      if (enabled && !this.fundsLoaded) {
+        this.loadFunds();
+      }
+    });
+  }
+
+  /**
+   * Load funds data when needed
+   */
+  private loadFunds(): void {
+    this.organizationService.getFunds().subscribe({
+      next: (funds) => {
+        this.availableFunds = funds;
+        this.fundsLoaded = true;
+      },
+      error: (error) => {
+        console.error('Error loading funds:', error);
+        this.availableFunds = [];
+        this.fundsLoaded = false;
+        // You could add user notification here
+      }
     });
   }
 }

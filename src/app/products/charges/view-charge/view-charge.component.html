@@ -136,7 +136,237 @@
         <div class="flex-50" *ngIf="chargeData.taxGroup">
           {{ chargeData.taxGroup.name }}
         </div>
+
+        <!-- Fee Split Configuration Section -->
+        <div class="flex-50 mat-body-strong" *ngIf="chargeData.enableFeeSplit">
+          {{ 'labels.inputs.Fee Split Configuration' | translate }}
+        </div>
+
+        <div class="flex-50" *ngIf="chargeData.enableFeeSplit">
+          <div *ngIf="loadingSplits" class="loading-spinner">
+            <mat-spinner diameter="20"></mat-spinner>
+            {{ 'labels.loading.Fee Splits' | translate }}
+          </div>
+          <div *ngIf="!loadingSplits && feeSplits.length > 0" class="fee-splits-summary">
+            <div class="fee-split-summary-item">
+              <strong>{{ 'labels.inputs.Total Splits' | translate }}:</strong> {{ feeSplits.length }}
+            </div>
+            <div class="fee-split-summary-item" *ngIf="getTotalPercentage() > 0">
+              <strong>{{ 'labels.inputs.Total Percentage' | translate }}:</strong> {{ getTotalPercentage() }}%
+            </div>
+            <div class="fee-split-summary-item" *ngIf="getTotalFlatAmount() > 0">
+              <strong>{{ 'labels.inputs.Total Flat Amount' | translate }}:</strong>
+              {{ getTotalFlatAmount() | currency }}
+            </div>
+          </div>
+          <div *ngIf="!loadingSplits && feeSplits.length === 0" class="no-splits">
+            {{ 'labels.messages.No Fee Splits Configured' | translate }}
+          </div>
+        </div>
       </div>
+
+      <!-- Fee Split Details Table -->
+      <div *ngIf="chargeData.enableFeeSplit && feeSplits.length > 0" class="fee-splits-details m-t-20">
+        <h3>{{ 'labels.inputs.Fee Split Details' | translate }}</h3>
+        <div class="mat-elevation-z8">
+          <table mat-table [dataSource]="feeSplits" class="fee-splits-table">
+            <ng-container matColumnDef="stakeholder">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Stakeholder' | translate }}</th>
+              <td mat-cell *matCellDef="let split">{{ split.fund?.name || 'Fund ' + split.fund?.id }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="splitType">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Split Type' | translate }}</th>
+              <td mat-cell *matCellDef="let split">
+                {{
+                  split.splitType === 'PERCENTAGE'
+                    ? ('labels.inputs.Percentage' | translate)
+                    : ('labels.inputs.Flat Amount' | translate)
+                }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="splitValue">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Split Value' | translate }}</th>
+              <td mat-cell *matCellDef="let split">
+                {{ split.splitValue }}{{ split.splitType === 'PERCENTAGE' ? '%' : '' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="glAccount">
+              <th mat-header-cell *matHeaderCellDef>{{ 'GL Account Name or Code Name or Code' | translate }}</th>
+              <td mat-cell *matCellDef="let split">
+                {{ split.glAccount?.name || 'Account ' + split.glAccount?.id }}
+                <span *ngIf="split.glAccount?.glCode" class="gl-code">({{ split.glAccount.glCode }})</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="active">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.status.Active' | translate }}</th>
+              <td mat-cell *matCellDef="let split">
+                {{ split.active === true | yesNo }}
+              </td>
+            </ng-container>
+
+            <tr
+              mat-header-row
+              *matHeaderRowDef="['stakeholder', 'splitType', 'splitValue', 'glAccount', 'active']"
+            ></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: ['stakeholder', 'splitType', 'splitValue', 'glAccount', 'active']"
+            ></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Fee Split Audit History -->
+      <div *ngIf="chargeData.enableFeeSplit && feeSplitAudits.length > 0" class="fee-split-audits m-t-20">
+        <h3>{{ 'labels.inputs.Fee Split Audit History' | translate }}</h3>
+        <div class="mat-elevation-z8">
+          <table mat-table [dataSource]="getFlattenedSplitDetails()" class="fee-split-audits-table">
+            <ng-container matColumnDef="transactionId">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Transaction ID' | translate }}</th>
+              <td mat-cell *matCellDef="let detail">{{ detail.transactionId }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Date' | translate }}</th>
+              <td mat-cell *matCellDef="let detail">{{ detail.splitDate | date: 'medium' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="percentage">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Percentage' | translate }}</th>
+              <td mat-cell *matCellDef="let detail">{{ detail.splitPercentage }}%</td>
+            </ng-container>
+
+            <ng-container matColumnDef="feeAmount">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Fee Amount' | translate }}</th>
+              <td mat-cell *matCellDef="let detail">{{ detail.totalFeeAmount | currency }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="splitAmount">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Split Amount' | translate }}</th>
+              <td mat-cell *matCellDef="let detail">{{ detail.splitAmount | currency }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="glAccount">
+              <th mat-header-cell *matHeaderCellDef>{{ 'GL Account Name or Code' | translate }}</th>
+              <td mat-cell *matCellDef="let detail">{{ detail.glAccountName }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="stakeholder">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Stakeholder' | translate }}</th>
+              <td mat-cell *matCellDef="let detail">{{ detail.fundName }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="journalEntry">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Journal Entry' | translate }}</th>
+              <td mat-cell *matCellDef="let detail">{{ detail.journalEntryId }}</td>
+            </ng-container>
+
+            <tr
+              mat-header-row
+              *matHeaderRowDef="[
+                'transactionId',
+                'date',
+                'percentage',
+                'feeAmount',
+                'splitAmount',
+                'glAccount',
+                'stakeholder',
+                'journalEntry'
+              ]"
+            ></tr>
+            <tr
+              mat-row
+              *matRowDef="
+                let row;
+                columns: [
+                  'transactionId',
+                  'date',
+                  'percentage',
+                  'feeAmount',
+                  'splitAmount',
+                  'glAccount',
+                  'stakeholder',
+                  'journalEntry'
+                ]
+              "
+            ></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Split Details Dialog -->
+      <ng-template #splitDetailsDialog>
+        <div class="split-details-dialog">
+          <h2 mat-dialog-title>
+            {{ 'labels.inputs.Split Details for Transaction' | translate }} {{ selectedAudit?.transactionId }}
+          </h2>
+          <mat-dialog-content>
+            <div class="split-details-summary">
+              <p>
+                <strong>{{ 'labels.inputs.Total Fee Amount' | translate }}:</strong>
+                {{ selectedAudit?.totalFeeAmount | currency }}
+              </p>
+              <p>
+                <strong>{{ 'labels.inputs.Split Date' | translate }}:</strong>
+                {{ selectedAudit?.splitDate | date: 'fullDate' }}
+              </p>
+              <p>
+                <strong>{{ 'labels.inputs.Total Splits' | translate }}:</strong>
+                {{ selectedAudit?.splitDetails?.length || 0 }}
+              </p>
+            </div>
+
+            <div class="split-details-table m-t-20">
+              <h4>{{ 'labels.inputs.Individual Splits' | translate }}</h4>
+              <table mat-table [dataSource]="selectedAudit?.splitDetails || []" class="split-details-table">
+                <ng-container matColumnDef="fundName">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Fund' | translate }}</th>
+                  <td mat-cell *matCellDef="let detail">{{ detail.fundName }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="splitAmount">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Split Amount' | translate }}</th>
+                  <td mat-cell *matCellDef="let detail">{{ detail.splitAmount | currency }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="splitPercentage">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Percentage' | translate }}</th>
+                  <td mat-cell *matCellDef="let detail">{{ detail.splitPercentage }}%</td>
+                </ng-container>
+
+                <ng-container matColumnDef="glAccountName">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'GL Account Name or Code' | translate }}</th>
+                  <td mat-cell *matCellDef="let detail">{{ detail.glAccountName }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="journalEntryId">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Journal Entry' | translate }}</th>
+                  <td mat-cell *matCellDef="let detail">{{ detail.journalEntryId }}</td>
+                </ng-container>
+
+                <tr
+                  mat-header-row
+                  *matHeaderRowDef="['fundName', 'splitAmount', 'splitPercentage', 'glAccountName', 'journalEntryId']"
+                ></tr>
+                <tr
+                  mat-row
+                  *matRowDef="
+                    let row;
+                    columns: ['fundName', 'splitAmount', 'splitPercentage', 'glAccountName', 'journalEntryId']
+                  "
+                ></tr>
+              </table>
+            </div>
+          </mat-dialog-content>
+          <mat-dialog-actions align="end">
+            <button mat-button mat-dialog-close>{{ 'labels.buttons.Close' | translate }}</button>
+          </mat-dialog-actions>
+        </div>
+      </ng-template>
 
       <div class="layout-row layout-align-center gap-2percent column-on-mobile">
         <button type="button" mat-raised-button color="primary" [routerLink]="['../']">
