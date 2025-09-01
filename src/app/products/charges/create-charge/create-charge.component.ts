@@ -1,6 +1,12 @@
 /** Angular Imports */
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableDataSource } from '@angular/material/table';
 import {
+  UntypedFormArray,
   UntypedFormGroup,
   UntypedFormBuilder,
   UntypedFormControl,
@@ -33,7 +39,10 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     MatDivider,
     MatCheckbox,
     ValidateOnFocusDirective,
-    GlAccountSelectorComponent
+    GlAccountSelectorComponent,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule
   ]
 })
 export class CreateChargeComponent implements OnInit {
@@ -55,6 +64,9 @@ export class CreateChargeComponent implements OnInit {
   repeatEveryLabel: string;
   /** Currency decimal places */
   currencyDecimalPlaces: number;
+
+  showChart: boolean = false;
+  dataSource = new MatTableDataSource<UntypedFormGroup>();
 
   /**
    * Retrieves the charges template data and income and liability account data from `resolve`.
@@ -91,8 +103,23 @@ export class CreateChargeComponent implements OnInit {
    */
   ngOnInit() {
     this.createChargeForm();
+    this.dataSource.data = this.chartSlabs.controls as FormGroup[];
     this.setChargeForm();
     this.setConditionalControls();
+    this.chargeForm.get('enableSlabs')?.valueChanges.subscribe((checked: boolean) => {
+      const amountControl = this.chargeForm.get('amount');
+      if (checked) {
+        // Checkbox selected → hide amount → clear validators
+        amountControl?.clearValidators();
+        amountControl?.updateValueAndValidity();
+      } else {
+        // Checkbox unselected → require amount again
+        amountControl?.setValidators([
+          Validators.required,
+          Validators.pattern('^\\s*(?=.*[1-9])\\d*(?:\\.\\d+)?\\s*$')]);
+        amountControl?.updateValueAndValidity();
+      }
+    });
   }
 
   /**
@@ -136,8 +163,87 @@ export class CreateChargeComponent implements OnInit {
       maxCap: [
         null,
         [minNumberValueValidator('minCap')]
+      ],
+      /** New chart group */
+
+      enableSlabs: [false],
+      chartSlabs: this.formBuilder.array([]) // <-- IMPORTANT
+    });
+  }
+
+  displayedColumns: string[] = [
+    'fromAmount',
+    'toAmount',
+    'value',
+    'actions'
+  ];
+
+  get chartSlabControls() {
+    return this.chartSlabs.controls;
+  }
+
+  /** Getter for chartSlabs form array */
+  get chartSlabs(): FormArray {
+    return this.chargeForm.get('chartSlabs') as FormArray;
+  }
+
+  /** Create one chart slab group */
+  createChartSlab(newFormAmount: string): UntypedFormGroup {
+    return this.formBuilder.group({
+      fromAmount: [
+        newFormAmount,
+        [
+          Validators.required,
+          Validators.pattern(/^\d+(\.\d+)?$/)]
+      ],
+      toAmount: [],
+      value: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^\d+(\.\d+)?$/)]
       ]
     });
+  }
+
+  /** Toggle chart slabs visibility */
+  toggleChart(checked: boolean) {
+    this.showChart = checked;
+    if (checked && this.chartSlabs.length === 0) {
+      this.addSlab(); // initialize with one row
+    }
+    if (!checked) {
+      this.chartSlabs.clear();
+    }
+  }
+
+  /** convenience getter for chartSlabs */
+
+  /** add new slab row */
+  addSlab() {
+    const slabsArray = this.chargeForm.get('chartSlabs') as UntypedFormArray;
+
+    let fromAmount = '';
+    if (slabsArray.length > 0) {
+      const lastSlab = slabsArray.at(slabsArray.length - 1) as UntypedFormGroup;
+      const lastToAmount = lastSlab.get('toAmount')?.value;
+
+      if (lastToAmount && !isNaN(lastToAmount)) {
+        fromAmount = (parseInt(lastToAmount, 10) + 1).toString();
+      }
+    }
+    this.chartSlabs.push(this.createChartSlab(fromAmount));
+    this.dataSource.data = this.chartSlabs.controls as FormGroup[];
+  }
+
+  /** remove slab by index */
+  removeSlab(index: number) {
+    this.chartSlabs.removeAt(index);
+    this.dataSource.data = this.chartSlabs.controls as FormGroup[];
+  }
+
+  get isChartSelected(): boolean {
+    return this.chargeForm.get('enableSlabs')?.value === true;
   }
 
   /**
@@ -319,7 +425,10 @@ export class CreateChargeComponent implements OnInit {
     const data = {
       ...chargeFormData,
       monthDayFormat,
-      locale
+      locale,
+      chart: {
+        chartSlabs: chargeFormData.chartSlabs || []
+      }
     };
     delete data.addFeeFrequency;
     if (!data.taxGroupId) {
@@ -331,6 +440,7 @@ export class CreateChargeComponent implements OnInit {
     if (!data.maxCap) {
       delete data.maxCap;
     }
+    delete (data as any).chartSlabs;
     this.productsService.createCharge(data).subscribe((response: any) => {
       this.router.navigate(['../'], { relativeTo: this.route });
     });

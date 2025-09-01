@@ -1,7 +1,18 @@
 /** Angular Imports */
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
+import {
+  UntypedFormGroup,
+  UntypedFormBuilder,
+  Validators,
+  ReactiveFormsModule,
+  UntypedFormArray
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableDataSource } from '@angular/material/table';
 
 /** Custom Services */
 import { ProductsService } from 'app/products/products.service';
@@ -24,7 +35,10 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     ...STANDALONE_SHARED_IMPORTS,
     ValidateOnFocusDirective,
     GlAccountSelectorComponent,
-    MatCheckbox
+    MatCheckbox,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule
   ]
 })
 export class EditChargeComponent implements OnInit {
@@ -54,6 +68,8 @@ export class EditChargeComponent implements OnInit {
   chargePaymentMode = false;
   /** Show Fee Options. */
   showFeeOptions = false;
+  showChart: boolean = false;
+  dataSource = new MatTableDataSource<UntypedFormGroup>();
 
   /**
    * Retrieves the charge data from `resolve`.
@@ -77,6 +93,7 @@ export class EditChargeComponent implements OnInit {
 
   ngOnInit() {
     this.editChargeForm();
+    this.dataSource.data = this.chartSlabs.controls as FormGroup[];
   }
 
   /**
@@ -119,8 +136,19 @@ export class EditChargeComponent implements OnInit {
       chargeCalculationType: [
         this.chargeData.chargeCalculationType.id,
         Validators.required
-      ]
+      ],
+      enableSlabs: [this.chargeData.chargeSlabs?.length > 0],
+      chartSlabs: this.formBuilder.array([])
     });
+
+    /** Pre-populate slabs if present */
+    if (this.chargeData.chargeSlabs?.length) {
+      this.chargeData.chargeSlabs.forEach((slab: any) => this.addSlab(slab));
+      this.chargeForm.get('amount')?.clearValidators();
+      this.chargeForm.get('amount')?.updateValueAndValidity();
+      this.dataSource.data = this.chartSlabs.controls as FormGroup[];
+    }
+
     switch (this.chargeData.chargeAppliesTo.value) {
       case 'Loan': {
         this.chargeTimeTypeOptions = this.chargeData.loanChargeTimeTypeOptions;
@@ -174,8 +202,65 @@ export class EditChargeComponent implements OnInit {
     } else {
       this.chargeForm.addControl('taxGroupId', this.formBuilder.control({ value: '' }));
     }
+    /** Watch enableSlabs changes */
+    this.chargeForm.get('enableSlabs')?.valueChanges.subscribe((enabled) => {
+      if (enabled) {
+        this.chargeForm.get('amount')?.clearValidators();
+      } else {
+        this.chargeForm.get('amount')?.setValidators([
+          Validators.required,
+          Validators.pattern('^\\s*(?=.*[1-9])\\d*(?:\\.\\d+)?\\s*$')]);
+      }
+      this.chargeForm.get('amount')?.updateValueAndValidity();
+    });
   }
 
+  displayedColumns: string[] = [
+    'fromAmount',
+    'toAmount',
+    'value',
+    'actions'
+  ];
+  get isChartSelected(): boolean {
+    return this.chargeForm.get('enableSlabs')?.value === true;
+  }
+  get chartSlabs(): UntypedFormArray {
+    return this.chargeForm.get('chartSlabs') as UntypedFormArray;
+  }
+
+  /** Add a new slab row */
+  addSlab(slab?: any): void {
+    const slabsArray = this.chargeForm.get('chartSlabs') as UntypedFormArray;
+    let newFromAmount = '';
+    if (slabsArray.length > 0) {
+      const lastSlab = slabsArray.at(slabsArray.length - 1) as UntypedFormGroup;
+      const lastToAmount = lastSlab.get('toAmount')?.value;
+
+      if (lastToAmount && !isNaN(lastToAmount)) {
+        newFromAmount = (parseInt(lastToAmount, 10) + 1).toString();
+      }
+    }
+    this.chartSlabs.push(
+      this.formBuilder.group({
+        fromAmount: [
+          slab?.fromAmount || newFromAmount,
+          Validators.required
+        ],
+        toAmount: [slab?.toAmount || ''],
+        value: [
+          slab?.value || '',
+          Validators.required
+        ]
+      })
+    );
+    this.dataSource.data = this.chartSlabs.controls as FormGroup[];
+  }
+
+  /** Remove a slab row */
+  removeSlab(index: number): void {
+    this.chartSlabs.removeAt(index);
+    this.dataSource.data = this.chartSlabs.controls as FormGroup[];
+  }
   /**
    * Get Add Fee Frequency value.
    */
@@ -204,6 +289,12 @@ export class EditChargeComponent implements OnInit {
     }
     if (!charges.maxCap) {
       delete charges.maxCap;
+    }
+    if (charges.enableSlabs) {
+      charges.chart = { chartSlabs: charges.chartSlabs };
+      delete charges.amount;
+    } else {
+      delete charges.chart;
     }
     this.productsService.updateCharge(this.chargeData.id.toString(), charges).subscribe((response: any) => {
       this.router.navigate(['../'], { relativeTo: this.route });
