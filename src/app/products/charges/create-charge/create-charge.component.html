@@ -254,7 +254,7 @@
         </div>
 
         <!-- ✅ Enable Slabs Checkbox (only for Withdrawal Fee = id 5) -->
-        <div class="flex-48" *ngIf="chargeForm.get('chargeTimeType').value == 5">
+        <div class="flex-48" *ngIf="chargeForm.get('chargeTimeType').value === 5">
           <mat-checkbox formControlName="enableSlabs">Enable Slabs</mat-checkbox>
         </div>
 
