@@ -503,7 +503,6 @@ export class EditChargeComponent implements OnInit {
   private setupFeeSplitDataLoading() {
     // Check if form is available before setting up subscriptions
     if (!this.chargeForm) {
-      console.warn('Form not available yet, skipping fee split setup');
       return;
     }
 

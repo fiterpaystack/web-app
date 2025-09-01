@@ -509,9 +509,6 @@ export class CreateChargeComponent implements OnInit {
    * Setup fee split data loading with lazy loading approach
    */
   setupFeeSplitDataLoading(): void {
-    console.log('Setting up fee split data loading...');
-    console.log('chargesTemplateData:', this.chargesTemplateData);
-
     // Use existing GL accounts from template data
     if (this.chargesTemplateData?.incomeOrLiabilityAccountOptions) {
       const incomeAccounts = this.chargesTemplateData.incomeOrLiabilityAccountOptions.incomeAccountOptions || [];
@@ -521,32 +518,25 @@ export class CreateChargeComponent implements OnInit {
         ...incomeAccounts,
         ...liabilityAccounts
       ];
-      console.log('GL accounts loaded:', this.glAccounts.length);
     } else {
-      console.warn('No GL accounts found in template data');
       this.glAccounts = [];
     }
 
     // Check if form is available before setting up subscriptions
     if (!this.chargeForm) {
-      console.warn('Form not available yet, skipping fee split setup');
       return;
     }
 
     // Check initial state and load funds if fee split is already enabled
     const initialFeeSplitState = this.chargeForm.get('enableFeeSplit')?.value;
-    console.log('Initial fee split state:', initialFeeSplitState);
 
     if (initialFeeSplitState && !this.fundsLoaded) {
-      console.log('Loading funds for initial state...');
       this.loadFunds();
     }
 
     // Load funds when fee split is enabled (handles both initial state and changes)
     this.chargeForm.get('enableFeeSplit')?.valueChanges.subscribe((enabled) => {
-      console.log('Fee split value changed to:', enabled);
       if (enabled && !this.fundsLoaded) {
-        console.log('Loading funds for value change...');
         this.loadFunds();
       }
     });
@@ -556,10 +546,8 @@ export class CreateChargeComponent implements OnInit {
    * Load funds data when needed
    */
   private loadFunds(): void {
-    console.log('Loading funds...');
     this.organizationService.getFunds().subscribe({
       next: (funds) => {
-        console.log('Funds loaded successfully:', funds);
         this.availableFunds = funds;
         this.fundsLoaded = true;
       },
