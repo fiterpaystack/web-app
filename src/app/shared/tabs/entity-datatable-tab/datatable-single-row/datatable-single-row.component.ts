@@ -100,7 +100,10 @@ export class DatatableSingleRowComponent implements OnInit {
           .addEntityDatatableEntry(this.entityId, this.datatableName, dataTableEntryObject)
           .subscribe(() => {
             this.systemService.getEntityDatatable(this.entityId, this.datatableName).subscribe((dataObject: any) => {
-              this.dataObject = dataObject;
+              this.dataObject = {
+                ...dataObject,
+                columnHeaders: dataObject.columnHeaders.filter((col: any) => col.visible !== false)
+              };
             });
           });
       }
@@ -129,6 +132,11 @@ export class DatatableSingleRowComponent implements OnInit {
         formfield.value = this.dataObject.data[0].row[columns[index].idx]
           ? this.dateUtils.parseDatetime(this.dataObject.data[0].row[columns[index].idx])
           : '';
+      } else if (formfield.controlType === 'select') {
+        const value = columns[index].columnValues.find((v: any) => {
+          return v.value === this.dataObject.data[0].row[columns[index].idx];
+        });
+        formfield.value = value ? value.id : '';
       } else {
         formfield.value = this.dataObject.data[0].row[columns[index].idx]
           ? this.dataObject.data[0].row[columns[index].idx]
@@ -155,7 +163,10 @@ export class DatatableSingleRowComponent implements OnInit {
           .editEntityDatatableEntry(this.entityId, this.datatableName, dataTableEntryObject)
           .subscribe(() => {
             this.systemService.getEntityDatatable(this.entityId, this.datatableName).subscribe((dataObject: any) => {
-              this.dataObject = dataObject;
+              this.dataObject = {
+                ...dataObject,
+                columnHeaders: dataObject.columnHeaders.filter((col: any) => col.visible !== false)
+              };
             });
           });
       }
