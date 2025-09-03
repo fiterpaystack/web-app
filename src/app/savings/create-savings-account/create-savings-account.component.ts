@@ -122,13 +122,27 @@ export class CreateSavingsAccountComponent {
     const monthDayFormat = 'dd MMMM';
     const savingsAccount = {
       ...this.savingsAccount,
-      charges: this.savingsAccount.charges.map((charge: any) => ({
-        chargeId: charge.id,
-        amount: charge.amount,
-        dueDate: charge.dueDate,
-        feeOnMonthDay: charge.feeOnMonthDay,
-        feeInterval: charge.feeInterval
-      })),
+      charges: this.savingsAccount.charges.map((charge: any) => {
+        let feeOnMonthDay = charge.feeOnMonthDay;
+        if (feeOnMonthDay && Array.isArray(feeOnMonthDay)) {
+          const [
+            month,
+            day
+          ] = feeOnMonthDay;
+          const tempDate = new Date(2024, month - 1, day);
+          const monthName = this.dateUtils.formatDate(tempDate, 'MMMM');
+          const dayFormatted = day.toString().padStart(2, '0');
+          feeOnMonthDay = `${dayFormatted} ${monthName}`;
+        }
+
+        return {
+          chargeId: charge.id,
+          amount: charge.amount,
+          dueDate: charge.dueDate,
+          feeOnMonthDay: feeOnMonthDay,
+          feeInterval: charge.feeInterval
+        };
+      }),
       submittedOnDate: this.dateUtils.formatDate(this.savingsAccount.submittedOnDate, dateFormat),
       dateFormat,
       monthDayFormat,

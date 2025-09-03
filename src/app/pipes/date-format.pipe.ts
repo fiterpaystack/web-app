@@ -14,7 +14,16 @@ export class DateFormatPipe implements PipeTransform {
     let dateVal;
     moment.locale(this.settingsService.language.code);
     if (value instanceof Array) {
-      dateVal = moment(value.join('-'), 'YYYY-MM-DD');
+      if (value.length === 2 && typeof value[0] === 'number' && typeof value[1] === 'number') {
+        const currentYear = new Date().getFullYear();
+        dateVal = moment([
+          currentYear,
+          value[0] - 1,
+          value[1]
+        ]);
+      } else {
+        dateVal = moment(value.join('-'), 'YYYY-MM-DD');
+      }
     } else {
       dateVal = moment(value);
     }
