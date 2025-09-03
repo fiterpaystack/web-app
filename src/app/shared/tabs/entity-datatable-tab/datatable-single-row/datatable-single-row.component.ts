@@ -74,7 +74,9 @@ export class DatatableSingleRowComponent implements OnInit {
       locale: this.settingsService.language.code
     };
     const dateTransformColumns: string[] = [];
-    const columns = this.datatables.filterSystemColumns(this.dataObject.columnHeaders);
+    const columns = this.datatables
+      .filterSystemColumns(this.dataObject.columnHeaders)
+      .filter((col: any) => col.visible !== false);
     const formfields: FormfieldBase[] = this.datatables.getFormfields(
       columns,
       dateTransformColumns,
@@ -110,7 +112,9 @@ export class DatatableSingleRowComponent implements OnInit {
       locale: this.settingsService.language.code
     };
     const dateTransformColumns: string[] = [];
-    const columns = this.datatables.filterSystemColumns(this.dataObject.columnHeaders);
+    const columns = this.datatables
+      .filterSystemColumns(this.dataObject.columnHeaders)
+      .filter((col: any) => col.visible !== false);
     let formfields: FormfieldBase[] = this.datatables.getFormfields(
       columns,
       dateTransformColumns,

@@ -60,7 +60,7 @@ export class Datatables {
         case 'CODELOOKUP':
           return new SelectBase({
             controlName: column.columnName,
-            label: column.columnName,
+            label: column.columnCode,
             value: '',
             options: { label: 'value', value: 'id', data: column.columnValues },
             required: column.isColumnNullable ? false : true
