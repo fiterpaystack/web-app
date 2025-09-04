@@ -25,8 +25,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
   imports: [
     ...STANDALONE_SHARED_IMPORTS,
     NgClass,
-    MatDivider,
-    DatePipe
+    MatDivider
   ]
 })
 export class FooterComponent implements OnInit, OnDestroy {
