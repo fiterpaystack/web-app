@@ -1,5 +1,5 @@
 {
-  "APP_NAME": "Mifos X",
+  "APP_NAME": "Paystack",
   "Logged in as": "Logged in as",
   "Remember me": "Remember me",
   "placeholders": {
@@ -3213,7 +3213,7 @@
       "Manage your Services": "Manage your Services",
       "Manual journal entry transactions recorded in a journal": "Manual journal entry transactions recorded in a journal",
       "Message Gateway": "Message Gateway",
-      "Mifos Initiative": "Mifos Initiative",
+      "Mifos Initiative": "Paystack Team",
       "Mifos X data-tables allow the user to add custom fields": "Mifos X data-tables allow the user to add custom fields in addition to the built-in fields to a client profile, loan/saving account, group, center or an office.",
       "Migrate Opening Balances": "Migrate Opening Balances",
       "Modify Loans Account": "Modify Loans Account",
@@ -3473,7 +3473,7 @@
       "edit": "edit",
       "elimination of poverty": "that aims to speed the elimination of poverty by enabling Organizations to more effectively and efficiently deliver responsible financial services to the world’s poor and unbanked.Sounds interesting?",
       "global community": "global community",
-      "is designed by the": "is designed by the",
+      "is designed by the": "is powered by",
       "per annum": "per annum",
       "undefined": "undefined",
       "username": "username",

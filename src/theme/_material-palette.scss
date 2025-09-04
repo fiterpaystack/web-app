@@ -1,47 +1,59 @@
 /* ############ Light mode palettes ################ */
 
 $primary-palette: (
-  100: #5ba2ec,
-  500: #1074b9,
-  700: #004989,
+  100: #011b33,
+  // Stack Blue (lighter variant)
+  500: #011b33,
+  // Stack Blue (main primary)
+  700: #000,
+  // Black (darker variant)
   contrast: (
-    100: rgb(0 0 0 / 87%),
-    500: white,
-    700: white
-  )
+      100: white,
+      500: white,
+      700: white
+    )
 );
 
 $accent-palette: (
-  100: #e7ffa5,
-  500: #b4d575,
-  700: #83a447,
+  100: #00c3f7,
+  // Cerulean Blue (light accent)
+  500: #00c3f7,
+  // Cerulean Blue (main accent)
+  700: #447384,
+  // Dark blue (darker accent)
   contrast: (
-    100: rgb(0 0 0 / 87%),
-    500: rgb(0 0 0 / 87%),
-    700: rgb(0 0 0 / 87%)
-  )
+      100: rgb(0 0 0 / 87%),
+      500: white,
+      700: white
+    )
 );
 
 /* ############ Dark mode palettes ################ */
 
 $dark-primary-palette: (
-  100: #5ba2ec,
-  500: #1074b9,
-  700: #004989,
+  100: #011b33,
+  // Stack Blue
+  500: #011b33,
+  // Stack Blue (main)
+  700: #000,
+  // Black
   contrast: (
-    100: white,
-    500: rgb(255 255 255 / 87%),
-    700: rgb(255 255 255 / 87%)
-  )
+      100: white,
+      500: white,
+      700: white
+    )
 );
 
 $dark-accent-palette: (
-  100: #e7ffa5,
-  500: #b4d575,
-  700: #83a447,
+  100: #00c3f7,
+  // Cerulean Blue (light accent)
+  500: #00c3f7,
+  // Cerulean Blue (main accent)
+  700: #285066,
+  // Dark blue (darker accent)
   contrast: (
-    100: white,
-    500: white,
-    700: white
-  )
+      100: rgb(0 0 0 / 87%),
+      500: white,
+      700: white
+    )
 );

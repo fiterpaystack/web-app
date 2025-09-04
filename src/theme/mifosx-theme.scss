@@ -2,6 +2,7 @@
 
 // Custom material palette
 @use 'material-palette' as *;
+@use 'colors' as *;
 
 // Plus imports for other components in your app.
 @use '../app/groups/groups-view/groups-view.component-theme.scss' as *;

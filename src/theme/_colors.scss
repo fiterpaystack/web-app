@@ -1,0 +1,64 @@
+// Brand Colors
+$cerulean-blue: #00c3f7;
+$stack-blue: #011b33;
+
+// Neutral Colors
+$white: #fff;
+$stack-grey: #828282;
+$black: #000;
+
+// Blue Variants
+$blue-lightest: #f6fcff;
+$blue-lighter: #dcf6ff;
+$blue-light: #eef2f5;
+$blue-medium: #72859e;
+
+// Additional Colors
+$blue-dark-1: #447384;
+$blue-dark-2: #285066;
+$blue-dark-3: #495573;
+$blue-dark-4: #537896;
+
+// Utility Colors
+$green-light: #89cfa6;
+$green-dark: #177532;
+
+// CSS Custom Properties
+:root {
+  // Primary Colors (Stack Blue as primary)
+  --color-primary: #{$stack-blue};
+  --color-primary-light: #{$stack-blue};
+  --color-primary-dark: #{$black};
+
+  // Accent Colors (Cerulean Blue as accent)
+  --color-accent: #{$cerulean-blue};
+  --color-accent-light: #{$cerulean-blue};
+  --color-accent-dark: #{$blue-dark-1};
+
+  // Neutral Colors
+  --color-white: #{$white};
+  --color-grey: #{$stack-grey};
+  --color-black: #{$black};
+
+  // Blue Variants
+  --color-blue-lightest: #{$blue-lightest};
+  --color-blue-lighter: #{$blue-lighter};
+  --color-blue-light: #{$blue-light};
+  --color-blue-medium: #{$blue-medium};
+
+  // Dark Blues
+  --color-blue-dark-1: #{$blue-dark-1};
+  --color-blue-dark-2: #{$blue-dark-2};
+  --color-blue-dark-3: #{$blue-dark-3};
+  --color-blue-dark-4: #{$blue-dark-4};
+
+  // Utility Colors
+  --color-green-light: #{$green-light};
+  --color-green-dark: #{$green-dark};
+
+  // Semantic Colors
+  --color-text-primary: #{$stack-blue};
+  --color-text-secondary: #{$stack-grey};
+  --color-background: #{$white};
+  --color-border: #{$blue-light};
+}
