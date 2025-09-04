@@ -180,13 +180,36 @@ export class SavingsAccountChargesStepComponent implements OnInit, OnChanges {
    * @param {any} charge Charge
    */
   editChargeDate(charge: any) {
+    let dateValue: Date | string = '';
+    const currentYear = new Date().getFullYear();
+    const minDate = new Date(currentYear, 0, 1);
+    const maxDate = new Date(currentYear + 10, 11, 31);
+
+    if (charge.dueDate) {
+      dateValue = charge.dueDate;
+    } else if (charge.feeOnMonthDay && Array.isArray(charge.feeOnMonthDay)) {
+      const [
+        month,
+        day
+      ] = charge.feeOnMonthDay;
+      dateValue = new Date(currentYear, month - 1, day);
+
+      if (dateValue < minDate) {
+        dateValue = new Date(currentYear, month - 1, day);
+      }
+    } else if (charge.feeOnMonthDay && typeof charge.feeOnMonthDay === 'string') {
+      dateValue = '';
+    }
+
     const formfields: FormfieldBase[] = [
       new DatepickerBase({
         controlName: 'date',
         label: this.translateService.instant('labels.inputs.Date'),
-        value: charge.dueDate || charge.feeOnMonthDay || '',
+        value: dateValue,
         type: 'datetime-local',
-        required: false
+        required: false,
+        minDate: minDate,
+        maxDate: maxDate
       })
 
     ];
@@ -208,8 +231,13 @@ export class SavingsAccountChargesStepComponent implements OnInit, OnChanges {
             break;
           case 'Annual Fee':
           case 'Monthly Fee':
-            const dateMonthDay = this.dateUtils.formatDate(response.data.value.date, 'dd MMMM');
-            newCharge = { ...charge, feeOnMonthDay: dateMonthDay };
+            const selectedDate = new Date(response.data.value.date);
+            const month = selectedDate.getMonth() + 1;
+            const day = selectedDate.getDate();
+            newCharge = { ...charge, feeOnMonthDay: [
+                month,
+                day
+              ] };
             break;
         }
         this.chargesDataSource.splice(this.chargesDataSource.indexOf(charge), 1, newCharge);
