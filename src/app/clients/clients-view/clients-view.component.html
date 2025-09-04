@@ -123,17 +123,16 @@
                     <td>
                       <b>{{ 'labels.inputs.Client Type' | translate }}</b>
                     </td>
-                    <td>{{ clientViewData.clientType.name }}</td>
+                    <td>
+                      <mifosx-entity-name entityName="{{ clientViewData.legalForm.value }}"></mifosx-entity-name>
+                    </td>
                   </tr>
                   <tr>
                     <td>
                       <b>{{ 'labels.inputs.Mobile Number' | translate }}</b>
                     </td>
                     <td>
-                      <mifosx-external-identifier
-                        externalId="{{ clientViewData.mobileNo }}"
-                        completed="true"
-                      ></mifosx-external-identifier>
+                      <mifosx-entity-name entityName="{{ clientViewData.mobileNo }}"></mifosx-entity-name>
                     </td>
                   </tr>
                   <tr>
@@ -141,10 +140,17 @@
                       <b>{{ 'labels.inputs.Email' | translate }}</b>
                     </td>
                     <td>
-                      <mifosx-external-identifier
-                        externalId="{{ clientViewData.emailAddress }}"
-                        completed="true"
-                      ></mifosx-external-identifier>
+                      <mifosx-entity-name entityName="{{ clientViewData.emailAddress }}"></mifosx-entity-name>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <b>{{ 'labels.inputs.Client Classification' | translate }}</b>
+                    </td>
+                    <td>
+                      <mifosx-entity-name
+                        entityName="{{ clientViewData.clientClassification.name }}"
+                      ></mifosx-entity-name>
                     </td>
                   </tr>
                 </tbody>
