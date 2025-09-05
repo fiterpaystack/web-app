@@ -10,7 +10,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
@@ -38,6 +38,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { SettingsService } from 'app/settings/settings.service';
 
 /**
  * Material Module
@@ -95,6 +96,25 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
         showError: true,
         displayDefaultIndicatorType: false
       }
+    },
+    {
+      provide: MAT_DATE_FORMATS,
+      useFactory: (settingsService: SettingsService) => {
+        const userFormat = settingsService.dateFormat || 'dd MMMM yyyy';
+
+        return {
+          parse: {
+            dateInput: userFormat
+          },
+          display: {
+            dateInput: userFormat,
+            monthYearLabel: 'MMM yyyy',
+            dateA11yLabel: 'LL',
+            monthYearA11yLabel: 'MMMM yyyy'
+          }
+        };
+      },
+      deps: [SettingsService]
     }
   ]
 })
