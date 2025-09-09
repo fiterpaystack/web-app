@@ -91,6 +91,10 @@ import { SettingsService } from 'app/settings/settings.service';
       useValue: { appearance: 'fill' }
     },
     {
+      provide: MAT_DATE_LOCALE,
+      useValue: 'en-GB'
+    },
+    {
       provide: STEPPER_GLOBAL_OPTIONS,
       useValue: {
         showError: true,
