@@ -15,6 +15,7 @@ import {
   MatRowDef,
   MatRow
 } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ViewSavingsAccountingDetailsComponent } from '../../../../shared/accounting/view-savings-accounting-details/view-savings-accounting-details.component';
 import { FormatNumberPipe } from '../../../../pipes/format-number.pipe';
 import { YesnoPipe } from '../../../../pipes/yesno.pipe';
@@ -40,7 +41,8 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     MatRow,
     ViewSavingsAccountingDetailsComponent,
     FormatNumberPipe,
-    YesnoPipe
+    YesnoPipe,
+    MatTooltipModule
   ]
 })
 export class SavingProductGeneralTabComponent {
