@@ -36,3 +36,28 @@ mat-divider {
 ::ng-deep mat-form-field.error-warn.mat-form-field-invalid .mat-error {
   color: #0009 !important;
 }
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 12px 24px;
+  margin-top: 12px;
+}
+
+.detail-row {
+  display: contents;
+}
+
+.label {
+  font-weight: 600;
+  color: #444;
+}
+
+.value {
+  color: #000;
+  word-break: break-word;
+}
+
+.mat-divider.mat-divider-inset {
+  margin-left: 2px;
+}

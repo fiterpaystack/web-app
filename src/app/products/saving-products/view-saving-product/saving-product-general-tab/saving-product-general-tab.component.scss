@@ -23,9 +23,65 @@ h4 {
   font-weight: 500;
 }
 
-table {
-  width: 100%;
+.mat-elevation-z1 {
+  margin: 1em 0 1.5em;
+}
 
+span {
+  margin: 0.5em 0;
+}
+
+mat-divider {
+  margin: 0 0 0.5em;
+}
+
+.margin-t {
+  margin-top: 1em;
+}
+
+/* -----------------------------
+   Charges Table
+-------------------------------- */
+.charges-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  /* Ensure headers and rows align properly */
+  th,
+  td {
+    padding: 8px 12px;
+    vertical-align: middle;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Angular Material cells */
+  th.mat-header-cell,
+  td.mat-cell {
+    max-width: 220px; /* default max width */
+  }
+
+  /* Column-specific adjustments */
+  .col-name {
+    max-width: 240px;
+  }
+
+  .col-type {
+    max-width: 160px;
+  }
+
+  .col-amount {
+    max-width: 120px;
+    text-align: right;
+  }
+
+  .col-collected {
+    max-width: 180px;
+  }
+
+  /* Incentives row inside charges table */
   tr.incentives-row {
     height: 0;
 
@@ -46,20 +102,4 @@ table {
       }
     }
   }
-}
-
-.mat-elevation-z1 {
-  margin: 1em 0 1.5em;
-}
-
-span {
-  margin: 0.5em 0;
-}
-
-mat-divider {
-  margin: 0 0 0.5em;
-}
-
-.margin-t {
-  margin-top: 1em;
 }

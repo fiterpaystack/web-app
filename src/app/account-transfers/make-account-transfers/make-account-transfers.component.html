@@ -8,37 +8,37 @@
   <mat-card *ngIf="!isLoading">
     <mat-card-content>
       <div class="layout-row-wrap responsive-column">
-        <h3 class="mat-h3 flex-fill">{{ 'labels.heading.Transferring From Details' | translate }}</h3>
-
+        <h3 class="mat-h3">{{ 'labels.heading.Transferring From Details' | translate }}</h3>
         <mat-divider [inset]="true"></mat-divider>
 
-        <div class="flex-fill">
-          <span class="flex-40">{{ 'labels.inputs.Applicant' | translate }}</span>
-          <span class="flex-60">{{ accountTransferTemplateData.fromClient.displayName }}</span>
-        </div>
+        <div class="details-grid">
+          <div class="detail-row">
+            <span class="label">{{ 'labels.inputs.Applicant' | translate }}</span>
+            <span class="value">{{ accountTransferTemplateData.fromClient.displayName }}</span>
+          </div>
 
-        <div class="flex-fill">
-          <span class="flex-40">{{ 'labels.inputs.Office' | translate }}</span>
-          <span class="flex-60">{{ accountTransferTemplateData.fromOffice.name }}</span>
-        </div>
+          <div class="detail-row">
+            <span class="label">{{ 'labels.inputs.Office' | translate }}</span>
+            <span class="value">{{ accountTransferTemplateData.fromOffice.name }}</span>
+          </div>
 
-        <div class="flex-fill">
-          <span class="flex-40">{{ 'labels.inputs.From Account' | translate }}</span>
-          <span class="flex-60"
-            >{{ accountTransferTemplateData.fromAccount.productName }}&nbsp;-&nbsp;#{{
-              accountTransferTemplateData.fromAccount.accountNo
-            }}</span
-          >
-        </div>
+          <div class="detail-row">
+            <span class="label">{{ 'labels.inputs.From Account' | translate }}</span>
+            <span class="value">
+              {{ accountTransferTemplateData.fromAccount.productName }} - #
+              {{ accountTransferTemplateData.fromAccount.accountNo }}
+            </span>
+          </div>
 
-        <div class="flex-fill">
-          <span class="flex-40">{{ 'labels.inputs.From Account Type' | translate }}</span>
-          <span class="flex-60">{{ accountTransferTemplateData.fromAccountType.value }}</span>
-        </div>
+          <div class="detail-row">
+            <span class="label">{{ 'labels.inputs.From Account Type' | translate }}</span>
+            <span class="value">{{ accountTransferTemplateData.fromAccountType.value }}</span>
+          </div>
 
-        <div class="flex-fill">
-          <span class="flex-40">{{ 'labels.inputs.Currency' | translate }}</span>
-          <span class="flex-60">{{ accountTransferTemplateData.currency.name }}</span>
+          <div class="detail-row">
+            <span class="label">{{ 'labels.inputs.Currency' | translate }}</span>
+            <span class="value">{{ accountTransferTemplateData.currency.name }}</span>
+          </div>
         </div>
       </div>
 
@@ -78,9 +78,9 @@
           </button>
         </mat-card-actions>
       </div>
-
+      <br />
       <mat-divider [inset]="true"></mat-divider>
-
+      <br />
       <form *ngIf="!interbank" [formGroup]="makeAccountTransferForm">
         <div class="layout-row-wrap gap-2px responsive-column">
           <mat-form-field class="flex-98" (click)="transferDatePicker.open()">
