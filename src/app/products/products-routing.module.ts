@@ -433,7 +433,8 @@ const routes: Routes = [
                       data: { title: 'Edit Tax Component', breadcrumb: 'Edit', routeParamBreadcrumb: false },
                       component: EditTaxComponentComponent,
                       resolve: {
-                        taxComponent: TaxComponentResolver
+                        taxComponent: TaxComponentResolver,
+                        taxComponentTemplate: TaxComponentTemplateResolver
                       }
                     }
                   ]
