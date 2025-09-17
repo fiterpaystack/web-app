@@ -1,6 +1,12 @@
 /** Angular Imports */
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormGroup, UntypedFormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  UntypedFormGroup,
+  UntypedFormBuilder,
+  Validators,
+  ReactiveFormsModule,
+  UntypedFormControl
+} from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 
 /** Custom Services */
@@ -9,6 +15,7 @@ import { SettingsService } from 'app/settings/settings.service';
 import { Dates } from 'app/core/utils/dates';
 import { TranslateService } from '@ngx-translate/core';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { GlAccountSelectorComponent } from '../../../shared/accounting/gl-account-selector/gl-account-selector.component';
 
 /**
  * Edit tax component.
@@ -18,7 +25,8 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
   templateUrl: './edit-tax-component.component.html',
   styleUrls: ['./edit-tax-component.component.scss'],
   imports: [
-    ...STANDALONE_SHARED_IMPORTS
+    ...STANDALONE_SHARED_IMPORTS,
+    GlAccountSelectorComponent
   ]
 })
 export class EditTaxComponentComponent implements OnInit {
@@ -30,6 +38,12 @@ export class EditTaxComponentComponent implements OnInit {
   taxComponentForm: UntypedFormGroup;
   /** Tax Component data. */
   taxComponentData: any;
+  /** Tax Component template data. */
+  taxComponentTemplateData: any;
+  /** Credit Account Type data. */
+  creditAccountTypeData: any;
+  /** Credit Account data. */
+  creditAccountData: any[] = [];
 
   /**
    * Retrieves the offices data from `resolve`.
@@ -49,8 +63,9 @@ export class EditTaxComponentComponent implements OnInit {
     private settingsService: SettingsService,
     private translateService: TranslateService
   ) {
-    this.route.data.subscribe((data: { taxComponent: any }) => {
+    this.route.data.subscribe((data: { taxComponent: any; taxComponentTemplate?: any }) => {
       this.taxComponentData = data.taxComponent;
+      this.taxComponentTemplateData = data.taxComponentTemplate;
     });
   }
 
@@ -61,17 +76,20 @@ export class EditTaxComponentComponent implements OnInit {
     this.minDate = this.settingsService.minAllowedDate;
     this.maxDate = this.settingsService.maxAllowedDate;
     this.editTaxComponent();
+    this.setConditionalControls();
   }
 
   /**
    * Edit tax component form.
    */
   editTaxComponent() {
-    const creditAccountTypeValue = this.taxComponentData?.creditAccountType?.value
-      ? this.translateService.instant(`labels.inputs.accounting.${this.taxComponentData.creditAccountType.value}`)
-      : null;
+    this.creditAccountTypeData = this.taxComponentTemplateData?.glAccountTypeOptions || [];
 
-    const creditAccountName = this.taxComponentData?.creditAccount?.name ?? null;
+    const selectedCreditAccountTypeId = this.taxComponentData?.creditAccountType?.id ?? null;
+    // Preload GLs for the selected type
+    if (selectedCreditAccountTypeId) {
+      this.creditAccountData = this.getAccountsData(selectedCreditAccountTypeId);
+    }
 
     this.taxComponentForm = this.formBuilder.group({
       name: [
@@ -86,14 +104,54 @@ export class EditTaxComponentComponent implements OnInit {
           Validators.max(100)]
       ],
       startDate: [this.taxComponentData.startDate && new Date(this.taxComponentData.startDate)],
-      creditAccountType: [
-        {
-          value: creditAccountTypeValue,
-          disabled: true
-        }
-      ],
-      creditAccount: [{ value: creditAccountName, disabled: true }]
+      creditAccountType: [selectedCreditAccountTypeId]
+      // Added on demand in setConditionalControls if not present
     });
+
+    // Add credit account control with initial value if present
+    const initialCreditAccountId = this.taxComponentData?.creditAccount?.id ?? '';
+    this.taxComponentForm.addControl(
+      'creditAccountId',
+      new UntypedFormControl(initialCreditAccountId, Validators.required)
+    );
+  }
+
+  /**
+   * Sets reactive handlers for dependent fields
+   */
+  setConditionalControls() {
+    const creditCtrl = this.taxComponentForm.get('creditAccountType');
+    if (creditCtrl) {
+      creditCtrl.valueChanges.subscribe((creditAccountTypeId) => {
+        this.creditAccountData = this.getAccountsData(creditAccountTypeId);
+        if (!this.taxComponentForm.get('creditAccountId')) {
+          this.taxComponentForm.addControl('creditAccountId', new UntypedFormControl('', Validators.required));
+        } else {
+          this.taxComponentForm.get('creditAccountId').setValue('');
+        }
+      });
+    }
+  }
+
+  /**
+   * @param accountTypeId Account type ID of account type.
+   * @returns Accounts list for the type
+   */
+  getAccountsData(accountTypeId: number) {
+    switch (accountTypeId) {
+      case 1:
+        return this.taxComponentTemplateData?.glAccountOptions?.assetAccountOptions || [];
+      case 2:
+        return this.taxComponentTemplateData?.glAccountOptions?.liabilityAccountOptions || [];
+      case 3:
+        return this.taxComponentTemplateData?.glAccountOptions?.equityAccountOptions || [];
+      case 4:
+        return this.taxComponentTemplateData?.glAccountOptions?.incomeAccountOptions || [];
+      case 5:
+        return this.taxComponentTemplateData?.glAccountOptions?.expenseAccountOptions || [];
+      default:
+        return [];
+    }
   }
 
   /**
