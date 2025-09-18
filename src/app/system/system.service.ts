@@ -758,4 +758,25 @@ export class SystemService {
     const emptyData = {};
     return this.http.post(`/loans/catch-up`, emptyData);
   }
+
+  /**
+   * @param {number} offset Page offset.
+   * @param {number} limit Number of entries within the page.
+   * @returns {Observable<any>} Kafka Notifications.
+   */
+  getKafkaNotifications(offset: number, limit: number): Observable<any> {
+    let httpParams = new HttpParams()
+      .set('offset', offset.toString())
+      .set('limit', limit.toString())
+      .set('paged', 'true');
+    return this.http.get('/kafka/notifications', { params: httpParams });
+  }
+
+  /**
+   * Retries all failed Kafka notifications.
+   * @returns {Observable<any>} Response.
+   */
+  retryAllKafkaNotifications(): Observable<any> {
+    return this.http.post('/kafka/notifications/retry-all', {});
+  }
 }
