@@ -140,8 +140,14 @@ export class KafkaNotificationsComponent implements OnInit, AfterViewInit {
     const pageIndex: number = this.paginator ? this.paginator.pageIndex : 0;
     const pageSize: any = this.paginator ? this.paginator.pageSize : 10;
 
-    this.dataSource.getKafkaNotifications(pageIndex, pageSize);
-    this.isLoading = false;
+    this.dataSource.getKafkaNotifications(pageIndex, pageSize).subscribe({
+      next: () => {
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      }
+    });
   }
 
   /**
