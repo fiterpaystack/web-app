@@ -46,6 +46,7 @@ import { EditRoleComponent } from './roles-and-permissions/edit-role/edit-role.c
 import { RolesAndPermissionsComponent } from './roles-and-permissions/roles-and-permissions.component';
 import { ViewRoleComponent } from './roles-and-permissions/view-role/view-role.component';
 import { SystemComponent } from './system.component';
+import { KafkaNotificationsComponent } from './kafka-notifications/kafka-notifications.component';
 
 /** Custom Resolvers */
 import { AccountNumberPreferencesResolver } from './account-number-preferences/account-number-preferences.resolver';
@@ -594,6 +595,11 @@ const routes: Routes = [
               }
             }
           ]
+        },
+        {
+          path: 'kafka-notifications',
+          data: { title: 'Kafka Notifications', breadcrumb: 'Kafka Notifications' },
+          component: KafkaNotificationsComponent
         }
       ]
     }
