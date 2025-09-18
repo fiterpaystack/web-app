@@ -87,6 +87,66 @@
   font-style: italic;
 }
 
+// Discount rules table styling
+.discount-rules-table {
+  width: 100%;
+  min-width: 600px; // Ensure minimum width for table content
+
+  th,
+  td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  th {
+    background-color: #f5f5f5;
+    font-weight: 500;
+  }
+
+  .mat-column-name {
+    min-width: 150px;
+  }
+
+  .mat-column-ruleType {
+    min-width: 120px;
+  }
+
+  .mat-column-ruleParameters {
+    min-width: 200px;
+    word-break: break-word;
+  }
+
+  .mat-column-priority {
+    min-width: 80px;
+    text-align: center;
+  }
+
+  .mat-column-active {
+    min-width: 80px;
+    text-align: center;
+  }
+}
+
+// Discount rules details container
+.discount-rules-details {
+  .mat-elevation-z8 {
+    overflow-x: auto; // Allow horizontal scrolling if needed
+    border-radius: 4px;
+  }
+}
+
+// Discount rules summary styling
+.discount-rules-summary {
+  .discount-rule-summary-item {
+    margin: 8px 0;
+
+    strong {
+      color: #333;
+    }
+  }
+}
+
 // Back button spacing
 .layout-row.layout-align-center {
   margin-top: 2rem;

@@ -139,6 +139,14 @@ import { ViewLimitsAndClassificationMappingComponent } from './manage-limits-and
 import { EditLimitsAndClassificationMappingComponent } from './manage-limits-and-classification-mapping/edit-limits-and-classification-mapping/edit-limits-and-classification-mapping.component';
 import { EditLimitAndClassificationMappingResolver } from './manage-limits-and-classification-mapping/edit-limits-and-classification-mapping/edit-limits-and-classification-mapping-resolver';
 import { LimitAndClassificationMappingResolver } from './manage-limits-and-classification-mapping/limit-and-classification-mapping.resolver';
+import { DiscountRulesComponent } from './discount-rules/discount-rules.component';
+import { CreateDiscountRuleComponent } from './discount-rules/create-discount-rule/create-discount-rule.component';
+import { ViewDiscountRuleComponent } from './discount-rules/view-discount-rule/view-discount-rule.component';
+import { EditDiscountRuleComponent } from './discount-rules/edit-discount-rule/edit-discount-rule.component';
+import { DiscountRulesResolver } from './discount-rules/discount-rules.resolver';
+import { DiscountRuleResolver } from './discount-rules/discount-rule.resolver';
+import { DiscountRuleTemplateResolver } from './discount-rules/discount-rule-template.resolver';
+import { DiscountTestComponent } from './saving-products/saving-product-stepper/saving-product-discount-step/test/discount-test.component';
 
 /** Products Routes */
 const routes: Routes = [
@@ -236,6 +244,11 @@ const routes: Routes = [
               resolve: {
                 savingProductsTemplate: SavingProductsTemplateResolver
               }
+            },
+            {
+              path: 'discount-test',
+              component: DiscountTestComponent,
+              data: { title: 'Discount Engine Test', breadcrumb: 'Discount Test' }
             },
             {
               path: ':productId',
@@ -722,6 +735,51 @@ const routes: Routes = [
           ]
         },
         {
+          path: 'discount-rules',
+          data: { title: 'Discount Rules', breadcrumb: 'Discount Rules' },
+          children: [
+            {
+              path: '',
+              component: DiscountRulesComponent,
+              resolve: {
+                discountRules: DiscountRulesResolver
+              }
+            },
+            {
+              path: 'create',
+              component: CreateDiscountRuleComponent,
+              data: { title: 'Create Discount Rule', breadcrumb: 'Create' },
+              resolve: {
+                discountRuleTemplate: DiscountRuleTemplateResolver
+              }
+            },
+            {
+              path: ':ruleId',
+              data: { title: 'View Discount Rule', breadcrumb: 'ruleId', routeParamBreadcrumb: 'ruleId' },
+              resolve: {
+                discountRule: DiscountRuleResolver
+              },
+              children: [
+                {
+                  path: '',
+                  component: ViewDiscountRuleComponent,
+                  resolve: {
+                    discountRule: DiscountRuleResolver
+                  }
+                },
+                {
+                  path: 'edit',
+                  component: EditDiscountRuleComponent,
+                  data: { title: 'Edit Discount Rule', breadcrumb: 'Edit', routeParamBreadcrumb: false },
+                  resolve: {
+                    discountRule: DiscountRuleResolver
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
           path: 'products-mix',
           data: { title: 'Products Mix', breadcrumb: 'Products Mix' },
           children: [
@@ -1056,7 +1114,10 @@ const routes: Routes = [
     TransactionLimitResolver,
     ManageLimitsAndClassificationMappingResolver,
     LimitAndClassificationMappingResolver,
-    EditLimitAndClassificationMappingResolver
+    EditLimitAndClassificationMappingResolver,
+    DiscountRulesResolver,
+    DiscountRuleResolver,
+    DiscountRuleTemplateResolver
   ]
 })
 export class ProductsRoutingModule {}

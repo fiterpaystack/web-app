@@ -21,6 +21,7 @@ import { forkJoin } from 'rxjs';
 
 /** Custom Services */
 import { ProductsService } from '../../products.service';
+import { DiscountRulesService } from '../../discount-rules/services/discount-rules.service';
 import { SettingsService } from 'app/settings/settings.service';
 import { OrganizationService } from 'app/organization/organization.service';
 import { Dates } from 'app/core/utils/dates';
@@ -49,10 +50,7 @@ import { FeeSplitRequest } from '../models/fee-split.model';
     MatCheckbox,
     MatProgressSpinner,
     ValidateOnFocusDirective,
-    GlAccountSelectorComponent,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule
+    GlAccountSelectorComponent
   ]
 })
 export class CreateChargeComponent implements OnInit {
@@ -82,6 +80,12 @@ export class CreateChargeComponent implements OnInit {
   private fundsLoaded = false;
   /** Loading state for charge creation */
   loading = false;
+  /** Available discount rules */
+  availableDiscountRules: any[] = [];
+  /** Selected discount rules */
+  selectedDiscountRules: any[] = [];
+  /** Filtered available rules (excluding already selected ones) */
+  filteredAvailableRules: any[] = [];
 
   showChart: boolean = false;
   dataSource = new MatTableDataSource<UntypedFormGroup>();
@@ -98,6 +102,7 @@ export class CreateChargeComponent implements OnInit {
   constructor(
     private formBuilder: UntypedFormBuilder,
     private productsService: ProductsService,
+    private discountRulesService: DiscountRulesService,
     private route: ActivatedRoute,
     private router: Router,
     private dateUtils: Dates,
@@ -130,6 +135,7 @@ export class CreateChargeComponent implements OnInit {
     this.setConditionalControls();
     // in case the route data was already loaded before ngOnInit
     this.setupFeeSplitDataLoading();
+    this.loadDiscountRules();
 
     this.chargeForm.get('enableSlabs')?.valueChanges.subscribe((checked: boolean) => {
       const amountControl = this.chargeForm.get('amount');
@@ -482,6 +488,13 @@ export class CreateChargeComponent implements OnInit {
     }
     delete (data as any).chartSlabs;
 
+    // Transform discount rules from array of objects to array of objects with id field
+    if (this.selectedDiscountRules && this.selectedDiscountRules.length > 0) {
+      data.discountRules = this.selectedDiscountRules.map((rule: any) => ({ id: rule.id }));
+    } else {
+      data.discountRules = [];
+    }
+
     // Extract fee split data before removing it from charge payload
     const stakeholderSplits = data.stakeholderSplits;
     const enableFeeSplit = data.enableFeeSplit;
@@ -545,9 +558,6 @@ export class CreateChargeComponent implements OnInit {
     });
   }
 
-  /**
-   * Getter for stakeholder splits form array
-   */
   get stakeholderSplits(): UntypedFormArray {
     return this.chargeForm.get('stakeholderSplits') as UntypedFormArray;
   }
@@ -668,5 +678,68 @@ export class CreateChargeComponent implements OnInit {
         // You could add user notification here
       }
     });
+  }
+
+  /**
+   * Load available discount rules
+   */
+  private loadDiscountRules(): void {
+    this.discountRulesService.getDiscountRules().subscribe({
+      next: (discountRules: any[]) => {
+        this.availableDiscountRules = discountRules.filter((rule: any) => rule.active);
+        this.updateFilteredAvailableRules();
+      },
+      error: (error: any) => {
+        console.error('Error loading discount rules:', error);
+        this.availableDiscountRules = [];
+        this.filteredAvailableRules = [];
+      }
+    });
+  }
+
+  /**
+   * Update filtered available rules (exclude already selected ones)
+   */
+  private updateFilteredAvailableRules(): void {
+    const selectedIds = this.selectedDiscountRules.map((rule) => rule.id);
+    this.filteredAvailableRules = this.availableDiscountRules.filter((rule) => !selectedIds.includes(rule.id));
+  }
+
+  /**
+   * Add a discount rule to the selected list
+   */
+  addDiscountRule(discountRuleSelect: any): void {
+    if (
+      discountRuleSelect.value &&
+      !this.selectedDiscountRules.find((rule) => rule.id === discountRuleSelect.value.id)
+    ) {
+      this.selectedDiscountRules.push(discountRuleSelect.value);
+      this.updateFilteredAvailableRules();
+      discountRuleSelect.value = null; // Clear the selection
+    }
+  }
+
+  /**
+   * Remove a discount rule from the selected list
+   */
+  removeDiscountRule(index: number): void {
+    this.selectedDiscountRules.splice(index, 1);
+    this.updateFilteredAvailableRules();
+  }
+
+  /**
+   * Format rule parameters for display
+   */
+  formatRuleParameters(ruleParametersJson: string): string {
+    if (!ruleParametersJson) {
+      return 'No parameters';
+    }
+
+    try {
+      const params = JSON.parse(ruleParametersJson);
+      return JSON.stringify(params, null, 2);
+    } catch (error) {
+      return ruleParametersJson;
+    }
   }
 }

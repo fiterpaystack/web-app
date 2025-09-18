@@ -163,6 +163,78 @@
             {{ 'labels.messages.No Fee Splits Configured' | translate }}
           </div>
         </div>
+
+        <!-- Discount Rules Section -->
+        <div
+          class="flex-50 mat-body-strong"
+          *ngIf="chargeData.chargeAppliesTo.id === 2 && chargeData.additionalAttributes?.enableDiscountEngine"
+        >
+          {{ 'labels.inputs.Discount Engine Configuration' | translate }}
+        </div>
+
+        <div
+          class="flex-50"
+          *ngIf="chargeData.chargeAppliesTo.id === 2 && chargeData.additionalAttributes?.enableDiscountEngine"
+        >
+          <div class="discount-rules-summary">
+            <div class="discount-rule-summary-item">
+              <strong>{{ 'labels.inputs.Total Discount Rules' | translate }}:</strong>
+              {{ chargeData.additionalAttributes?.discountRules?.length || 0 }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Discount Rules Details Table -->
+      <div
+        *ngIf="chargeData.chargeAppliesTo.id === 2 && chargeData.additionalAttributes?.discountRules?.length"
+        class="discount-rules-details m-t-20"
+      >
+        <h3>{{ 'labels.inputs.Discount Rules Details' | translate }}</h3>
+        <div class="mat-elevation-z8">
+          <table mat-table [dataSource]="chargeData.additionalAttributes.discountRules" class="discount-rules-table">
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Name' | translate }}</th>
+              <td mat-cell *matCellDef="let rule" class="col-name" [matTooltip]="rule.name">
+                {{ rule.name }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="ruleType">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Rule Type' | translate }}</th>
+              <td mat-cell *matCellDef="let rule" class="col-rule-type">
+                {{ rule.ruleType }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="ruleParameters">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Rule Parameters' | translate }}</th>
+              <td mat-cell *matCellDef="let rule" class="col-rule-parameters">
+                {{ formatRuleParameters(rule.ruleParametersJson) }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="priority">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Priority' | translate }}</th>
+              <td mat-cell *matCellDef="let rule" class="col-priority">
+                {{ rule.rulePriority }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="active">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.status.Active' | translate }}</th>
+              <td mat-cell *matCellDef="let rule" class="col-active">
+                {{ rule.active === true | yesNo }}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['name', 'ruleType', 'ruleParameters', 'priority', 'active']"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: ['name', 'ruleType', 'ruleParameters', 'priority', 'active']"
+            ></tr>
+          </table>
+        </div>
       </div>
 
       <!-- Fee Split Details Table -->

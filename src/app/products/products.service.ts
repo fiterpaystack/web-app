@@ -153,11 +153,11 @@ export class ProductsService {
    * @returns {Observable<any>} Charges data.
    */
   getCharges(): Observable<any> {
-    return this.http.get('/charges');
+    return this.http.get('/paystack/charges');
   }
 
   getChargesTemplate(): Observable<any> {
-    return this.http.get('/charges/template');
+    return this.http.get('/paystack/charges/template');
   }
 
   /**
@@ -166,7 +166,7 @@ export class ProductsService {
    */
   getCharge(selectedCharge: string, template: boolean = false): Observable<any> {
     const httpParams = new HttpParams().set('template', template.toString());
-    return this.http.get(`/charges/${selectedCharge}`, { params: httpParams });
+    return this.http.get(`/paystack/charges/${selectedCharge}`, { params: httpParams });
   }
 
   /**
@@ -174,7 +174,7 @@ export class ProductsService {
    * @param charges  Charge Data to be updated.
    */
   updateCharge(chargeId: string, charges: any): Observable<any> {
-    return this.http.put(`/charges/${chargeId}`, charges);
+    return this.http.put(`/paystack/charges/${chargeId}`, charges);
   }
 
   /**
@@ -190,7 +190,7 @@ export class ProductsService {
    * @returns {Observable<any>}
    */
   createCharge(charge: any): Observable<any> {
-    return this.http.post('/charges', charge);
+    return this.http.post('/paystack/charges', charge);
   }
 
   /**
@@ -785,5 +785,70 @@ export class ProductsService {
       });
     }
     return this.http.get('/fee-split-audits/summary', { params: httpParams });
+  }
+
+  /**
+   * Assign a discount rule to a charge
+   * @param {number} ruleId Discount rule ID
+   * @param {number} chargeId Charge ID
+   * @returns {Observable<any>} Assignment result
+   */
+  assignDiscountRuleToCharge(ruleId: number, chargeId: number): Observable<any> {
+    const payload = { chargeId: chargeId };
+    return this.http.post(`/v1/discount-rules/charges/${ruleId}/assign`, payload);
+  }
+
+  /**
+   * Unassign a discount rule from a charge
+   * @param {number} ruleId Discount rule ID
+   * @param {number} chargeId Charge ID
+   * @returns {Observable<any>} Unassignment result
+   */
+  unassignDiscountRuleFromCharge(ruleId: number, chargeId: number): Observable<any> {
+    return this.http.delete(`/v1/discount-rules/charges/${ruleId}/charges/${chargeId}`);
+  }
+
+  /**
+   * Get discount rules assigned to a charge
+   * @param {number} chargeId Charge ID
+   * @returns {Observable<any[]>} List of assigned discount rules
+   */
+  getDiscountRulesForCharge(chargeId: number): Observable<any[]> {
+    return this.http.get<any[]>(`/v1/discount-rules/charges/charges/${chargeId}`);
+  }
+
+  /**
+   * Assign a discount rule to a product
+   * @param {number} ruleId Discount rule ID
+   * @param {number} productId Product ID
+   * @param {string} productType Product type
+   * @returns {Observable<any>} Assignment result
+   */
+  assignDiscountRuleToProduct(ruleId: number, productId: number, productType: string): Observable<any> {
+    const payload = { productId: productId, productType: productType };
+    return this.http.post(`/v1/discount-rules/products/${ruleId}/assign`, payload);
+  }
+
+  /**
+   * Unassign a discount rule from a product
+   * @param {number} ruleId Discount rule ID
+   * @param {number} productId Product ID
+   * @param {string} productType Product type
+   * @returns {Observable<any>} Unassignment result
+   */
+  unassignDiscountRuleFromProduct(ruleId: number, productId: number, productType: string): Observable<any> {
+    const params = new HttpParams().set('productType', productType);
+    return this.http.delete(`/v1/discount-rules/products/${ruleId}/products/${productId}`, { params });
+  }
+
+  /**
+   * Get discount rules assigned to a product
+   * @param {number} productId Product ID
+   * @param {string} productType Product type
+   * @returns {Observable<any[]>} List of assigned discount rules
+   */
+  getDiscountRulesForProduct(productId: number, productType: string): Observable<any[]> {
+    const params = new HttpParams().set('productType', productType);
+    return this.http.get<any[]>(`/v1/discount-rules/products/products/${productId}`, { params });
   }
 }

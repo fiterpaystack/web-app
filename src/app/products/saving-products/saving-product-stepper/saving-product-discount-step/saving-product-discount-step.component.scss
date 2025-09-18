@@ -1,0 +1,96 @@
+/* Saving Product Discount Step Component Styles */
+
+.discount-rule-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #fafafa;
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+  }
+}
+
+.rule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.rule-header h4 {
+  margin: 0;
+  color: #333;
+  font-weight: 500;
+}
+
+.no-rules-card {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f9f9f9;
+  border: 2px dashed #ccc;
+}
+
+.no-rules-card p {
+  margin: 10px 0;
+  color: #666;
+}
+
+/* Form field adjustments */
+.mat-form-field {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.mat-checkbox {
+  margin-bottom: 10px;
+}
+
+/* Error states */
+.mat-form-field.mat-form-field-invalid .mat-form-field-outline {
+  color: #f44336;
+}
+
+/* Success states */
+.mat-form-field.mat-form-field-valid .mat-form-field-outline {
+  color: #4caf50;
+}
+
+/* Responsive adjustments */
+@media (width <= 768px) {
+  .layout-row-wrap {
+    flex-direction: column;
+  }
+
+  .flex-48,
+  .flex-24 {
+    flex: 1 1 100%;
+  }
+
+  .discount-rule-card {
+    padding: 15px;
+  }
+}
+
+/* Button styles */
+[mat-raised-button] {
+  margin: 5px;
+}
+
+[mat-icon-button] {
+  margin: 0;
+}
+
+/* Form field spacing */
+.mat-form-field + .mat-form-field {
+  margin-top: 10px;
+}
+
+/* Card spacing */
+.discount-rule-card + .discount-rule-card {
+  margin-top: 20px;
+}

@@ -126,6 +126,7 @@ import { TransactionLimitsComponent } from './transaction-limits/transaction-lim
 import { CreateTransactionLimitComponent } from './transaction-limits/create-transaction-limit/create-transaction-limit.component';
 import { EditTransactionLimitComponent } from './transaction-limits/edit-transaction-limit/edit-transaction-limit.component';
 import { ViewTransactionLimitComponent } from './transaction-limits/view-transaction-limit/view-transaction-limit.component';
+import { DiscountTestComponent } from './saving-products/saving-product-stepper/saving-product-discount-step/test/discount-test.component';
 
 /**
  * Products Module
@@ -257,7 +258,8 @@ import { ViewTransactionLimitComponent } from './transaction-limits/view-transac
     TransactionLimitsComponent,
     CreateTransactionLimitComponent,
     EditTransactionLimitComponent,
-    ViewTransactionLimitComponent
+    ViewTransactionLimitComponent,
+    DiscountTestComponent
   ]
 })
 export class ProductsModule {}
