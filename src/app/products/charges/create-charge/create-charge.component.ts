@@ -46,6 +46,7 @@ import { FeeSplitRequest } from '../models/fee-split.model';
   styleUrls: ['./create-charge.component.scss'],
   imports: [
     ...STANDALONE_SHARED_IMPORTS,
+    MatTableModule,
     MatDivider,
     MatCheckbox,
     MatProgressSpinner,
