@@ -163,11 +163,11 @@ export class KafkaNotificationsComponent implements OnInit, AfterViewInit {
   /**
    * Formats timestamp array to readable date string.
    * @param {number[]} timestampArray Timestamp array from API.
-   * @returns {Date} Formatted date.
+   * @returns {Date | null} Formatted date, or null if input is invalid.
    */
-  formatTimestamp(timestampArray: number[]): Date {
+  formatTimestamp(timestampArray: number[]): Date | null {
     if (!timestampArray || timestampArray.length < 6) {
-      return new Date();
+      return null;
     }
     // timestampArray format: [year, month, day, hour, minute, second]
     // Note: month is 0-indexed in JavaScript Date constructor
