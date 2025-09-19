@@ -1,0 +1,142 @@
+<div class="discount-analytics-container">
+  <!-- Analytics Form -->
+  <mat-card class="analytics-form-card">
+    <mat-card-header>
+      <mat-card-title>{{ 'labels.inputs.Discount Analytics' | translate }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="analyticsForm" (ngModelChange)="onDateRangeChange()">
+        <div class="layout-row-wrap gap-2px">
+          <mat-form-field class="flex-32">
+            <mat-label>{{ 'labels.inputs.From Date' | translate }}</mat-label>
+            <input matInput [matDatepicker]="fromDatePicker" formControlName="fromDate" />
+            <mat-datepicker-toggle matSuffix [for]="fromDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #fromDatePicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field class="flex-32">
+            <mat-label>{{ 'labels.inputs.To Date' | translate }}</mat-label>
+            <input matInput [matDatepicker]="toDatePicker" formControlName="toDate" />
+            <mat-datepicker-toggle matSuffix [for]="toDatePicker"></mat-datepicker-toggle>
+            <mat-datepicker #toDatePicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field class="flex-32">
+            <mat-label>{{ 'labels.inputs.Product' | translate }}</mat-label>
+            <mat-select formControlName="productId" (selectionChange)="onProductChange()">
+              <mat-option value="1">Premium Savings</mat-option>
+              <mat-option value="2">Basic Savings</mat-option>
+              <mat-option value="3">High Yield Savings</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner></mat-spinner>
+    <p>{{ 'labels.messages.Loading analytics data...' | translate }}</p>
+  </div>
+
+  <!-- Analytics Data -->
+  <div *ngIf="!loading && analyticsData" class="analytics-content">
+    <!-- Key Metrics Cards -->
+    <div class="metrics-cards">
+      <mat-card class="metric-card">
+        <mat-card-content>
+          <div class="metric-value">{{ keyMetrics.totalApplications }}</div>
+          <div class="metric-label">{{ 'labels.inputs.Total Applications' | translate }}</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="metric-card">
+        <mat-card-content>
+          <div class="metric-value">{{ keyMetrics.totalOriginalAmount | currency }}</div>
+          <div class="metric-label">{{ 'labels.inputs.Total Original Amount' | translate }}</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="metric-card">
+        <mat-card-content>
+          <div class="metric-value">{{ keyMetrics.totalDiscountAmount | currency }}</div>
+          <div class="metric-label">{{ 'labels.inputs.Total Discount Amount' | translate }}</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="metric-card">
+        <mat-card-content>
+          <div class="metric-value">{{ keyMetrics.averageDiscountPercentage | number: '1.2-2' }}%</div>
+          <div class="metric-label">{{ 'labels.inputs.Average Discount %' | translate }}</div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="metric-card">
+        <mat-card-content>
+          <div class="metric-value">{{ keyMetrics.totalFinalAmount | currency }}</div>
+          <div class="metric-label">{{ 'labels.inputs.Total Final Amount' | translate }}</div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+      <!-- Discount Amount Chart -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>{{ 'labels.inputs.Discount Amount Breakdown' | translate }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <canvas baseChart [data]="chartData.discountTrend" [type]="'doughnut'" [options]="chartOptions"> </canvas>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Applications Chart -->
+      <mat-card class="chart-card">
+        <mat-card-header>
+          <mat-card-title>{{ 'labels.inputs.Application Count' | translate }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <canvas baseChart [data]="chartData.applications" [type]="'bar'" [options]="chartOptions"> </canvas>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Summary Table -->
+    <mat-card class="summary-card">
+      <mat-card-header>
+        <mat-card-title>{{ 'labels.inputs.Summary' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="summaryData" class="summary-table">
+          <ng-container matColumnDef="metric">
+            <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Metric' | translate }}</th>
+            <td mat-cell *matCellDef="let element">{{ element.metric }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="value">
+            <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Value' | translate }}</th>
+            <td mat-cell *matCellDef="let element">{{ element.value }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="summaryColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: summaryColumns"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- No Data Message -->
+  <div *ngIf="!loading && !analyticsData" class="no-data-container">
+    <mat-card class="no-data-card">
+      <mat-card-content>
+        <div class="no-data-icon">
+          <fa-icon icon="chart-bar" size="3x"></fa-icon>
+        </div>
+        <h3>{{ 'labels.messages.No Analytics Data' | translate }}</h3>
+        <p>{{ 'labels.messages.Select a date range and product to view analytics' | translate }}</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

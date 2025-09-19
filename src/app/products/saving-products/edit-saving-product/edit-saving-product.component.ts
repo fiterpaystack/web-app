@@ -9,6 +9,7 @@ import { SavingProductTermsStepComponent } from '../saving-product-stepper/savin
 import { SavingProductSettingsStepComponent } from '../saving-product-stepper/saving-product-settings-step/saving-product-settings-step.component';
 import { SavingProductChargesStepComponent } from '../saving-product-stepper/saving-product-charges-step/saving-product-charges-step.component';
 import { SavingProductAccountingStepComponent } from '../saving-product-stepper/saving-product-accounting-step/saving-product-accounting-step.component';
+import { SavingProductDiscountRulesStepComponent } from '../saving-product-stepper/saving-product-discount-rules-step/saving-product-discount-rules-step.component';
 
 /** Custom Services */
 import { ProductsService } from 'app/products/products.service';
@@ -36,6 +37,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     SavingProductSettingsStepComponent,
     SavingProductChargesStepComponent,
     SavingProductAccountingStepComponent,
+    SavingProductDiscountRulesStepComponent,
     SavingProductPreviewStepComponent
   ]
 })
@@ -51,6 +53,8 @@ export class EditSavingProductComponent {
   savingProductChargesStep: SavingProductChargesStepComponent;
   @ViewChild(SavingProductAccountingStepComponent, { static: true })
   savingProductAccountingStep: SavingProductAccountingStepComponent;
+  @ViewChild(SavingProductDiscountRulesStepComponent, { static: true })
+  savingProductDiscountRulesStep: SavingProductDiscountRulesStepComponent;
 
   savingProductAndTemplate: any;
   accountingRuleData: string[] = [];
@@ -107,7 +111,8 @@ export class EditSavingProductComponent {
         !this.savingProductTermsForm.pristine ||
         !this.savingProductSettingsForm.pristine ||
         !this.savingProductChargesStep.pristine ||
-        !this.savingProductAccountingForm.pristine)
+        !this.savingProductAccountingForm.pristine ||
+        !this.savingProductDiscountRulesStep.pristine)
     );
   }
 
@@ -118,7 +123,8 @@ export class EditSavingProductComponent {
       ...this.savingProductTermsStep.savingProductTerms,
       ...this.savingProductSettingsStep.savingProductSettings,
       ...this.savingProductChargesStep.savingProductCharges,
-      ...this.savingProductAccountingStep.savingProductAccounting
+      ...this.savingProductAccountingStep.savingProductAccounting,
+      ...this.savingProductDiscountRulesStep.savingProductDiscountRules
     };
   }
 
@@ -127,6 +133,7 @@ export class EditSavingProductComponent {
     const savingProduct = {
       ...this.savingProduct,
       charges: this.savingProduct.charges.map((charge: any) => ({ id: charge.id })),
+      discountRules: this.savingProduct.discountRules.map((rule: any) => ({ id: rule.id })),
       locale: this.settingsService.language.code // locale required for nominalAnnualInterestRate
     };
     delete savingProduct.advancedAccountingRules;

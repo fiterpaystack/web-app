@@ -23,6 +23,7 @@ import { Observable } from 'rxjs';
 
 /** Custom Services */
 import { ProductsService } from 'app/products/products.service';
+import { DiscountRulesService } from '../../discount-rules/services/discount-rules.service';
 import { SettingsService } from 'app/settings/settings.service';
 import { OrganizationService } from 'app/organization/organization.service';
 import { maxNumberValueValidator } from 'app/shared/validators/max-number-value.validator';
@@ -89,6 +90,12 @@ export class EditChargeComponent implements OnInit {
   glAccounts: any[] = [];
   private fundsLoaded = false;
   loading = false;
+  /** Available discount rules */
+  availableDiscountRules: any[] = [];
+  /** Selected discount rules */
+  selectedDiscountRules: any[] = [];
+  /** Filtered available rules (excluding already selected ones) */
+  filteredAvailableRules: any[] = [];
 
   /**
    * Retrieves the charge data from `resolve`.
@@ -100,6 +107,7 @@ export class EditChargeComponent implements OnInit {
    */
   constructor(
     private productsService: ProductsService,
+    private discountRulesService: DiscountRulesService,
     private formBuilder: UntypedFormBuilder,
     private route: ActivatedRoute,
     private router: Router,
@@ -241,6 +249,13 @@ export class EditChargeComponent implements OnInit {
       this.chargeForm.addControl('stakeholderSplits', this.formBuilder.array([], [this.splitTotalsValidator()]));
       this.loadExistingFeeSplits();
     }
+
+    // Add discount rules form control if charge applies to savings
+    if (this.chargeData.chargeAppliesTo.id === 2) {
+      // Initialize selected discount rules from existing data
+      this.selectedDiscountRules = this.chargeData.additionalAttributes?.discountRules || [];
+      this.loadDiscountRules();
+    }
   }
 
   /**
@@ -376,6 +391,13 @@ export class EditChargeComponent implements OnInit {
       delete charges.amount;
     } else {
       delete charges.chart;
+    }
+
+    // Transform discount rules from array of objects to array of objects with id field
+    if (this.selectedDiscountRules && this.selectedDiscountRules.length > 0) {
+      charges.discountRules = this.selectedDiscountRules.map((rule: any) => ({ id: rule.id }));
+    } else {
+      charges.discountRules = [];
     }
 
     // Extract fee split data before removing it from charge payload
@@ -700,5 +722,68 @@ export class EditChargeComponent implements OnInit {
    */
   hasFormErrors(): boolean {
     return this.chargeForm.invalid || this.getFeeSplitErrors().length > 0;
+  }
+
+  /**
+   * Load available discount rules
+   */
+  private loadDiscountRules(): void {
+    this.discountRulesService.getDiscountRules().subscribe({
+      next: (discountRules: any[]) => {
+        this.availableDiscountRules = discountRules.filter((rule: any) => rule.active);
+        this.updateFilteredAvailableRules();
+      },
+      error: (error: any) => {
+        console.error('Error loading discount rules:', error);
+        this.availableDiscountRules = [];
+        this.filteredAvailableRules = [];
+      }
+    });
+  }
+
+  /**
+   * Update filtered available rules (exclude already selected ones)
+   */
+  private updateFilteredAvailableRules(): void {
+    const selectedIds = this.selectedDiscountRules.map((rule) => rule.id);
+    this.filteredAvailableRules = this.availableDiscountRules.filter((rule) => !selectedIds.includes(rule.id));
+  }
+
+  /**
+   * Add a discount rule to the selected list
+   */
+  addDiscountRule(discountRuleSelect: any): void {
+    if (
+      discountRuleSelect.value &&
+      !this.selectedDiscountRules.find((rule) => rule.id === discountRuleSelect.value.id)
+    ) {
+      this.selectedDiscountRules.push(discountRuleSelect.value);
+      this.updateFilteredAvailableRules();
+      discountRuleSelect.value = null; // Clear the selection
+    }
+  }
+
+  /**
+   * Remove a discount rule from the selected list
+   */
+  removeDiscountRule(index: number): void {
+    this.selectedDiscountRules.splice(index, 1);
+    this.updateFilteredAvailableRules();
+  }
+
+  /**
+   * Format rule parameters for display
+   */
+  formatRuleParameters(ruleParametersJson: string): string {
+    if (!ruleParametersJson) {
+      return 'No parameters';
+    }
+
+    try {
+      const params = JSON.parse(ruleParametersJson);
+      return JSON.stringify(params, null, 2);
+    } catch (error) {
+      return ruleParametersJson;
+    }
   }
 }

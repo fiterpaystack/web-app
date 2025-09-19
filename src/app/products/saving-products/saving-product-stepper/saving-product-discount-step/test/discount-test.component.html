@@ -1,0 +1,132 @@
+<div class="discount-test-container">
+  <mat-card class="test-card">
+    <mat-card-header>
+      <mat-card-title>Discount Engine Test</mat-card-title>
+      <mat-card-subtitle>Test discount functionality directly</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Test Configuration -->
+      <form [formGroup]="testForm">
+        <div class="layout-row-wrap gap-2px m-b-20">
+          <mat-form-field class="flex-48">
+            <mat-label>Product ID</mat-label>
+            <input matInput type="number" formControlName="productId" placeholder="1" />
+          </mat-form-field>
+
+          <mat-form-field class="flex-48">
+            <mat-label>Original Amount</mat-label>
+            <input matInput type="number" formControlName="originalAmount" placeholder="100" />
+          </mat-form-field>
+        </div>
+
+        <!-- Discount Rules -->
+        <div class="rules-section">
+          <h3>Discount Rules</h3>
+
+          <div class="m-b-20">
+            <button type="button" mat-raised-button color="primary" (click)="addDiscountRule()">Add Rule</button>
+          </div>
+
+          <div formArrayName="discountRules">
+            <div
+              *ngFor="let rule of discountRules.controls; let i = index"
+              [formGroupName]="i"
+              class="rule-card m-b-20"
+            >
+              <div class="rule-header">
+                <h4>Rule {{ i + 1 }}</h4>
+                <button type="button" mat-icon-button color="warn" (click)="removeDiscountRule(i)">Delete</button>
+              </div>
+
+              <div class="layout-row-wrap gap-2px">
+                <mat-form-field class="flex-48">
+                  <mat-label>Rule Name</mat-label>
+                  <input matInput formControlName="name" placeholder="Rule Name" />
+                </mat-form-field>
+
+                <mat-form-field class="flex-24">
+                  <mat-label>Type</mat-label>
+                  <mat-select formControlName="ruleType">
+                    <mat-option value="PERCENTAGE">Percentage</mat-option>
+                    <mat-option value="FLAT">Flat</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="flex-24">
+                  <mat-label>Value</mat-label>
+                  <input matInput type="number" formControlName="discountValue" placeholder="10" />
+                </mat-form-field>
+              </div>
+
+              <div class="layout-row-wrap gap-2px">
+                <mat-form-field class="flex-48">
+                  <mat-label>Max Discount Amount</mat-label>
+                  <input matInput type="number" formControlName="maxDiscountAmount" placeholder="50" />
+                </mat-form-field>
+
+                <mat-form-field class="flex-48">
+                  <mat-label>Priority</mat-label>
+                  <input matInput type="number" formControlName="priority" placeholder="1" />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <!-- Test Actions -->
+      <div class="test-actions m-t-20">
+        <button
+          type="button"
+          mat-raised-button
+          color="primary"
+          (click)="testPreview()"
+          [disabled]="loading || !testForm.valid"
+        >
+          Test Preview
+        </button>
+
+        <button
+          type="button"
+          mat-raised-button
+          color="accent"
+          (click)="testCreateRule()"
+          [disabled]="loading || !testForm.valid"
+        >
+          Create Rules
+        </button>
+
+        <button type="button" mat-raised-button color="warn" (click)="testGetRules()" [disabled]="loading">
+          Get Rules
+        </button>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="30"></mat-spinner>
+        <span class="m-l-10">Testing...</span>
+      </div>
+
+      <!-- Preview Results -->
+      <div *ngIf="previewResult && !loading" class="preview-results m-t-20">
+        <h3>Preview Results</h3>
+
+        <div *ngIf="previewResult.error" class="error-message">
+          <mat-icon color="warn">error</mat-icon>
+          <span>{{ previewResult.error }}</span>
+        </div>
+
+        <div *ngIf="!previewResult.error" class="success-message">
+          <div class="result-item"><strong>Original Amount:</strong> {{ previewResult.originalAmount | currency }}</div>
+          <div class="result-item"><strong>Discount Amount:</strong> {{ previewResult.discountAmount | currency }}</div>
+          <div class="result-item"><strong>Final Amount:</strong> {{ previewResult.finalAmount | currency }}</div>
+          <div class="result-item">
+            <strong>Discount Percentage:</strong>
+            {{ (previewResult.discountAmount / previewResult.originalAmount) * 100 | number: '1.2-2' }}%
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

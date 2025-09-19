@@ -1,0 +1,45 @@
+table {
+  width: 100%;
+
+  .select-row:hover {
+    cursor: pointer;
+  }
+}
+
+.true {
+  color: #32cd32;
+}
+
+.false {
+  color: #f44366;
+}
+
+.active {
+  color: #32cd32;
+}
+
+.inactive {
+  color: #f44366;
+}
+
+.container {
+  max-width: 100%;
+  padding: 20px;
+}
+
+.card-actions {
+  margin-left: auto;
+}
+
+.filter-field {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.mat-elevation-z8 {
+  border-radius: 4px;
+}

@@ -1,0 +1,47 @@
+<div class="container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Discount Rule Details</mat-card-title>
+      <div class="card-actions">
+        <button mat-raised-button color="primary" [routerLink]="['edit']">Edit</button>
+      </div>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="rule-details" *ngIf="discountRule">
+        <div class="detail-row">
+          <label>Name:</label>
+          <span>{{ discountRule.name }}</span>
+        </div>
+
+        <div class="detail-row">
+          <label>Description:</label>
+          <span>{{ discountRule.description }}</span>
+        </div>
+
+        <div class="detail-row">
+          <label>Rule Type:</label>
+          <span>{{ discountRule.ruleType }}</span>
+        </div>
+
+        <div class="detail-row" *ngIf="discountRule.ruleParametersJson">
+          <label>Rule Parameters:</label>
+          <div class="parameters-display">
+            <pre>{{ formatRuleParameters(discountRule.ruleParametersJson) }}</pre>
+          </div>
+        </div>
+
+        <div class="detail-row">
+          <label>Priority:</label>
+          <span>{{ discountRule.rulePriority }}</span>
+        </div>
+
+        <div class="detail-row">
+          <label>Status:</label>
+          <span [class]="discountRule.active ? 'active' : 'inactive'">
+            {{ discountRule.active ? 'Active' : 'Inactive' }}
+          </span>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

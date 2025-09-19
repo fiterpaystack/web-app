@@ -134,6 +134,38 @@
             </mat-list-item>
           </div>
 
+          <div #discountRules>
+            <mat-list-item [routerLink]="['discount-rules']" *mifosxHasPermission="'READ_DISCOUNTRULE'">
+              <div class="menu-list-item-content">
+                <div class="menu-left-section" [routerLink]="['discount-rules']">
+                  <mat-icon matListIcon>
+                    <fa-icon icon="tag" size="sm"></fa-icon>
+                  </mat-icon>
+                  <div matLine>
+                    {{ 'labels.heading.Discount Rules' | translate }}
+                    <p matLine *ngIf="arrowBooleans[4]" [routerLink]="['discount-rules']" class="menu-explanation">
+                      {{ 'labels.text.Manage discount rules and configurations' | translate }}
+                    </p>
+                  </div>
+                </div>
+                <div class="menu-right-section">
+                  <fa-icon
+                    (click)="arrowBooleansToggle(4); $event.stopPropagation()"
+                    *ngIf="!arrowBooleans[4]"
+                    icon="arrow-down"
+                    size="md"
+                  ></fa-icon>
+                  <fa-icon
+                    (click)="arrowBooleansToggle(4); $event.stopPropagation()"
+                    *ngIf="arrowBooleans[4]"
+                    icon="arrow-up"
+                    size="md"
+                  ></fa-icon>
+                </div>
+              </div>
+            </mat-list-item>
+          </div>
+
           <mat-list-item [routerLink]="['collaterals']">
             <div class="menu-list-item-content">
               <div class="menu-left-section" [routerLink]="['collaterals']">
@@ -381,21 +413,21 @@
                 </mat-icon>
                 <div matLine>
                   {{ 'labels.heading.Transaction Limits' | translate }}
-                  <p matLine *ngIf="arrowBooleans[10]" [routerLink]="['transaction-limits']">
+                  <p matLine *ngIf="arrowBooleans[11]" [routerLink]="['transaction-limits']">
                     {{ 'labels.text.Limits for transactions in the system' | translate }}
                   </p>
                 </div>
               </div>
               <div class="menu-right-section">
                 <fa-icon
-                  (click)="arrowBooleansToggle(10); $event.stopPropagation()"
-                  *ngIf="!arrowBooleans[10]"
+                  (click)="arrowBooleansToggle(11); $event.stopPropagation()"
+                  *ngIf="!arrowBooleans[11]"
                   icon="arrow-down"
                   size="md"
                 ></fa-icon>
                 <fa-icon
-                  (click)="arrowBooleansToggle(10); $event.stopPropagation()"
-                  *ngIf="arrowBooleans[10]"
+                  (click)="arrowBooleansToggle(11); $event.stopPropagation()"
+                  *ngIf="arrowBooleans[11]"
                   icon="arrow-up"
                   size="md"
                 ></fa-icon>

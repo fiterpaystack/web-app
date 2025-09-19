@@ -13,7 +13,8 @@ import {
   MatHeaderRowDef,
   MatHeaderRow,
   MatRowDef,
-  MatRow
+  MatRow,
+  MatTableDataSource
 } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ViewSavingsAccountingDetailsComponent } from '../../../../shared/accounting/view-savings-accounting-details/view-savings-accounting-details.component';
@@ -47,12 +48,20 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 })
 export class SavingProductGeneralTabComponent {
   savingProduct: any;
+  discountRulesDataSource: MatTableDataSource<any> = new MatTableDataSource();
 
   chargesDisplayedColumns: string[] = [
     'name',
     'chargeCalculationType',
     'amount',
     'chargeTimeType'
+  ];
+  discountRulesDisplayedColumns: string[] = [
+    'name',
+    'ruleType',
+    'ruleParameters',
+    'priority',
+    'active'
   ];
   paymentFundSourceDisplayedColumns: string[] = [
     'paymentTypeId',
@@ -69,6 +78,10 @@ export class SavingProductGeneralTabComponent {
   ) {
     this.route.data.subscribe((data: { savingProduct: any }) => {
       this.savingProduct = data.savingProduct;
+
+      // Update the data source
+      const discountRules = this.getDiscountRules();
+      this.discountRulesDataSource.data = discountRules;
     });
   }
 
@@ -78,5 +91,29 @@ export class SavingProductGeneralTabComponent {
 
   isAccrualAccounting(): boolean {
     return this.accounting.isAccrualAccounting(this.savingProduct.accountingRule);
+  }
+
+  getDiscountRules(): any[] {
+    if (!this.savingProduct) {
+      return [];
+    }
+
+    // Check multiple possible locations for discount rules
+    let discountRules = [];
+
+    // First try direct discountRules property
+    if (this.savingProduct.discountRules) {
+      discountRules = this.savingProduct.discountRules;
+    }
+    // Then try additionalAttributes.discountRules
+    else if (this.savingProduct.additionalAttributes?.discountRules) {
+      discountRules = this.savingProduct.additionalAttributes.discountRules;
+    }
+    // Also check additionalParameters.discountRules
+    else if (this.savingProduct.additionalParameters?.discountRules) {
+      discountRules = this.savingProduct.additionalParameters.discountRules;
+    }
+
+    return discountRules || [];
   }
 }

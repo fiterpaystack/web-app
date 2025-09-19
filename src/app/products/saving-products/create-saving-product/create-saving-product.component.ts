@@ -8,6 +8,7 @@ import { SavingProductCurrencyStepComponent } from '../saving-product-stepper/sa
 import { SavingProductTermsStepComponent } from '../saving-product-stepper/saving-product-terms-step/saving-product-terms-step.component';
 import { SavingProductSettingsStepComponent } from '../saving-product-stepper/saving-product-settings-step/saving-product-settings-step.component';
 import { SavingProductChargesStepComponent } from '../saving-product-stepper/saving-product-charges-step/saving-product-charges-step.component';
+import { SavingProductDiscountRulesStepComponent } from '../saving-product-stepper/saving-product-discount-rules-step/saving-product-discount-rules-step.component';
 import { SavingProductAccountingStepComponent } from '../saving-product-stepper/saving-product-accounting-step/saving-product-accounting-step.component';
 
 /** Custom Services */
@@ -35,6 +36,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     SavingProductTermsStepComponent,
     SavingProductSettingsStepComponent,
     SavingProductChargesStepComponent,
+    SavingProductDiscountRulesStepComponent,
     SavingProductAccountingStepComponent,
     SavingProductPreviewStepComponent
   ]
@@ -49,6 +51,8 @@ export class CreateSavingProductComponent {
   savingProductSettingsStep: SavingProductSettingsStepComponent;
   @ViewChild(SavingProductChargesStepComponent, { static: true })
   savingProductChargesStep: SavingProductChargesStepComponent;
+  @ViewChild(SavingProductDiscountRulesStepComponent, { static: true })
+  savingProductDiscountRulesStep: SavingProductDiscountRulesStepComponent;
   @ViewChild(SavingProductAccountingStepComponent, { static: true })
   savingProductAccountingStep: SavingProductAccountingStepComponent;
 
@@ -95,6 +99,10 @@ export class CreateSavingProductComponent {
     return this.savingProductAccountingStep.savingProductAccountingForm;
   }
 
+  get savingProductDiscountForm() {
+    return this.savingProductDiscountRulesStep.savingProductDiscountRules;
+  }
+
   get savingProductFormValid() {
     return (
       this.savingProductDetailsForm.valid &&
@@ -112,6 +120,7 @@ export class CreateSavingProductComponent {
       ...this.savingProductTermsStep.savingProductTerms,
       ...this.savingProductSettingsStep.savingProductSettings,
       ...this.savingProductChargesStep.savingProductCharges,
+      ...this.savingProductDiscountRulesStep.savingProductDiscountRules,
       ...this.savingProductAccountingStep.savingProductAccounting
     };
   }
@@ -121,6 +130,7 @@ export class CreateSavingProductComponent {
     const savingProduct = {
       ...this.savingProduct,
       charges: this.savingProduct.charges.map((charge: any) => ({ id: charge.id })),
+      discountRules: this.savingProduct.discountRules.map((rule: any) => ({ id: rule.id })),
       locale: this.settingsService.language.code // locale required for nominalAnnualInterestRate
     };
     delete savingProduct.advancedAccountingRules;
