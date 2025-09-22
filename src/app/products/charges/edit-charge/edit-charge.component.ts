@@ -32,6 +32,8 @@ import { ValidateOnFocusDirective } from '../../../directives/validate-on-focus.
 import { GlAccountSelectorComponent } from '../../../shared/accounting/gl-account-selector/gl-account-selector.component';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from 'app/shared/confirmation-dialog/confirmation-dialog.component';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /** Custom Models */
@@ -90,6 +92,8 @@ export class EditChargeComponent implements OnInit {
   glAccounts: any[] = [];
   private fundsLoaded = false;
   loading = false;
+  /** Original tax group id captured at load for comparison */
+  originalTaxGroupId: number | null = null;
   /** Available discount rules */
   availableDiscountRules: any[] = [];
   /** Selected discount rules */
@@ -112,7 +116,8 @@ export class EditChargeComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private settingsService: SettingsService,
-    private organizationService: OrganizationService
+    private organizationService: OrganizationService,
+    private dialog: MatDialog
   ) {
     this.route.data.subscribe((data: { chargesTemplate: any }) => {
       this.chargeData = data.chargesTemplate;
@@ -223,14 +228,8 @@ export class EditChargeComponent implements OnInit {
         break;
       }
     }
-    if (this.chargeData.taxGroup) {
-      this.chargeForm.addControl(
-        'taxGroupId',
-        this.formBuilder.control({ value: this.chargeData.taxGroup.id, disabled: true })
-      );
-    } else {
-      this.chargeForm.addControl('taxGroupId', this.formBuilder.control({ value: '' }));
-    }
+    this.originalTaxGroupId = this.chargeData.taxGroup ? this.chargeData.taxGroup.id : null;
+    this.chargeForm.addControl('taxGroupId', this.formBuilder.control(this.originalTaxGroupId));
 
     /** Watch enableSlabs changes */
     this.chargeForm.get('enableSlabs')?.valueChanges.subscribe((enabled) => {
@@ -377,9 +376,10 @@ export class EditChargeComponent implements OnInit {
     const charges = this.chargeForm.getRawValue();
     charges.locale = this.settingsService.language.code;
 
-    if (charges.taxGroupId.value === '') {
+    if (charges.taxGroupId === '' || charges.taxGroupId === undefined) {
       delete charges.taxGroupId;
     }
+    // Allow explicit null to remove association; keep as-is
     if (!charges.minCap) {
       delete charges.minCap;
     }
@@ -419,6 +419,40 @@ export class EditChargeComponent implements OnInit {
         console.error('Error updating charge:', error);
         this.loading = false;
         // TODO: Show error notification
+      }
+    });
+  }
+
+  /**
+   * Handle selection changes for tax group with confirmation and revert on cancel
+   */
+  onTaxGroupSelectionChange(newTaxGroupId: number | null) {
+    // If nothing changed, do nothing
+    if (newTaxGroupId === this.originalTaxGroupId) {
+      return;
+    }
+
+    const heading = 'Confirm Tax Group Change';
+    const dialogContext =
+      newTaxGroupId === null
+        ? 'Removing the tax group affects future transactions only. Historical transactions remain unchanged. Proceed to remove?'
+        : 'Changing the tax group affects future transactions only. Historical transactions remain unchanged. Proceed to change?';
+
+    const dialogRef = (this as any).dialog?.open
+      ? (this as any).dialog.open(ConfirmationDialogComponent, {
+          data: { heading, dialogContext, type: 'warn' }
+        })
+      : null;
+
+    if (!dialogRef) {
+      // If dialog isn't available, keep new value silently
+      return;
+    }
+
+    dialogRef.afterClosed().subscribe((result: any) => {
+      if (!result || !result.confirm) {
+        // Revert selection
+        this.chargeForm.patchValue({ taxGroupId: this.originalTaxGroupId });
       }
     });
   }
