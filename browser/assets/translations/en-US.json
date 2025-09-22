@@ -1227,6 +1227,7 @@
       "No discount rules configured": "No discount rules configured"
     },
     "inputs": {
+      "NoTaxGroup": "No Tax Group",
       "Discount Rules": "Discount Rules",
       "Rule Type": "Rule Type",
       "Rule Parameters": "Rule Parameters",
