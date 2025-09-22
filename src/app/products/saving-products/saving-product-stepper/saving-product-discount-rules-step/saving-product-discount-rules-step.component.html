@@ -1,0 +1,85 @@
+<div class="layout-row-wrap gap-2px responsive-column">
+  <mat-form-field class="flex-48">
+    <mat-label>{{ 'labels.inputs.Discount Rule' | translate }}</mat-label>
+    <mat-select #discountRule>
+      <mat-option *ngFor="let rule of filteredAvailableRules" [value]="rule">
+        {{ rule.name }} ({{ rule.ruleType }})
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div class="flex-48 align-center">
+    <button
+      type="button"
+      mat-raised-button
+      color="primary"
+      (click)="addDiscountRule(discountRule)"
+      [disabled]="!discountRule.value"
+    >
+      <fa-icon icon="plus" class="m-r-10"></fa-icon>
+      {{ 'labels.buttons.Add' | translate }}
+    </button>
+  </div>
+
+  <table
+    class="flex-98 mat-elevation-z1"
+    mat-table
+    [dataSource]="discountRulesDataSource"
+    [hidden]="discountRulesDataSource.length === 0"
+  >
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Name' | translate }}</th>
+      <td mat-cell *matCellDef="let rule">{{ rule.name }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="ruleType">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Type' | translate }}</th>
+      <td mat-cell *matCellDef="let rule">
+        {{
+          rule.ruleType === 'PERCENTAGE'
+            ? ('labels.inputs.Percentage' | translate)
+            : ('labels.inputs.Flat Amount' | translate)
+        }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="ruleParameters">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Parameters' | translate }}</th>
+      <td mat-cell *matCellDef="let rule">{{ rule.ruleParametersJson || 'No parameters' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="priority">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Priority' | translate }}</th>
+      <td mat-cell *matCellDef="let rule">{{ rule.rulePriority }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Action' | translate }}</th>
+      <td mat-cell *matCellDef="let rule">
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="deleteDiscountRule(rule)"
+          matTooltip="{{ 'tooltips.Remove this discount rule' | translate }}"
+        >
+          <fa-icon icon="trash"></fa-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  <!-- Stepper Navigation -->
+  <div class="flex-100 layout-row justify-content-end">
+    <button mat-button matStepperPrevious>
+      <fa-icon icon="arrow-left" class="m-r-10"></fa-icon>
+      {{ 'labels.buttons.Previous' | translate }}
+    </button>
+    <button mat-raised-button color="primary" matStepperNext>
+      {{ 'labels.buttons.Next' | translate }}
+      <fa-icon icon="arrow-right" class="m-l-10"></fa-icon>
+    </button>
+  </div>
+</div>

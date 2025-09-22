@@ -58,6 +58,7 @@ import { ChargeStakeholderSplit, FeeSplitAudit } from '../models/fee-split.model
     MatRowDef,
     MatRow,
     MatButton,
+    MatTooltip,
     MatDialogTitle,
     MatDialogContent,
     MatDialogActions
@@ -232,5 +233,21 @@ export class ViewChargeComponent {
       width: '800px',
       maxHeight: '90vh'
     });
+  }
+
+  /**
+   * Format rule parameters for display
+   */
+  formatRuleParameters(ruleParametersJson: string): string {
+    if (!ruleParametersJson) {
+      return 'No parameters';
+    }
+
+    try {
+      const params = JSON.parse(ruleParametersJson);
+      return JSON.stringify(params, null, 2);
+    } catch (error) {
+      return ruleParametersJson;
+    }
   }
 }

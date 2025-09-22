@@ -60,6 +60,13 @@ export class SavingProductPreviewStepComponent implements OnInit, OnChanges {
     'amount',
     'chargeTimeType'
   ];
+  discountRulesDisplayedColumns: string[] = [
+    'name',
+    'ruleType',
+    'ruleParameters',
+    'priority',
+    'active'
+  ];
   paymentFundSourceDisplayedColumns: string[] = [
     'paymentTypeId',
     'fundSourceAccountId'

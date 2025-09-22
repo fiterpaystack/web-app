@@ -62,6 +62,16 @@
       </mifosx-saving-product-charges-step>
     </mat-step>
 
+    <mat-step completed>
+      <ng-template matStepLabel>{{ 'labels.inputs.DISCOUNT RULES' | translate }}</ng-template>
+
+      <mifosx-saving-product-discount-rules-step
+        [savingProductsTemplate]="savingProductAndTemplate"
+        [currencyCode]="savingProductCurrencyForm.get('currencyCode')"
+      >
+      </mifosx-saving-product-discount-rules-step>
+    </mat-step>
+
     <mat-step [stepControl]="savingProductAccountingForm" completed>
       <ng-template matStepLabel>{{ 'labels.inputs.ACCOUNTING' | translate }}</ng-template>
 

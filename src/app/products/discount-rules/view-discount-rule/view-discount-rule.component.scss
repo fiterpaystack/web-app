@@ -1,0 +1,41 @@
+.container {
+  max-width: 37rem;
+  padding: 20px;
+}
+
+.card-actions {
+  margin-left: auto;
+}
+
+.rule-details {
+  .detail-row {
+    display: flex;
+    margin-bottom: 15px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    label {
+      font-weight: 500;
+      min-width: 150px;
+      color: #333;
+    }
+
+    span {
+      color: #666;
+    }
+  }
+}
+
+.active {
+  color: #32cd32;
+  font-weight: 500;
+}
+
+.inactive {
+  color: #f44366;
+  font-weight: 500;
+}
