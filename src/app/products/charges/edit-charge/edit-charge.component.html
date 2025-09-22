@@ -160,17 +160,27 @@
 
           <mat-form-field class="flex-48">
             <mat-label>{{ 'labels.inputs.Tax Group' | translate }}</mat-label>
-            <mat-select *ngIf="chargeData.taxGroup" formControlName="taxGroupId">
+            <mat-select
+              formControlName="taxGroupId"
+              (selectionChange)="onTaxGroupSelectionChange($event.value)"
+              *mifosxHasPermission="'UPDATE_CHARGE'"
+            >
+              <mat-option [value]="null">{{ 'labels.inputs.NoTaxGroup' | translate }}</mat-option>
               <mat-option *ngFor="let taxGroup of chargeData.taxGroupOptions" [value]="taxGroup.id">
                 {{ taxGroup.name }}
               </mat-option>
             </mat-select>
-
-            <mat-select *ngIf="!chargeData.taxGroup" formControlName="taxGroupId">
-              <mat-option *ngFor="let taxGroup of chargeData.taxGroupOptions" [value]="taxGroup.id">
-                {{ taxGroup.name }}
-              </mat-option>
-            </mat-select>
+            <button
+              mat-icon-button
+              matSuffix
+              aria-label="Clear"
+              type="button"
+              *ngIf="chargeForm.get('taxGroupId')?.value !== null"
+              (click)="onTaxGroupSelectionChange(null); chargeForm.get('taxGroupId')?.setValue(null)"
+            >
+              <mat-icon>clear</mat-icon>
+            </button>
+            <!-- Hint removed to avoid missing MatHint import error; consider re-adding with proper module import -->
           </mat-form-field>
 
           <div class="password-never-expires-wrapper checkbox flex-48" *ngIf="addFeeFrequency">
