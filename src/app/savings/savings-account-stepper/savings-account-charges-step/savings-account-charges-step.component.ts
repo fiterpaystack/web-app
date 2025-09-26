@@ -126,6 +126,9 @@ export class SavingsAccountChargesStepComponent implements OnInit, OnChanges {
       this.chargesDataSource =
         this.savingsAccountProductTemplate.charges.map((charge: any) => ({ ...charge, id: charge.chargeId })) || [];
     }
+    if (this.savingsAccountProductTemplate && this.savingsAccountTemplate && !this.savingsAccountTemplate.charges) {
+      this.savingsAccountTemplate.charges = this.savingsAccountProductTemplate.charges;
+    }
     if (this.savingsAccountTemplate && this.savingsAccountTemplate.charges) {
       this.chargesDataSource =
         this.savingsAccountTemplate.charges.map((charge: any) => ({ ...charge, id: charge.chargeId })) || [];
