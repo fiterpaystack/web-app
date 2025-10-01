@@ -100,6 +100,27 @@ export class ReportsService {
   }
 
   /**
+   * Run Report Data for Excel export.
+   * @param {any} reportName report name
+   * @param {object} formData Form Data.
+   * @returns {Observable<any>}
+   */
+  getExcelRunReportData(reportName: string, formData: object): Observable<any> {
+    let httpParams = new HttpParams();
+    for (const [
+      key,
+      value
+    ] of Object.entries(formData)) {
+      httpParams = httpParams.set(key, value);
+    }
+    return this.http.get(`/runreports/${reportName}`, {
+      responseType: 'arraybuffer',
+      observe: 'response',
+      params: httpParams
+    });
+  }
+
+  /**
    * Run Report Data for Pentaho.
    * @param {any} reportName report name
    * @param {object} formData Form Data.

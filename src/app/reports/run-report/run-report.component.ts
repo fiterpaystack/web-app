@@ -13,7 +13,6 @@ import { SelectOption } from '../common-models/select-option.model';
 import { Dates } from 'app/core/utils/dates';
 import { GlobalConfiguration } from 'app/system/configurations/global-configurations-tab/configuration.model';
 
-import * as ExcelJS from 'exceljs';
 import { AlertService } from 'app/core/alert/alert.service';
 import { NgIf, NgFor, NgSwitch, NgSwitchCase } from '@angular/common';
 import { MatCheckbox } from '@angular/material/checkbox';
@@ -336,66 +335,34 @@ export class RunReportComponent implements OnInit {
     const reportName = this.report.name;
     const payload = {
       ...userResponseValues,
-      decimalChoice: this.decimalChoice.value
-      // exportCSV: true
+      decimalChoice: this.decimalChoice.value,
+      exportExcel: true
     };
-    this.reportsService.getRunReportData(reportName, payload).subscribe((res: any) => {
-      if (res.data.length > 0) {
-        this.alertService.alert({ type: 'Report generation', message: `Report: ${reportName} data generated` });
 
-        const displayedColumns: string[] = [];
-        res.columnHeaders.forEach((header: any) => {
-          displayedColumns.push(header.columnName);
-        });
+    // Call the backend endpoint expecting an Excel file download
+    this.reportsService.getExcelRunReportData(reportName, payload).subscribe((res: any) => {
+      this.alertService.alert({ type: 'Report generation', message: `Report: ${reportName} Excel file generated` });
 
-        this.exportToXLS(reportName, res.data, displayedColumns);
-      } else {
-        this.alertService.alert({ type: 'Report generation', message: `Report: ${reportName} without data generated` });
-      }
+      const fileName = `${reportName}.xlsx`;
+      const contentType =
+        res.headers.get('Content-Type') || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+      // Create blob from the Excel file response
+      const blob = new Blob([res.body], { type: contentType });
+
+      // Create download link and trigger download
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 0);
+
       this.isProcessing = false;
     });
-  }
-
-  async exportToXLS(reportName: string, csvData: any, displayedColumns: string[]): Promise<void> {
-    const fileName = `${reportName}.xlsx`;
-
-    // Format data for ExcelJS
-    const data = csvData.map((object: any) => {
-      const row: Record<string, any> = {};
-      for (let i = 0; i < displayedColumns.length; i++) {
-        row[displayedColumns[i]] = object.row[i];
-      }
-      return row;
-    });
-
-    // Create workbook and worksheet
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('report');
-
-    // Add header
-    worksheet.addRow(displayedColumns);
-
-    // Add data rows
-    data.forEach((rowObj: any) => {
-      worksheet.addRow(displayedColumns.map((col) => rowObj[col]));
-    });
-
-    // Write to buffer and trigger download
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    });
-
-    // Native download logic (no FileSaver)
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }, 0);
   }
 }

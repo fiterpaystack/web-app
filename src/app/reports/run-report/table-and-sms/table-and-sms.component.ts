@@ -26,7 +26,6 @@ import { FormDialogComponent } from 'app/shared/form-dialog/form-dialog.componen
 import { environment } from '../../../../environments/environment';
 import { ProgressBarService } from 'app/core/progress-bar/progress-bar.service';
 
-import * as ExcelJS from 'exceljs';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
@@ -170,34 +169,32 @@ export class TableAndSmsComponent implements OnChanges {
   }
 
   exportToXLS(): void {
-    const fileName = `${this.dataObject.report.name}.xlsx`;
-    const data = this.csvData.map((object: any) => {
-      const row: { [key: string]: any } = {};
-      for (let i = 0; i < this.displayedColumns.length; i++) {
-        row[this.displayedColumns[i]] = object.row[i];
-      }
-      return row;
-    });
+    // Add exportExcel parameter to the form data
+    const formDataWithExport = {
+      ...this.dataObject.formData,
+      exportExcel: true
+    };
 
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Report');
+    // Call the backend endpoint expecting an Excel file download
+    this.reportsService.getExcelRunReportData(this.dataObject.report.name, formDataWithExport).subscribe((res: any) => {
+      const fileName = `${this.dataObject.report.name}.xlsx`;
+      const contentType =
+        res.headers.get('Content-Type') || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
-    // Add header row
-    worksheet.addRow(this.displayedColumns);
+      // Create blob from the Excel file response
+      const blob = new Blob([res.body], { type: contentType });
 
-    // Add data rows
-    data.forEach((rowObj: any) => {
-      worksheet.addRow(this.displayedColumns.map((col) => rowObj[col]));
-    });
-
-    workbook.xlsx.writeBuffer().then((buffer: any) => {
-      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      // Create download link and trigger download
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'filename.xlsx';
+      a.download = fileName;
+      document.body.appendChild(a);
       a.click();
-      URL.revokeObjectURL(url);
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 0);
     });
   }
 
