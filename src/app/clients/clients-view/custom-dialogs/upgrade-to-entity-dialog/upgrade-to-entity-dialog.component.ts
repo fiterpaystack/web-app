@@ -95,7 +95,7 @@ export class UpgradeToEntityDialogComponent implements OnInit {
         new Date(),
         [Validators.required]
       ],
-      upgradeDate: [new Date()]
+      upgradeDate: [null]
     });
   }
 
