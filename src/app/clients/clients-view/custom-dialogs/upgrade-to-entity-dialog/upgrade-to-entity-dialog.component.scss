@@ -1,0 +1,55 @@
+.upgrade-to-entity-dialog-content {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.warning-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 16px;
+
+  mat-icon {
+    color: #f39c12;
+  }
+
+  p {
+    margin: 0;
+    color: #856404;
+    font-weight: 500;
+  }
+}
+
+.form-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  .flex-100 {
+    flex: 1 1 100%;
+  }
+
+  .flex-48 {
+    flex: 1 1 48%;
+    min-width: 200px;
+  }
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-dialog-actions {
+  padding: 16px 0;
+  margin: 0;
+}
+
+.dialog-actions {
+  padding-right: 24px !important;
+  padding-left: 24px !important;
+  gap: 12px;
+}

@@ -12,6 +12,7 @@ import { DeleteSignatureDialogComponent } from './custom-dialogs/delete-signatur
 import { DeleteDialogComponent } from 'app/shared/delete-dialog/delete-dialog.component';
 import { UploadImageDialogComponent } from './custom-dialogs/upload-image-dialog/upload-image-dialog.component';
 import { CaptureImageDialogComponent } from './custom-dialogs/capture-image-dialog/capture-image-dialog.component';
+import { UpgradeToEntityDialogComponent } from './custom-dialogs/upgrade-to-entity-dialog/upgrade-to-entity-dialog.component';
 
 /** Custom Services */
 import { ClientsService } from '../clients.service';
@@ -170,6 +171,9 @@ export class ClientsViewComponent implements OnInit {
           queryParams: viewStandingInstructionsQueryParams
         });
         break;
+      case 'Upgrade to Entity':
+        this.upgradeToEntity();
+        break;
     }
   }
 
@@ -307,6 +311,31 @@ export class ClientsViewComponent implements OnInit {
     deleteClientImageDialogRef.afterClosed().subscribe((response: any) => {
       if (response.delete) {
         this.clientsService.deleteClientProfileImage(this.clientViewData.id).subscribe(() => {
+          this.reload();
+        });
+      }
+    });
+  }
+
+  /**
+   * Upgrades client to entity.
+   */
+  private upgradeToEntity() {
+    // Get constitution and business line options from client template (same as client creation form)
+    const constitutionOptions = this.clientTemplateData?.clientNonPersonConstitutionOptions || [];
+    const businessLineOptions = this.clientTemplateData?.clientNonPersonMainBusinessLineOptions || [];
+
+    const upgradeToEntityDialogRef = this.dialog.open(UpgradeToEntityDialogComponent, {
+      data: {
+        constitutionOptions: constitutionOptions,
+        businessLineOptions: businessLineOptions
+      },
+      width: '600px'
+    });
+
+    upgradeToEntityDialogRef.afterClosed().subscribe((upgradeData: any) => {
+      if (upgradeData) {
+        this.clientsService.upgradeClientToEntity(this.clientViewData.id, upgradeData).subscribe(() => {
           this.reload();
         });
       }

@@ -323,6 +323,9 @@
             {{ 'labels.buttons.View Standing Instructions' | translate }}
           </button>
         </span>
+        <button mat-menu-item (click)="doAction('Upgrade to Entity')" *ngIf="clientViewData.legalForm.id === 1">
+          {{ 'labels.buttons.Upgrade to Entity' | translate }}
+        </button>
       </mat-menu>
     </mat-card-title-group>
   </mat-card-header>
