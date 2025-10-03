@@ -1,0 +1,99 @@
+<h1 mat-dialog-title>{{ 'labels.heading.Upgrade to Entity' | translate }}</h1>
+
+<div mat-dialog-content cdkScrollable class="upgrade-to-entity-dialog-content">
+  <!-- Warning Message -->
+  <div class="warning-message">
+    <mat-icon color="warn">warning</mat-icon>
+    <p>{{ 'labels.text.Upgrade to Entity Warning' | translate }}</p>
+  </div>
+
+  <form [formGroup]="upgradeToEntityForm" (ngSubmit)="upgradeToEntityForm.valid && dialogRef.close(formValue)">
+    <div class="form-container">
+      <!-- Entity Name -->
+      <mat-form-field class="flex-100">
+        <mat-label>{{ 'labels.inputs.Entity Name' | translate }} *</mat-label>
+        <input matInput formControlName="entityName" required />
+        <mat-error *ngIf="formControls.entityName.hasError('required')">
+          {{ 'labels.inputs.Entity Name' | translate }} {{ 'labels.commons.is' | translate }}
+          <strong>{{ 'labels.commons.required' | translate }}</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Constitution -->
+      <mat-form-field class="flex-48">
+        <mat-label>{{ 'labels.inputs.Constitution' | translate }} *</mat-label>
+        <mat-select formControlName="constitutionId" required>
+          <mat-option *ngFor="let constitution of constitutionOptions" [value]="constitution.id">
+            {{ constitution.name }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="formControls.constitutionId.hasError('required')">
+          {{ 'labels.inputs.Constitution' | translate }} {{ 'labels.commons.is' | translate }}
+          <strong>{{ 'labels.commons.required' | translate }}</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Incorporation Number -->
+      <mat-form-field class="flex-48">
+        <mat-label>{{ 'labels.inputs.Incorporation Number' | translate }}</mat-label>
+        <input matInput formControlName="incorpNumber" />
+      </mat-form-field>
+
+      <!-- Incorporation Date -->
+      <mat-form-field class="flex-48">
+        <mat-label>{{ 'labels.inputs.Incorporation Date' | translate }} *</mat-label>
+        <input matInput [matDatepicker]="incorporationDatePicker" formControlName="incorporationDate" required />
+        <mat-datepicker-toggle matSuffix [for]="incorporationDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #incorporationDatePicker [startAt]="minDate"></mat-datepicker>
+        <mat-error *ngIf="formControls.incorporationDate.hasError('required')">
+          {{ 'labels.inputs.Incorporation Date' | translate }} {{ 'labels.commons.is' | translate }}
+          <strong>{{ 'labels.commons.required' | translate }}</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Incorporation Validity Till Date -->
+      <mat-form-field class="flex-48">
+        <mat-label>{{ 'labels.inputs.Incorporation Validity Till Date' | translate }}</mat-label>
+        <input matInput [matDatepicker]="validityDatePicker" formControlName="incorpValidityTillDate" />
+        <mat-datepicker-toggle matSuffix [for]="validityDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #validityDatePicker [startAt]="minDate"></mat-datepicker>
+      </mat-form-field>
+
+      <!-- Main Business Line -->
+      <mat-form-field class="flex-48">
+        <mat-label>{{ 'labels.inputs.Main Business Line' | translate }}</mat-label>
+        <mat-select formControlName="mainBusinessLineId">
+          <mat-option *ngFor="let businessLine of businessLineOptions" [value]="businessLine.id">
+            {{ businessLine.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Upgrade Date -->
+      <mat-form-field class="flex-48">
+        <mat-label>{{ 'labels.inputs.Upgrade Date' | translate }}</mat-label>
+        <input matInput [matDatepicker]="upgradeDatePicker" formControlName="upgradeDate" />
+        <mat-datepicker-toggle matSuffix [for]="upgradeDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #upgradeDatePicker [startAt]="maxDate"></mat-datepicker>
+      </mat-form-field>
+
+      <!-- Remarks -->
+      <mat-form-field class="flex-100">
+        <mat-label>{{ 'labels.inputs.Remarks' | translate }}</mat-label>
+        <textarea matInput formControlName="remarks" cdkTextareaAutosize cdkAutosizeMinRows="3"></textarea>
+      </mat-form-field>
+    </div>
+  </form>
+</div>
+
+<mat-dialog-actions align="end" class="dialog-actions">
+  <button mat-raised-button mat-dialog-close>{{ 'labels.buttons.Cancel' | translate }}</button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="!upgradeToEntityForm.valid"
+    (click)="upgradeToEntityForm.valid && dialogRef.close(formValue)"
+  >
+    {{ 'labels.buttons.Upgrade to Entity' | translate }}
+  </button>
+</mat-dialog-actions>

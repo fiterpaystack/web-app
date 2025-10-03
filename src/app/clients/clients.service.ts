@@ -480,4 +480,14 @@ export class ClientsService {
     }
     return this.http.post(`/v2/clients/search`, request);
   }
+
+  /**
+   * Upgrades a client from Person to Entity.
+   * @param {string} clientId Client ID.
+   * @param {any} upgradeData Upgrade data.
+   * @returns {Observable<any>}
+   */
+  upgradeClientToEntity(clientId: string, upgradeData: any): Observable<any> {
+    return this.http.post(`/clients/${clientId}/extended/upgrade-to-entity`, upgradeData);
+  }
 }
