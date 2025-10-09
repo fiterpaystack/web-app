@@ -50,6 +50,7 @@ export class UpgradeToEntityDialogComponent implements OnInit {
   minDate = new Date(1900, 0, 1);
   /** Maximum date allowed. */
   maxDate = new Date();
+  today = new Date();
 
   /**
    * @param {MatDialogRef} dialogRef Component reference to dialog.
