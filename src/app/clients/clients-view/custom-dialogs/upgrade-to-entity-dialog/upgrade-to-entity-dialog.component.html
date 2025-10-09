@@ -44,7 +44,7 @@
         <mat-label>{{ 'labels.inputs.Incorporation Date' | translate }} *</mat-label>
         <input matInput [matDatepicker]="incorporationDatePicker" formControlName="incorporationDate" required />
         <mat-datepicker-toggle matSuffix [for]="incorporationDatePicker"></mat-datepicker-toggle>
-        <mat-datepicker #incorporationDatePicker [startAt]="minDate"></mat-datepicker>
+        <mat-datepicker #incorporationDatePicker [startAt]="today"></mat-datepicker>
         <mat-error *ngIf="formControls.incorporationDate.hasError('required')">
           {{ 'labels.inputs.Incorporation Date' | translate }} {{ 'labels.commons.is' | translate }}
           <strong>{{ 'labels.commons.required' | translate }}</strong>
@@ -56,7 +56,7 @@
         <mat-label>{{ 'labels.inputs.Incorporation Validity Till Date' | translate }}</mat-label>
         <input matInput [matDatepicker]="validityDatePicker" formControlName="incorpValidityTillDate" />
         <mat-datepicker-toggle matSuffix [for]="validityDatePicker"></mat-datepicker-toggle>
-        <mat-datepicker #validityDatePicker [startAt]="minDate"></mat-datepicker>
+        <mat-datepicker #validityDatePicker [startAt]="today"></mat-datepicker>
       </mat-form-field>
 
       <!-- Main Business Line -->
@@ -74,7 +74,7 @@
         <mat-label>{{ 'labels.inputs.Upgrade Date' | translate }}</mat-label>
         <input matInput [matDatepicker]="upgradeDatePicker" formControlName="upgradeDate" />
         <mat-datepicker-toggle matSuffix [for]="upgradeDatePicker"></mat-datepicker-toggle>
-        <mat-datepicker #upgradeDatePicker [startAt]="maxDate"></mat-datepicker>
+        <mat-datepicker #upgradeDatePicker [startAt]="today"></mat-datepicker>
       </mat-form-field>
 
       <!-- Remarks -->
