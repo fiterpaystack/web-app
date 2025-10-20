@@ -288,7 +288,7 @@
         <ng-container matColumnDef="chargeCalculationType">
           <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Type' | translate }}</th>
           <td mat-cell *matCellDef="let charge" class="col-type">
-            {{ charge.chargeCalculationType.value | translateKey: 'catalogs' }}
+            {{ charge.chargeCalculationType?.value | translateKey: 'catalogs' }}
           </td>
         </ng-container>
 
@@ -302,7 +302,7 @@
         <ng-container matColumnDef="chargeTimeType">
           <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Collected On' | translate }}</th>
           <td mat-cell *matCellDef="let charge" class="col-collected">
-            {{ charge.chargeTimeType.value | translateKey: 'catalogs' }}
+            {{ charge.chargeTimeType?.value | translateKey: 'catalogs' }}
           </td>
         </ng-container>
 
