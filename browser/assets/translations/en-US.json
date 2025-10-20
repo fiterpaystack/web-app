@@ -288,6 +288,9 @@
     "validation.msg.savingsproduct.number.invalid.length": "NUBAN base length does not match weight array length"
   },
   "labels": {
+    "messages": {
+      "No Fee Splits Configured": "No Fee Splits Configured"
+    },
     "accounting": {
       "Accrual (periodic)": "Accrual (periodic)",
       "Accrual (upfront)": "Accrual (upfront)",
@@ -516,6 +519,7 @@
       "Subledger Account": "Subledger Account",
       "Submit": "Submit",
       "Summary": "Summary",
+      "Updating": "Updating",
       "Survey": "Survey",
       "Suspend": "Suspend",
       "Take Survey": "Take Survey",
@@ -1226,7 +1230,8 @@
       "Limits and Classification Mapping": "Manage Classification Mapping",
       "Transaction Limit Mapping": "Transaction Limit Mapping",
       "Click Add Discount Rule to create your first rule": "Click Add Discount Rule to create your first rule",
-      "No discount rules configured": "No discount rules configured"
+      "No discount rules configured": "No discount rules configured",
+      "Selected Discount Rules": "Selected Discount Rules"
     },
     "inputs": {
       "NoTaxGroup": "No Tax Group",
