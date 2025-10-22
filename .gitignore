@@ -59,3 +59,11 @@ cypress/
 
 src/assets/env.js
 src/environments/.env.ts
+
+# exclude web.mdc
+web.mdc
+*.mdc
+web.mdc/**
+
+# exclude Cursor workspace
+.cursor/
