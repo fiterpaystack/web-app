@@ -99,6 +99,10 @@ export class EditSavingProductComponent {
     return this.savingProductSettingsStep.savingProductSettingsForm;
   }
 
+  get savingProductWithdrawalFrequencyForm() {
+    return this.savingProductWithdrawalFrequencyStep.form;
+  }
+
   get savingProductAccountingForm() {
     return this.savingProductAccountingStep.savingProductAccountingForm;
   }
@@ -109,12 +113,14 @@ export class EditSavingProductComponent {
       this.savingProductCurrencyForm.valid &&
       this.savingProductTermsForm.valid &&
       this.savingProductSettingsForm.valid &&
+      this.savingProductWithdrawalFrequencyForm.valid &&
       this.savingProductAccountingForm.valid &&
       (!this.savingProductDetailsForm.pristine ||
         !this.savingProductCurrencyForm.pristine ||
         !this.savingProductTermsForm.pristine ||
         !this.savingProductSettingsForm.pristine ||
         !this.savingProductChargesStep.pristine ||
+        !this.savingProductWithdrawalFrequencyForm.pristine ||
         !this.savingProductAccountingForm.pristine ||
         !this.savingProductDiscountRulesStep.pristine)
     );
@@ -127,6 +133,7 @@ export class EditSavingProductComponent {
       ...this.savingProductTermsStep.savingProductTerms,
       ...this.savingProductSettingsStep.savingProductSettings,
       ...this.savingProductChargesStep.savingProductCharges,
+      ...this.savingProductWithdrawalFrequencyStep.savingProductWithdrawalFrequency,
       ...this.savingProductAccountingStep.savingProductAccounting,
       ...this.savingProductDiscountRulesStep.savingProductDiscountRules
     };

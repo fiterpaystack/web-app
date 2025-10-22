@@ -1,0 +1,40 @@
+.master-toggle-card {
+  margin-bottom: 16px;
+}
+
+.templates-card {
+  margin-bottom: 16px;
+}
+
+.template-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rule-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  background-color: #fafafa;
+}
+
+.add-rule-button {
+  margin-top: 8px;
+}
+
+.stepper-actions {
+  margin-top: 24px;
+}
+
+@media (width <= 768px) {
+  .rule-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}

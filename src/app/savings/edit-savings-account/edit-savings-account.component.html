@@ -50,6 +50,13 @@
       </mifosx-savings-account-charges-step>
     </mat-step>
 
+    <mat-step>
+      <ng-template matStepLabel>{{ 'labels.inputs.Withdrawal Frequency' | translate }}</ng-template>
+
+      <mifosx-savings-account-withdrawal-frequency-step [savingsAccountTemplate]="savingsAccountAndTemplate">
+      </mifosx-savings-account-withdrawal-frequency-step>
+    </mat-step>
+
     <mat-step *ngIf="savingsAccountFormValidAndNotPristine" completed>
       <ng-template matStepLabel>{{ 'labels.inputs.PREVIEW' | translate }}</ng-template>
 

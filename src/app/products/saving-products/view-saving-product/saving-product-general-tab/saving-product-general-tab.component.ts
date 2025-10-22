@@ -116,4 +116,14 @@ export class SavingProductGeneralTabComponent {
 
     return discountRules || [];
   }
+
+  getTimePeriodLabel(timePeriod: string): string {
+    const labels: { [key: string]: string } = {
+      DAILY: 'day',
+      WEEKLY: 'week',
+      MONTHLY: 'month',
+      YEARLY: 'year'
+    };
+    return labels[timePeriod] || timePeriod.toLowerCase();
+  }
 }

@@ -12,9 +12,9 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 
 @Component({
-  selector: 'mifosx-saving-product-withdrawal-frequency-step',
-  templateUrl: './saving-product-withdrawal-frequency-step.component.html',
-  styleUrls: ['./saving-product-withdrawal-frequency-step.component.scss'],
+  selector: 'mifosx-savings-account-withdrawal-frequency-step',
+  templateUrl: './savings-account-withdrawal-frequency-step.component.html',
+  styleUrls: ['./savings-account-withdrawal-frequency-step.component.scss'],
   imports: [
     ...STANDALONE_SHARED_IMPORTS,
     FaIconComponent,
@@ -35,8 +35,8 @@ import { FaIconComponent } from '@fortawesome/angular-fontawesome';
     MatStepperNext
   ]
 })
-export class SavingProductWithdrawalFrequencyStepComponent implements OnInit {
-  @Input() savingProductsTemplate: any;
+export class SavingsAccountWithdrawalFrequencyStepComponent implements OnInit {
+  @Input() savingsAccountTemplate: any;
 
   form: UntypedFormGroup;
   pristine = true;
@@ -51,18 +51,24 @@ export class SavingProductWithdrawalFrequencyStepComponent implements OnInit {
 
   constructor(private fb: UntypedFormBuilder) {
     this.form = this.fb.group({
-      enable: [true],
+      enable: [false],
       withdrawalFrequencySettings: this.fb.array([])
     });
   }
 
   ngOnInit() {
-    const existing = this.savingProductsTemplate?.additionalAttributes?.withdrawalFrequencySettings || [];
-    if (Array.isArray(existing) && existing.length) {
+    const existing = this.savingsAccountTemplate?.additionalAttributes?.withdrawalFrequencySettings;
+    if (existing && Array.isArray(existing)) {
+      // Load existing account-level settings
       existing.forEach((s: any) => this.addSetting(s));
+      this.form.get('enable')?.setValue(true);
     } else {
-      // start empty; unlimited by default
-      this.form.get('enable')?.setValue(false);
+      // Start with product defaults if available
+      const productDefaults = this.savingsAccountTemplate?.product?.additionalAttributes?.withdrawalFrequencySettings;
+      if (Array.isArray(productDefaults) && productDefaults.length) {
+        productDefaults.forEach((s: any) => this.addSetting(s));
+        this.form.get('enable')?.setValue(true);
+      }
     }
 
     // Mark as initialized then start tracking user-driven changes
@@ -95,9 +101,10 @@ export class SavingProductWithdrawalFrequencyStepComponent implements OnInit {
   }
 
   addSetting(setting?: any) {
-    // prevent duplicate time periods
+    // Prevent duplicate time periods
     const period = setting?.timePeriod;
     if (period && this.settingsArray.value?.some((r: any) => r.timePeriod === period)) return;
+
     this.settingsArray.push(this.createSetting(setting));
     this.form.get('enable')?.setValue(true);
     if (this.initialized) this.pristine = false;
@@ -105,6 +112,8 @@ export class SavingProductWithdrawalFrequencyStepComponent implements OnInit {
 
   removeSetting(index: number) {
     this.settingsArray.removeAt(index);
+
+    // Disable if no settings remain
     if (this.settingsArray.length === 0) {
       this.form.get('enable')?.setValue(false);
     }
@@ -127,19 +136,21 @@ export class SavingProductWithdrawalFrequencyStepComponent implements OnInit {
         { maxWithdrawals: 6, timePeriod: 'MONTHLY', isActive: true }
       ]
     };
+
+    // Clear settings and apply template
     this.settingsArray.clear();
-    (templates[template] || []).forEach((t) => this.settingsArray.push(this.createSetting(t)));
+    (templates[template] || []).forEach((t) => this.addSetting(t));
     this.form.get('enable')?.setValue(this.settingsArray.length > 0);
     if (this.initialized) this.pristine = false;
   }
 
   isTimePeriodDisabled(period: string, currentIndex: number): boolean {
     const settings = this.settingsArray.value || [];
-    // Check if this period is already used by another rule (not the current one)
+    // Check if this period is already used by another rule
     return settings.some((setting: any, index: number) => index !== currentIndex && setting.timePeriod === period);
   }
 
-  get savingProductWithdrawalFrequency() {
+  get savingsAccountWithdrawalFrequency() {
     const enabled = this.form.get('enable')?.value;
     const settings: any[] = (this.settingsArray.value || []).filter((r: any) => !!r);
     // If not enabled or no rules, omit the field to imply unlimited

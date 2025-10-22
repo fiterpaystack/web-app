@@ -161,8 +161,8 @@
         >
           <div class="layout-row align-center gap-2percent">
             <span class="flex-60">
-              {{ rule.maxWithdrawals }} {{ 'labels.inputs.withdrawals per' | translate }}
-              {{ rule.timePeriod | lowercase }}
+              {{ rule.maxWithdrawals }} {{ rule.maxWithdrawals === 1 ? 'withdrawal' : 'withdrawals' }} per
+              {{ getTimePeriodLabel(rule.timePeriod) }}
             </span>
             <span class="flex-40" [ngClass]="{ 'text-success': rule.isActive, 'text-muted': !rule.isActive }">
               {{ rule.isActive ? 'Active' : 'Inactive' }}

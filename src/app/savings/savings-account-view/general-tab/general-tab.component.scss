@@ -70,3 +70,54 @@ $color: #e2e4ec;
     width: $bar;
   }
 }
+
+// Withdrawal Frequency Styling
+.withdrawal-frequency-content {
+  .frequency-group {
+    margin-bottom: 12px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #333;
+      font-size: 13px;
+    }
+  }
+
+  .frequency-rule {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2px 0;
+    margin-left: 8px;
+
+    .rule-text {
+      flex: 1;
+      color: #555;
+      font-size: 13px;
+    }
+
+    .rule-status {
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+
+      &.status-active {
+        background-color: #e8f5e8;
+        color: #2e7d32;
+      }
+
+      &.status-inactive {
+        background-color: #f5f5f5;
+        color: #757575;
+      }
+    }
+  }
+}
