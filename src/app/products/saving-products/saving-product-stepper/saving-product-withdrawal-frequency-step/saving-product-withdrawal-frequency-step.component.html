@@ -1,0 +1,83 @@
+<form [formGroup]="form">
+  <mat-card class="master-toggle-card">
+    <mat-card-header>
+      <mat-card-title>{{ 'labels.inputs.Withdrawal Frequency' | translate }}</mat-card-title>
+      <mat-card-subtitle>{{
+        'tooltips.Configure limits on how often withdrawals can be made' | translate
+      }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-checkbox formControlName="enable">{{
+        'labels.inputs.Enable Withdrawal Frequency Limits' | translate
+      }}</mat-checkbox>
+    </mat-card-content>
+  </mat-card>
+
+  <div *ngIf="form.get('enable')?.value">
+    <mat-card class="templates-card">
+      <mat-card-header>
+        <mat-card-title>{{ 'labels.inputs.Quick Templates' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content class="template-buttons">
+        <button mat-stroked-button type="button" (click)="applyTemplate('conservative')">
+          {{ 'labels.inputs.Conservative' | translate }}
+        </button>
+        <button mat-stroked-button type="button" (click)="applyTemplate('moderate')">
+          {{ 'labels.inputs.Moderate' | translate }}
+        </button>
+        <button mat-stroked-button type="button" (click)="applyTemplate('flexible')">
+          {{ 'labels.inputs.Flexible' | translate }}
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ 'labels.inputs.Custom Rules' | translate }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div formArrayName="withdrawalFrequencySettings">
+          <div *ngFor="let group of settingsArray.controls; let i = index" [formGroupName]="i" class="rule-row">
+            <mat-form-field>
+              <mat-label>{{ 'labels.inputs.Maximum Withdrawals' | translate }}</mat-label>
+              <input matInput type="number" formControlName="maxWithdrawals" min="1" />
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>{{ 'labels.inputs.Time Period' | translate }}</mat-label>
+              <mat-select formControlName="timePeriod">
+                <mat-option
+                  *ngFor="let option of timePeriodOptions"
+                  [value]="option.value"
+                  [disabled]="isTimePeriodDisabled(option.value, i)"
+                  >{{ option.label | translate }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+            <mat-checkbox formControlName="isActive">{{ 'labels.inputs.Active' | translate }}</mat-checkbox>
+
+            <button mat-stroked-button color="warn" type="button" (click)="removeSetting(i)">
+              {{ 'labels.buttons.Remove' | translate }}
+            </button>
+          </div>
+        </div>
+
+        <button class="add-rule-button" mat-stroked-button type="button" (click)="addSetting()">
+          {{ 'labels.inputs.Add Withdrawal Limit' | translate }}
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="layout-row align-center gap-2percent margin-t responsive-column stepper-actions">
+    <button mat-raised-button matStepperPrevious>
+      <fa-icon icon="arrow-left" class="m-r-10"></fa-icon>
+      {{ 'labels.buttons.Previous' | translate }}
+    </button>
+    <button mat-raised-button matStepperNext>
+      {{ 'labels.buttons.Next' | translate }}
+      <fa-icon icon="arrow-right" class="m-l-10"></fa-icon>
+    </button>
+  </div>
+</form>

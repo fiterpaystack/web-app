@@ -18,6 +18,7 @@ import { Accounting } from 'app/core/utils/accounting';
 import { MatStepper, MatStepperIcon, MatStep, MatStepLabel } from '@angular/material/stepper';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { SavingProductPreviewStepComponent } from '../saving-product-stepper/saving-product-preview-step/saving-product-preview-step.component';
+import { SavingProductWithdrawalFrequencyStepComponent } from '../saving-product-stepper/saving-product-withdrawal-frequency-step/saving-product-withdrawal-frequency-step.component';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 @Component({
@@ -38,7 +39,8 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     SavingProductChargesStepComponent,
     SavingProductAccountingStepComponent,
     SavingProductDiscountRulesStepComponent,
-    SavingProductPreviewStepComponent
+    SavingProductPreviewStepComponent,
+    SavingProductWithdrawalFrequencyStepComponent
   ]
 })
 export class EditSavingProductComponent {
@@ -55,6 +57,8 @@ export class EditSavingProductComponent {
   savingProductAccountingStep: SavingProductAccountingStepComponent;
   @ViewChild(SavingProductDiscountRulesStepComponent, { static: true })
   savingProductDiscountRulesStep: SavingProductDiscountRulesStepComponent;
+  @ViewChild(SavingProductWithdrawalFrequencyStepComponent, { static: true })
+  savingProductWithdrawalFrequencyStep: SavingProductWithdrawalFrequencyStepComponent;
 
   savingProductAndTemplate: any;
   accountingRuleData: string[] = [];

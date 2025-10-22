@@ -1,0 +1,29 @@
+.master-toggle-card {
+  margin-bottom: 16px;
+}
+
+.templates-card {
+  margin-bottom: 16px;
+}
+
+.template-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rule-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.add-rule-button {
+  margin-top: 8px;
+}
+
+.stepper-actions {
+  margin-top: 24px;
+}
