@@ -437,8 +437,8 @@ export class EditChargeComponent implements OnInit {
       const heading = 'Confirm Tax Group Change';
       const dialogContext =
         newTaxGroupId === null
-          ? 'Removing the tax group affects future transactions only. Historical transactions remain unchanged. Proceed to remove?'
-          : 'Changing the tax group affects future transactions only. Historical transactions remain unchanged. Proceed to change?';
+          ? 'Removing the tax group affects future transactions only. Historical transactions remain unchanged. Proceed to remove'
+          : 'Changing the tax group affects future transactions only. Historical transactions remain unchanged. Proceed to change';
 
       const dialogRef = (this as any).dialog?.open
         ? (this as any).dialog.open(ConfirmationDialogComponent, {
