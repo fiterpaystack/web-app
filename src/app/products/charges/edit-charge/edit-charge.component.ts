@@ -432,29 +432,32 @@ export class EditChargeComponent implements OnInit {
       return;
     }
 
-    const heading = 'Confirm Tax Group Change';
-    const dialogContext =
-      newTaxGroupId === null
-        ? 'Removing the tax group affects future transactions only. Historical transactions remain unchanged. Proceed to remove?'
-        : 'Changing the tax group affects future transactions only. Historical transactions remain unchanged. Proceed to change?';
+    // Add a small delay to allow the dropdown to close before showing the dialog
+    setTimeout(() => {
+      const heading = 'Confirm Tax Group Change';
+      const dialogContext =
+        newTaxGroupId === null
+          ? 'Removing the tax group affects future transactions only. Historical transactions remain unchanged. Proceed to remove'
+          : 'Changing the tax group affects future transactions only. Historical transactions remain unchanged. Proceed to change';
 
-    const dialogRef = (this as any).dialog?.open
-      ? (this as any).dialog.open(ConfirmationDialogComponent, {
-          data: { heading, dialogContext, type: 'warn' }
-        })
-      : null;
+      const dialogRef = (this as any).dialog?.open
+        ? (this as any).dialog.open(ConfirmationDialogComponent, {
+            data: { heading, dialogContext, type: 'warn' }
+          })
+        : null;
 
-    if (!dialogRef) {
-      // If dialog isn't available, keep new value silently
-      return;
-    }
-
-    dialogRef.afterClosed().subscribe((result: any) => {
-      if (!result || !result.confirm) {
-        // Revert selection
-        this.chargeForm.patchValue({ taxGroupId: this.originalTaxGroupId });
+      if (!dialogRef) {
+        // If dialog isn't available, keep new value silently
+        return;
       }
-    });
+
+      dialogRef.afterClosed().subscribe((result: any) => {
+        if (!result || !result.confirm) {
+          // Revert selection
+          this.chargeForm.patchValue({ taxGroupId: this.originalTaxGroupId });
+        }
+      });
+    }, 100); // 100ms delay to allow dropdown to close
   }
 
   /**

@@ -70,6 +70,13 @@
       </mifosx-saving-product-discount-rules-step>
     </mat-step>
 
+    <mat-step>
+      <ng-template matStepLabel>{{ 'labels.inputs.Withdrawal Frequency' | translate }}</ng-template>
+
+      <mifosx-saving-product-withdrawal-frequency-step [savingProductsTemplate]="savingProductsTemplate">
+      </mifosx-saving-product-withdrawal-frequency-step>
+    </mat-step>
+
     <mat-step [stepControl]="savingProductAccountingForm">
       <ng-template matStepLabel>{{ 'labels.inputs.ACCOUNTING' | translate }}</ng-template>
 

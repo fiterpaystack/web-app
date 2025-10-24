@@ -149,6 +149,32 @@
       }}</span>
     </div>
 
+    <h3 class="mat-h3 flex-fill">{{ 'labels.inputs.Withdrawal Frequency' | translate }}</h3>
+
+    <mat-divider [inset]="true"></mat-divider>
+
+    <div *ngIf="savingProduct.additionalAttributes?.withdrawalFrequencySettings?.length; else unlimited">
+      <div class="layout-row-wrap gap-2percent responsive-column">
+        <div
+          *ngFor="let rule of savingProduct.additionalAttributes.withdrawalFrequencySettings"
+          class="flex-31 mat-elevation-z1 p-10"
+        >
+          <div class="layout-row align-center gap-2percent">
+            <span class="flex-60">
+              {{ rule.maxWithdrawals }} {{ rule.maxWithdrawals === 1 ? 'withdrawal' : 'withdrawals' }} per
+              {{ getTimePeriodLabel(rule.timePeriod) }}
+            </span>
+            <span class="flex-40" [ngClass]="{ 'text-success': rule.isActive, 'text-muted': !rule.isActive }">
+              {{ rule.isActive ? 'Active' : 'Inactive' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-template #unlimited>
+      <div class="text-muted">Unlimited withdrawals</div>
+    </ng-template>
+
     <div
       class="flex-fill layout-row"
       *ngIf="

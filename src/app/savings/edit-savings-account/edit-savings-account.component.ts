@@ -6,6 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { SavingsAccountDetailsStepComponent } from '../savings-account-stepper/savings-account-details-step/savings-account-details-step.component';
 import { SavingsAccountTermsStepComponent } from '../savings-account-stepper/savings-account-terms-step/savings-account-terms-step.component';
 import { SavingsAccountChargesStepComponent } from '../savings-account-stepper/savings-account-charges-step/savings-account-charges-step.component';
+import { SavingsAccountWithdrawalFrequencyStepComponent } from '../savings-account-stepper/savings-account-withdrawal-frequency-step/savings-account-withdrawal-frequency-step.component';
 
 /** Custom Services */
 import { SavingsService } from '../savings.service';
@@ -33,6 +34,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     SavingsAccountDetailsStepComponent,
     SavingsAccountTermsStepComponent,
     SavingsAccountChargesStepComponent,
+    SavingsAccountWithdrawalFrequencyStepComponent,
     SavingsAccountPreviewStepComponent
   ]
 })
@@ -51,6 +53,9 @@ export class EditSavingsAccountComponent {
   /** Savings Account Charges Step */
   @ViewChild(SavingsAccountChargesStepComponent, { static: true })
   savingsAccountChargesStep: SavingsAccountChargesStepComponent;
+  /** Savings Account Withdrawal Frequency Step */
+  @ViewChild(SavingsAccountWithdrawalFrequencyStepComponent, { static: true })
+  savingsAccountWithdrawalFrequencyStep: SavingsAccountWithdrawalFrequencyStepComponent;
 
   /**
    * Fetches savings account template from `resolve`
@@ -95,15 +100,24 @@ export class EditSavingsAccountComponent {
   }
 
   /**
+   * Retrieves savings account withdrawal frequency form.
+   */
+  get savingsAccountWithdrawalFrequencyForm() {
+    return this.savingsAccountWithdrawalFrequencyStep.form;
+  }
+
+  /**
    * Checks validity and pristinity of overall savings account form .
    */
   get savingsAccountFormValidAndNotPristine() {
     return (
       this.savingsAccountDetailsForm.valid &&
       this.savingsAccountTermsForm.valid &&
+      this.savingsAccountWithdrawalFrequencyForm.valid &&
       (!this.savingsAccountDetailsForm.pristine ||
         !this.savingsAccountTermsForm.pristine ||
-        !this.savingsAccountChargesStep.pristine)
+        !this.savingsAccountChargesStep.pristine ||
+        !this.savingsAccountWithdrawalFrequencyStep.pristine)
     );
   }
 
@@ -114,7 +128,8 @@ export class EditSavingsAccountComponent {
     return {
       ...this.savingsAccountDetailsStep.savingsAccountDetails,
       ...this.savingsAccountTermsStep.savingsAccountTerms,
-      ...this.savingsAccountChargesStep.savingsAccountCharges
+      ...this.savingsAccountChargesStep.savingsAccountCharges,
+      ...this.savingsAccountWithdrawalFrequencyStep.savingsAccountWithdrawalFrequency
     };
   }
 

@@ -242,6 +242,84 @@
           <td>{{ 'labels.inputs.Withhold Tax Group' | translate }}</td>
           <td>{{ savingsAccountData.taxGroup.name }}</td>
         </tr>
+        <tr>
+          <td>{{ 'labels.inputs.Withdrawal Frequency' | translate }}</td>
+          <td *ngIf="savingsAccountData.additionalAttributes?.withdrawalFrequencySettings; else unlimitedWithdrawals">
+            <div class="withdrawal-frequency-content">
+              <!-- Effective Settings -->
+              <div
+                *ngIf="savingsAccountData.additionalAttributes.withdrawalFrequencySettings.effective?.length"
+                class="frequency-group"
+              >
+                <strong>{{ 'labels.inputs.Effective Settings' | translate }}:</strong>
+                <div
+                  *ngFor="let rule of savingsAccountData.additionalAttributes.withdrawalFrequencySettings.effective"
+                  class="frequency-rule"
+                >
+                  <span class="rule-text">
+                    {{ rule.maxWithdrawals }} {{ rule.maxWithdrawals === 1 ? 'withdrawal' : 'withdrawals' }} per
+                    {{ getTimePeriodLabel(rule.timePeriod) }}
+                  </span>
+                  <span
+                    class="rule-status"
+                    [ngClass]="{ 'status-active': rule.isActive, 'status-inactive': !rule.isActive }"
+                  >
+                    {{ rule.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Account Settings -->
+              <div
+                *ngIf="savingsAccountData.additionalAttributes.withdrawalFrequencySettings.account?.length"
+                class="frequency-group"
+              >
+                <strong>{{ 'labels.inputs.Account Settings' | translate }}:</strong>
+                <div
+                  *ngFor="let rule of savingsAccountData.additionalAttributes.withdrawalFrequencySettings.account"
+                  class="frequency-rule"
+                >
+                  <span class="rule-text">
+                    {{ rule.maxWithdrawals }} {{ rule.maxWithdrawals === 1 ? 'withdrawal' : 'withdrawals' }} per
+                    {{ getTimePeriodLabel(rule.timePeriod) }}
+                  </span>
+                  <span
+                    class="rule-status"
+                    [ngClass]="{ 'status-active': rule.isActive, 'status-inactive': !rule.isActive }"
+                  >
+                    {{ rule.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Product Settings -->
+              <div
+                *ngIf="savingsAccountData.additionalAttributes.withdrawalFrequencySettings.product?.length"
+                class="frequency-group"
+              >
+                <strong>{{ 'labels.inputs.Product Settings' | translate }}:</strong>
+                <div
+                  *ngFor="let rule of savingsAccountData.additionalAttributes.withdrawalFrequencySettings.product"
+                  class="frequency-rule"
+                >
+                  <span class="rule-text">
+                    {{ rule.maxWithdrawals }} {{ rule.maxWithdrawals === 1 ? 'withdrawal' : 'withdrawals' }} per
+                    {{ getTimePeriodLabel(rule.timePeriod) }}
+                  </span>
+                  <span
+                    class="rule-status"
+                    [ngClass]="{ 'status-active': rule.isActive, 'status-inactive': !rule.isActive }"
+                  >
+                    {{ rule.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </td>
+          <ng-template #unlimitedWithdrawals>
+            <td class="text-muted">Unlimited withdrawals</td>
+          </ng-template>
+        </tr>
       </tbody>
     </table>
   </div>
