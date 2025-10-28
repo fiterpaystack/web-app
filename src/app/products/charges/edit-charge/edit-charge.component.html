@@ -279,74 +279,92 @@
           <button mat-raised-button color="primary" type="button" (click)="addSlab()">Add Slab</button>
         </div>
         <!-- Fee Split Configuration Section -->
-        <div *ngIf="chargeData.enableFeeSplit" class="fee-split-config m-t-20">
-          <h3>{{ 'labels.inputs.Fee Split Configuration' | translate }}</h3>
-          <div formArrayName="stakeholderSplits">
-            <div
-              *ngFor="let split of stakeholderSplits.controls; let i = index"
-              [formGroupName]="i"
-              class="split-row layout-row-wrap gap-2percent m-b-10"
-            >
-              <mat-form-field class="flex-30">
-                <mat-label>{{ 'labels.inputs.Stakeholder' | translate }}</mat-label>
-                <mat-select formControlName="fundId" required>
-                  <mat-option *ngFor="let fund of availableFunds" [value]="fund.id">
-                    {{ fund.name }}
-                  </mat-option>
-                </mat-select>
-                <mat-error *ngIf="stakeholderSplits.at(i).get('fundId')?.hasError('required')">
-                  {{ 'labels.inputs.Stakeholder' | translate }} {{ 'labels.commons.is' | translate }}
-                  <strong>{{ 'labels.commons.required' | translate }}</strong>
-                </mat-error>
-              </mat-form-field>
+        <div class="form-section">
+          <mat-divider class="m-b-20"></mat-divider>
+          <h4>{{ 'labels.heading.Fee Split Configuration' | translate }}</h4>
 
-              <mat-form-field class="flex-20">
-                <mat-label>{{ 'labels.inputs.Split Type' | translate }}</mat-label>
-                <mat-select formControlName="splitType" required>
-                  <mat-option value="PERCENTAGE">{{ 'labels.inputs.Percentage' | translate }}</mat-option>
-                  <mat-option value="FLAT_AMOUNT">{{ 'labels.inputs.Flat Amount' | translate }}</mat-option>
-                </mat-select>
-                <mat-error *ngIf="stakeholderSplits.at(i).get('splitType')?.hasError('required')">
-                  {{ 'labels.inputs.Split Type' | translate }} {{ 'labels.commons.is' | translate }}
-                  <strong>{{ 'labels.commons.required' | translate }}</strong>
-                </mat-error>
-              </mat-form-field>
-
-              <mat-form-field class="flex-20">
-                <mat-label>{{ 'labels.inputs.Split Value' | translate }}</mat-label>
-                <input matInput type="number" formControlName="splitValue" required />
-                <mat-error *ngIf="stakeholderSplits.at(i).get('splitValue')?.hasError('required')">
-                  {{ 'labels.inputs.Split Value' | translate }} {{ 'labels.commons.is' | translate }}
-                  <strong>{{ 'labels.commons.required' | translate }}</strong>
-                </mat-error>
-              </mat-form-field>
-
-              <mat-form-field class="flex-25">
-                <mat-label>{{ 'GL Account Name or Code Name or Code' | translate }}</mat-label>
-                <mat-select formControlName="glAccountId" required>
-                  <mat-option *ngFor="let account of glAccounts" [value]="account.id">
-                    {{ account.name }} ({{ account.glCode }})
-                  </mat-option>
-                </mat-select>
-                <mat-error *ngIf="stakeholderSplits.at(i).get('glAccountId')?.hasError('required')">
-                  {{ 'GL Account Name or Code Name or Code' | translate }} {{ 'labels.commons.is' | translate }}
-                  <strong>{{ 'labels.commons.required' | translate }}</strong>
-                </mat-error>
-              </mat-form-field>
-
-              <button mat-icon-button type="button" (click)="removeStakeholderSplit(i)" class="m-t-10">
-                <mat-icon>delete</mat-icon>
-              </button>
+          <div class="layout-row-wrap gap-2percent layout-lt-md-column">
+            <div class="flex-48">
+              <mat-checkbox labelPosition="before" formControlName="enableFeeSplit">
+                {{ 'labels.inputs.Enable Fee Split' | translate }}
+              </mat-checkbox>
             </div>
           </div>
 
-          <button mat-raised-button type="button" (click)="addStakeholderSplit()" class="m-t-10">
-            <!-- <mat-icon>add</mat-icon> -->
-            {{ 'labels.buttons.Add Stakeholder' | translate }}
-          </button>
-        </div>
+          <div *ngIf="chargeForm.controls.enableFeeSplit.value" class="fee-split-config m-t-20">
+            <div formArrayName="stakeholderSplits">
+              <div
+                *ngFor="let split of stakeholderSplits.controls; let i = index"
+                [formGroupName]="i"
+                class="split-row layout-row-wrap gap-2percent m-b-10"
+              >
+                <mat-form-field class="flex-30">
+                  <mat-label>{{ 'labels.inputs.Stakeholder' | translate }}</mat-label>
+                  <mat-select formControlName="fundId" required>
+                    <mat-option *ngFor="let fund of availableFunds" [value]="fund.id">
+                      {{ fund.name }}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="stakeholderSplits.at(i).get('fundId')?.hasError('required')">
+                    {{ 'labels.inputs.Stakeholder' | translate }} {{ 'labels.commons.is' | translate }}
+                    <strong>{{ 'labels.commons.required' | translate }}</strong>
+                  </mat-error>
+                </mat-form-field>
 
-        <!-- Discount Rules Assignment Section -->
+                <mat-form-field class="flex-20">
+                  <mat-label>{{ 'labels.inputs.Split Type' | translate }}</mat-label>
+                  <mat-select formControlName="splitType" required>
+                    <mat-option value="PERCENTAGE">{{ 'labels.inputs.Percentage' | translate }}</mat-option>
+                    <mat-option value="FLAT_AMOUNT">{{ 'labels.inputs.Flat Amount' | translate }}</mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="stakeholderSplits.at(i).get('splitType')?.hasError('required')">
+                    {{ 'labels.inputs.Split Type' | translate }} {{ 'labels.commons.is' | translate }}
+                    <strong>{{ 'labels.commons.required' | translate }}</strong>
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="flex-20">
+                  <mat-label>{{ 'labels.inputs.Split Value' | translate }}</mat-label>
+                  <input matInput type="number" formControlName="splitValue" required />
+                  <mat-error *ngIf="stakeholderSplits.at(i).get('splitValue')?.hasError('required')">
+                    {{ 'labels.inputs.Split Value' | translate }} {{ 'labels.commons.is' | translate }}
+                    <strong>{{ 'labels.commons.required' | translate }}</strong>
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="flex-25">
+                  <mat-label>{{ 'GL Account Name or Code Name or Code' | translate }}</mat-label>
+                  <mat-select formControlName="glAccountId" required>
+                    <mat-option *ngFor="let account of glAccounts" [value]="account.id">
+                      {{ account.name }} ({{ account.glCode }})
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="stakeholderSplits.at(i).get('glAccountId')?.hasError('required')">
+                    {{ 'GL Account Name or Code Name or Code' | translate }} {{ 'labels.commons.is' | translate }}
+                    <strong>{{ 'labels.commons.required' | translate }}</strong>
+                  </mat-error>
+                </mat-form-field>
+
+                <button mat-icon-button type="button" (click)="removeStakeholderSplit(i)" class="m-t-10">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <button
+              mat-raised-button
+              type="button"
+              (click)="addStakeholderSplit()"
+              class="m-t-10"
+              *ngIf="chargeForm.controls.enableFeeSplit.value"
+            >
+              <!-- <mat-icon>add</mat-icon> -->
+              {{ 'labels.buttons.Add Stakeholder' | translate }}
+            </button>
+          </div>
+
+          <!-- Discount Rules Assignment Section -->
+        </div>
         <div *ngIf="chargeData.chargeAppliesTo.id === 2" class="form-section">
           <mat-divider class="m-b-20"></mat-divider>
           <h4>{{ 'labels.heading.Discount Rules Assignment' | translate }}</h4>
