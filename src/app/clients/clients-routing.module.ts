@@ -51,6 +51,8 @@ import { ClientFeeConfigurationResolver } from './clients-view/client-fee-config
 import { OverrideChargeComponent } from './clients-view/client-fee-configuration/override-charge/override-charge.component';
 import { FeeDetailComponent } from './clients-view/client-fee-configuration/fee-detail/fee-detail.component';
 import { FeeDetailResolver } from './clients-view/client-fee-configuration/fee-detail/fee-detail.resolver';
+import { KycSummaryComponent } from './kyc-summary/kyc-summary.component';
+import { KycSummaryResolver } from './kyc-summary/kyc-summary.resolver';
 
 const routes: Routes = [
   Route.withShell([
@@ -156,6 +158,14 @@ const routes: Routes = [
               data: { title: 'Documents', breadcrumb: 'Documents', routeParamBreadcrumb: false },
               resolve: {
                 clientDocuments: ClientDocumentsResolver
+              }
+            },
+            {
+              path: 'kyc-summary',
+              component: KycSummaryComponent,
+              data: { title: 'KYC Summary', breadcrumb: 'KYC Summary', routeParamBreadcrumb: false },
+              resolve: {
+                kycSummary: KycSummaryResolver
               }
             },
             {
@@ -332,7 +342,8 @@ const routes: Routes = [
     ClientTransactionPayResolver,
     ClientDataAndTemplateResolver,
     ClientCollateralResolver,
-    ClientFeeConfigurationResolver
+    ClientFeeConfigurationResolver,
+    KycSummaryResolver
   ]
 })
 export class ClientsRoutingModule {}
