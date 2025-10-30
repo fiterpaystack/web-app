@@ -1,12 +1,21 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import {
+  ApplicationRef,
+  ChangeDetectionStrategy,
+  Component,
+  EnvironmentInjector,
+  createComponent,
+  inject
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AsyncPipe, CurrencyPipe, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, CurrencyPipe, NgFor, NgIf, DOCUMENT } from '@angular/common';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { MatDivider } from '@angular/material/divider';
 import { MatButton } from '@angular/material/button';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 import { KycSummary } from './models/kyc-summary.model';
 import { FamilyMembersListComponent } from './family-members-list/family-members-list.component';
+import { KycDocumentComponent } from './kyc-document/kyc-document.component';
+import { KycExportService } from './kyc-export.service';
 
 @Component({
   selector: 'mifosx-kyc-summary',
@@ -31,11 +40,39 @@ import { FamilyMembersListComponent } from './family-members-list/family-members
 })
 export class KycSummaryComponent {
   private route = inject(ActivatedRoute);
+  private appRef = inject(ApplicationRef);
+  private injector = inject(EnvironmentInjector);
+  private document = inject(DOCUMENT);
+  private exportSvc = inject(KycExportService);
   kyc: KycSummary = this.route.snapshot.data['kycSummary'];
 
-  print(): void {
-    // Intentionally disabled for now
-    return;
+  async print(): Promise<void> {
+    const container = this.document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.left = '-10000px';
+    container.style.top = '0';
+    this.document.body.appendChild(container);
+
+    const compRef = createComponent(KycDocumentComponent, {
+      environmentInjector: this.injector
+    });
+    compRef.location.nativeElement.id = 'kyc-doc-host';
+    compRef.instance.kyc = this.kyc;
+    this.appRef.attachView(compRef.hostView);
+    container.appendChild(compRef.location.nativeElement);
+
+    // Ensure change detection & layout complete before capture
+    compRef.changeDetectorRef.markForCheck();
+    compRef.changeDetectorRef.detectChanges();
+    await Promise.resolve();
+
+    try {
+      await this.exportSvc.exportDomToPdf('#kyc-doc-root', 'kyc-summary.pdf');
+    } finally {
+      this.appRef.detachView(compRef.hostView);
+      compRef.destroy();
+      container.remove();
+    }
   }
 
   nextOfKinMembers(): any[] {

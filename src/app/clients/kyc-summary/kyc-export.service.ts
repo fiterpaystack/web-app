@@ -31,14 +31,15 @@ export class KycExportService {
     const imgWidth = pageWidth;
     const imgHeight = canvas.height / pxPerMm;
 
+    // Render full image each page, shifting Y to simulate page slices
     let position = 0;
-    let remaining = imgHeight;
+    let remaining = imgHeight - pageHeight;
 
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, Math.min(imgHeight, pageHeight));
-    remaining -= pageHeight;
-    position = -pageHeight;
+    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
 
-    while (remaining > 0) {
+    // Guard against floating precision causing an extra blank page
+    const EPS = 0.5; // mm
+    while (remaining > EPS) {
       pdf.addPage();
       position += pageHeight;
       pdf.addImage(imgData, 'PNG', 0, -position, imgWidth, imgHeight);
