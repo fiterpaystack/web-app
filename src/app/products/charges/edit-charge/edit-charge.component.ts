@@ -32,6 +32,7 @@ import { ValidateOnFocusDirective } from '../../../directives/validate-on-focus.
 import { GlAccountSelectorComponent } from '../../../shared/accounting/gl-account-selector/gl-account-selector.component';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatDivider } from '@angular/material/divider';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from 'app/shared/confirmation-dialog/confirmation-dialog.component';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
@@ -54,7 +55,8 @@ import { ChargeStakeholderSplit, FeeSplitRequest } from '../models/fee-split.mod
     MatTableModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinner
+    MatProgressSpinner,
+    MatDivider
   ]
 })
 export class EditChargeComponent implements OnInit {
@@ -172,7 +174,8 @@ export class EditChargeComponent implements OnInit {
         Validators.required
       ],
       enableSlabs: [this.chargeData.chargeSlabs?.length > 0],
-      chartSlabs: this.formBuilder.array([])
+      chartSlabs: this.formBuilder.array([]),
+      enableFeeSplit: [this.chargeData.enableFeeSplit === true]
     });
 
     /** Pre-populate slabs if present */
@@ -243,11 +246,25 @@ export class EditChargeComponent implements OnInit {
       this.chargeForm.get('amount')?.updateValueAndValidity();
     });
 
-    // Add fee split form array if enabled
-    if (this.chargeData.enableFeeSplit) {
+    // Initialize fee split form array based on toggle current value
+    if (this.chargeForm.get('enableFeeSplit')?.value) {
       this.chargeForm.addControl('stakeholderSplits', this.formBuilder.array([], [this.splitTotalsValidator()]));
       this.loadExistingFeeSplits();
     }
+
+    // React to enableFeeSplit changes
+    this.chargeForm.get('enableFeeSplit')?.valueChanges.subscribe((enabled: boolean) => {
+      const hasArray = !!this.chargeForm.get('stakeholderSplits');
+      if (enabled && !hasArray) {
+        this.chargeForm.addControl('stakeholderSplits', this.formBuilder.array([], [this.splitTotalsValidator()]));
+        if (!this.fundsLoaded) {
+          this.loadFunds();
+        }
+        this.loadExistingFeeSplits();
+      } else if (!enabled && hasArray) {
+        this.chargeForm.removeControl('stakeholderSplits');
+      }
+    });
 
     // Add discount rules form control if charge applies to savings
     if (this.chargeData.chargeAppliesTo.id === 2) {
@@ -400,20 +417,71 @@ export class EditChargeComponent implements OnInit {
       charges.discountRules = [];
     }
 
-    // Extract fee split data before removing it from charge payload
+    // Extract fee split data and record toggle state; API for charge update doesn't accept splits array
     const stakeholderSplits = charges.stakeholderSplits;
+    const newEnableFeeSplit: boolean = !!charges.enableFeeSplit;
     delete charges.stakeholderSplits;
 
     // Update charge first
     this.productsService.updateCharge(this.chargeData.id.toString(), charges).subscribe({
       next: (response: any) => {
-        // Update fee splits if enabled and there are changes
-        if (this.chargeData.enableFeeSplit && this.hasFeeSplitChanges(stakeholderSplits)) {
-          this.updateFeeSplits(stakeholderSplits);
-        } else {
-          this.loading = false;
-          this.router.navigate(['../'], { relativeTo: this.route });
+        const previouslyEnabled = !!this.chargeData.enableFeeSplit;
+
+        // Case 1: previously enabled -> now disabled: delete all existing splits
+        if (previouslyEnabled && !newEnableFeeSplit) {
+          if (this.feeSplits && this.feeSplits.length > 0) {
+            const ops = this.feeSplits.map((s) =>
+              this.productsService.deleteChargeStakeholderSplit(this.chargeData.id, s.id!)
+            );
+            forkJoin(ops).subscribe({
+              next: () => {
+                this.loading = false;
+                this.router.navigate(['../'], { relativeTo: this.route });
+              },
+              error: () => {
+                this.loading = false;
+                this.router.navigate(['../'], { relativeTo: this.route });
+              }
+            });
+          } else {
+            this.loading = false;
+            this.router.navigate(['../'], { relativeTo: this.route });
+          }
+          return;
         }
+
+        // Case 2: previously disabled -> now enabled: create all provided splits
+        if (!previouslyEnabled && newEnableFeeSplit) {
+          if (stakeholderSplits && stakeholderSplits.length > 0) {
+            const ops = stakeholderSplits.map((s: any) =>
+              this.productsService.createChargeStakeholderSplit(this.chargeData.id, this.toFeeSplitRequest(s))
+            );
+            forkJoin(ops).subscribe({
+              next: () => {
+                this.loading = false;
+                this.router.navigate(['../'], { relativeTo: this.route });
+              },
+              error: () => {
+                this.loading = false;
+                this.router.navigate(['../'], { relativeTo: this.route });
+              }
+            });
+          } else {
+            this.loading = false;
+            this.router.navigate(['../'], { relativeTo: this.route });
+          }
+          return;
+        }
+
+        // Case 3: remains enabled: diff and update
+        if (previouslyEnabled && newEnableFeeSplit && this.hasFeeSplitChanges(stakeholderSplits)) {
+          this.updateFeeSplits(stakeholderSplits);
+          return;
+        }
+
+        // Case 4: remains disabled: nothing to do
+        this.loading = false;
+        this.router.navigate(['../'], { relativeTo: this.route });
       },
       error: (error) => {
         console.error('Error updating charge:', error);
@@ -660,7 +728,7 @@ export class EditChargeComponent implements OnInit {
     }
 
     // Load funds if fee split is enabled
-    if (this.chargeData.enableFeeSplit && !this.fundsLoaded) {
+    if (this.chargeForm.get('enableFeeSplit')?.value && !this.fundsLoaded) {
       this.loadFunds();
     }
   }
