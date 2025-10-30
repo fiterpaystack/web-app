@@ -23,12 +23,4 @@
   word-break: break-word;
 }
 
-@media print {
-  button {
-    display: none;
-  }
-
-  mat-card {
-    box-shadow: none !important;
-  }
-}
+/* (No print overrides for now) */

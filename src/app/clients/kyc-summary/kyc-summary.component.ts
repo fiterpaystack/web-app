@@ -6,6 +6,7 @@ import { MatDivider } from '@angular/material/divider';
 import { MatButton } from '@angular/material/button';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 import { KycSummary } from './models/kyc-summary.model';
+import { FamilyMembersListComponent } from './family-members-list/family-members-list.component';
 
 @Component({
   selector: 'mifosx-kyc-summary',
@@ -24,7 +25,8 @@ import { KycSummary } from './models/kyc-summary.model';
     MatCardTitle,
     MatCardContent,
     MatDivider,
-    MatButton
+    MatButton,
+    FamilyMembersListComponent
   ]
 })
 export class KycSummaryComponent {
@@ -32,6 +34,13 @@ export class KycSummaryComponent {
   kyc: KycSummary = this.route.snapshot.data['kycSummary'];
 
   print(): void {
-    window.print();
+    // Intentionally disabled for now
+    return;
+  }
+
+  nextOfKinMembers(): any[] {
+    const members = this.kyc?.familyMembers ?? [];
+    const filtered = members.filter((m: any) => (m?.relationship ?? '').toString().toLowerCase().includes('next'));
+    return filtered.length ? filtered : members;
   }
 }

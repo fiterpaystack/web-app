@@ -35,8 +35,6 @@
         <div class="value">{{ kyc.contact.email || 'Not provided' }}</div>
         <div class="label">Home Address</div>
         <div class="value">{{ kyc.contact.address || 'Not provided' }}</div>
-        <div class="label">Time in Current Address (months)</div>
-        <div class="value">{{ kyc.contact.monthsAtAddress || 'Not provided' }}</div>
       </div>
     </div>
 
@@ -58,75 +56,9 @@
     </div>
 
     <div class="section">
-      <h3>Account Information</h3>
-      <mat-divider></mat-divider>
-      <div class="grid">
-        <div class="label">Account Type</div>
-        <div class="value">{{ kyc.account.accountType || 'Not provided' }}</div>
-        <div class="label">Account Tier</div>
-        <div class="value">{{ kyc.account.accountTier || 'Not provided' }}</div>
-        <div class="label">Bank Name</div>
-        <div class="value">{{ kyc.account.bankName || 'Not provided' }}</div>
-        <div class="label">Account Name</div>
-        <div class="value">{{ kyc.account.accountName || 'Not provided' }}</div>
-        <div class="label">Account Number</div>
-        <div class="value">{{ kyc.account.accountNumber || 'Not provided' }}</div>
-      </div>
-    </div>
-
-    <div class="section">
-      <h3>Employment</h3>
-      <mat-divider></mat-divider>
-      <div class="grid">
-        <div class="label">Employment Status</div>
-        <div class="value">{{ kyc.employment?.status || 'Not provided' }}</div>
-        <div class="label">Employer's Name</div>
-        <div class="value">{{ kyc.employment?.employerName || 'Not provided' }}</div>
-        <div class="label">Employer's Address</div>
-        <div class="value">{{ kyc.employment?.employerAddress || 'Not provided' }}</div>
-        <div class="label">Industry Sector</div>
-        <div class="value">{{ kyc.employment?.sector || 'Not provided' }}</div>
-        <div class="label">Net Monthly Income</div>
-        <div class="value">{{ kyc.employment?.monthlyNetIncome | currency: 'NGN' : 'symbol-narrow' }}</div>
-        <div class="label">Staff ID No</div>
-        <div class="value">{{ kyc.employment?.staffId || 'Not provided' }}</div>
-        <div class="label">Employer's Telephone No</div>
-        <div class="value">{{ kyc.employment?.telephone || 'Not provided' }}</div>
-        <div class="label">Landmark</div>
-        <div class="value">{{ kyc.employment?.landmark || 'Not provided' }}</div>
-      </div>
-    </div>
-
-    <div class="section">
       <h3>Next of Kin</h3>
       <mat-divider></mat-divider>
-      <div class="grid">
-        <div class="label">Name</div>
-        <div class="value">{{ kyc.nextOfKin?.name || 'Not provided' }}</div>
-        <div class="label">Relationship</div>
-        <div class="value">{{ kyc.nextOfKin?.relationship || 'Not provided' }}</div>
-        <div class="label">Home Address</div>
-        <div class="value">{{ kyc.nextOfKin?.address || 'Not provided' }}</div>
-        <div class="label">Mobile Number</div>
-        <div class="value">{{ kyc.nextOfKin?.mobile || 'Not provided' }}</div>
-        <div class="label">Email Address</div>
-        <div class="value">{{ kyc.nextOfKin?.email || 'Not provided' }}</div>
-      </div>
-    </div>
-
-    <div class="section">
-      <h3>Guarantor</h3>
-      <mat-divider></mat-divider>
-      <div class="grid">
-        <div class="label">Name</div>
-        <div class="value">{{ kyc.guarantor?.name || 'Not provided' }}</div>
-        <div class="label">Email</div>
-        <div class="value">{{ kyc.guarantor?.email || 'Not provided' }}</div>
-        <div class="label">Mobile</div>
-        <div class="value">{{ kyc.guarantor?.mobile || 'Not provided' }}</div>
-        <div class="label">Address</div>
-        <div class="value">{{ kyc.guarantor?.address || 'Not provided' }}</div>
-      </div>
+      <mifosx-family-members-list [members]="nextOfKinMembers()" />
     </div>
 
     <div class="section">
