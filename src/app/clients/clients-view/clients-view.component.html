@@ -381,6 +381,16 @@
       </a>
       <a
         mat-tab-link
+        [routerLink]="['./kyc-summary']"
+        routerLinkActive
+        #kycSummary="routerLinkActive"
+        [active]="kycSummary.isActive"
+        *mifosxHasPermission="'READ_CLIENT'"
+      >
+        KYC Summary
+      </a>
+      <a
+        mat-tab-link
         [routerLink]="['./notes']"
         routerLinkActive
         #notes="routerLinkActive"

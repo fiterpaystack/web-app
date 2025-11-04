@@ -195,8 +195,8 @@
           <table mat-table [dataSource]="chargeData.additionalAttributes.discountRules" class="discount-rules-table">
             <ng-container matColumnDef="name">
               <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Name' | translate }}</th>
-              <td mat-cell *matCellDef="let rule" class="col-name" [matTooltip]="rule.name">
-                {{ rule.name }}
+              <td mat-cell *matCellDef="let rule" class="col-name" [matTooltip]="rule.ruleName || rule.name">
+                {{ rule.ruleName || rule.name }}
               </td>
             </ng-container>
 

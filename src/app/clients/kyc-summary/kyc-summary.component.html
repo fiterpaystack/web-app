@@ -1,0 +1,69 @@
+<mat-card class="kyc-summary-card">
+  <mat-card-header>
+    <mat-card-title>KYC Summary</mat-card-title>
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="print()">Print</button>
+    </div>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="section">
+      <h3>Customer Information</h3>
+      <mat-divider></mat-divider>
+      <div class="grid">
+        <div class="label">Full Name</div>
+        <div class="value">{{ kyc.personal.fullName }}</div>
+        <div class="label">Date of Birth</div>
+        <div class="value">{{ kyc.personal.dateOfBirth | dateFormat }}</div>
+        <div class="label">Marital Status</div>
+        <div class="value">{{ kyc.personal.maritalStatus || 'Not provided' }}</div>
+        <div class="label">Gender</div>
+        <div class="value">{{ kyc.personal.gender || 'Not provided' }}</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Contact Details</h3>
+      <mat-divider></mat-divider>
+      <div class="grid">
+        <div class="label">Mobile No</div>
+        <div class="value">{{ kyc.contact.mobile || 'Not provided' }}</div>
+        <div class="label">Email</div>
+        <div class="value">{{ kyc.contact.email || 'Not provided' }}</div>
+        <div class="label">Home Address</div>
+        <div class="value">{{ kyc.contact.address || 'Not provided' }}</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Identity Information</h3>
+      <mat-divider></mat-divider>
+      <div class="grid">
+        <div class="label">BVN</div>
+        <div class="value">{{ kyc.identity.bvn || 'Not provided' }}</div>
+        <div class="label">Means of Identity</div>
+        <div class="value">{{ kyc.identity.meansOfIdentity || 'Not provided' }}</div>
+        <div class="label">Identity Card No</div>
+        <div class="value">{{ kyc.identity.idNumber || 'Not provided' }}</div>
+        <div class="label">Issue Date</div>
+        <div class="value">{{ kyc.identity.issueDate | dateFormat }}</div>
+        <div class="label">Expiry Date</div>
+        <div class="value">{{ kyc.identity.expiryDate | dateFormat }}</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Next of Kin</h3>
+      <mat-divider></mat-divider>
+      <mifosx-family-members-list [members]="nextOfKinMembers()" />
+    </div>
+
+    <div class="section">
+      <h3>File Uploaded</h3>
+      <mat-divider></mat-divider>
+      <div class="grid">
+        <div class="label" *ngFor="let doc of kyc.documents">{{ doc.category }}</div>
+        <div class="value" *ngFor="let doc of kyc.documents">{{ doc.name }} - {{ doc.uploaded ? 'Yes' : 'No' }}</div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
