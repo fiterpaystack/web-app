@@ -456,7 +456,7 @@
         <button
           mat-raised-button
           color="primary"
-          [disabled]="!chargeForm.valid || loading"
+          [disabled]="!chargeForm.valid || !chargeForm.dirty || loading"
           *mifosxHasPermission="'UPDATE_CHARGE'"
         >
           <span *ngIf="loading" class="loading-spinner">
