@@ -184,6 +184,8 @@ export class EditChargeComponent implements OnInit {
       this.chargeForm.get('amount')?.clearValidators();
       this.chargeForm.get('amount')?.updateValueAndValidity();
       this.dataSource.data = this.chartSlabs.controls as FormGroup[];
+      // Update form validity after loading slabs to ensure all validations run
+      this.chargeForm.updateValueAndValidity();
     }
 
     switch (this.chargeData.chargeAppliesTo.value) {
@@ -272,6 +274,12 @@ export class EditChargeComponent implements OnInit {
       this.selectedDiscountRules = this.chargeData.additionalAttributes?.discountRules || [];
       this.loadDiscountRules();
     }
+
+    // Mark form as pristine after all initialization is complete
+    // This ensures the form is considered "unchanged" when first loaded
+    setTimeout(() => {
+      this.chargeForm.markAsPristine();
+    }, 0);
   }
 
   /**
@@ -339,27 +347,47 @@ export class EditChargeComponent implements OnInit {
       if (lastToAmount && !isNaN(lastToAmount)) {
         newFromAmount = (parseInt(lastToAmount, 10) + 1).toString();
       }
+    } else {
+      // For the first slab, default fromAmount to '0' if not provided
+      newFromAmount = '0';
     }
+
+    // Helper function to convert value to string, handling null/undefined/0 properly
+    const toValueString = (value: any, defaultValue: string): string => {
+      if (value === null || value === undefined) {
+        return defaultValue;
+      }
+      // Convert number to string, or return string as-is
+      return typeof value === 'number' ? value.toString() : String(value);
+    };
+
     this.chartSlabs.push(
       this.formBuilder.group({
         fromAmount: [
-          slab?.fromAmount || newFromAmount,
+          toValueString(slab?.fromAmount, newFromAmount),
           Validators.required
         ],
-        toAmount: [slab?.toAmount || ''],
+        toAmount: [toValueString(slab?.toAmount, '')],
         value: [
-          slab?.value || '',
+          toValueString(slab?.value, ''),
           Validators.required
         ]
       })
     );
     this.dataSource.data = this.chartSlabs.controls as FormGroup[];
+    // Mark form as dirty when adding a slab (user action)
+    if (!slab) {
+      // Only mark dirty if this is a new slab added by user, not when loading existing data
+      this.chargeForm.markAsDirty();
+    }
   }
 
   /** Remove a slab row */
   removeSlab(index: number): void {
     this.chartSlabs.removeAt(index);
     this.dataSource.data = this.chartSlabs.controls as FormGroup[];
+    // Mark form as dirty when removing a slab (user action)
+    this.chargeForm.markAsDirty();
   }
   /**
    * Get Add Fee Frequency value.
@@ -617,6 +645,10 @@ export class EditChargeComponent implements OnInit {
       });
       splitsArray.push(splitForm);
     });
+    // Mark form pristine after loading fee splits to indicate no changes yet
+    setTimeout(() => {
+      this.chargeForm.markAsPristine();
+    }, 0);
   }
 
   /**

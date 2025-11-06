@@ -42,19 +42,23 @@
             <mat-form-field>
               <mat-label>{{ param }}</mat-label>
 
-              <!-- Text input for parameters without bracket notation -->
-              <input
-                *ngIf="!selectedRuleTypeInfo.parameterDescriptions[param].includes('[')"
-                matInput
-                [(ngModel)]="ruleParameters[param]"
-                [name]="param"
-                required
-                (ngModelChange)="onParameterChange()"
-              />
+              <!-- Date picker for date fields -->
+              <ng-container *ngIf="isDateField(param)">
+                <input
+                  matInput
+                  [matDatepicker]="datePicker"
+                  [(ngModel)]="ruleParameters[param]"
+                  [name]="param"
+                  required
+                  (ngModelChange)="onParameterChange()"
+                />
+                <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+                <mat-datepicker #datePicker></mat-datepicker>
+              </ng-container>
 
               <!-- Dropdown for parameters with bracket notation -->
               <mat-select
-                *ngIf="selectedRuleTypeInfo.parameterDescriptions[param].includes('[')"
+                *ngIf="!isDateField(param) && selectedRuleTypeInfo.parameterDescriptions[param].includes('[')"
                 [(ngModel)]="ruleParameters[param]"
                 [name]="param"
                 required
@@ -68,24 +72,38 @@
                   {{ option }}
                 </mat-option>
               </mat-select>
+
+              <!-- Text input for parameters without bracket notation and not date fields -->
+              <input
+                *ngIf="!isDateField(param) && !selectedRuleTypeInfo.parameterDescriptions[param].includes('[')"
+                matInput
+                [(ngModel)]="ruleParameters[param]"
+                [name]="param"
+                required
+                (ngModelChange)="onParameterChange()"
+              />
             </mat-form-field>
           </div>
           <div *ngFor="let param of selectedRuleTypeInfo.optionalParameters" class="form-group">
             <mat-form-field>
               <mat-label>{{ param }}</mat-label>
 
-              <!-- Text input for parameters without bracket notation -->
-              <input
-                *ngIf="!selectedRuleTypeInfo.parameterDescriptions[param].includes('[')"
-                matInput
-                [(ngModel)]="ruleParameters[param]"
-                [name]="param"
-                (ngModelChange)="onParameterChange()"
-              />
+              <!-- Date picker for date fields -->
+              <ng-container *ngIf="isDateField(param)">
+                <input
+                  matInput
+                  [matDatepicker]="datePicker"
+                  [(ngModel)]="ruleParameters[param]"
+                  [name]="param"
+                  (ngModelChange)="onParameterChange()"
+                />
+                <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+                <mat-datepicker #datePicker></mat-datepicker>
+              </ng-container>
 
               <!-- Dropdown for parameters with bracket notation -->
               <mat-select
-                *ngIf="selectedRuleTypeInfo.parameterDescriptions[param].includes('[')"
+                *ngIf="!isDateField(param) && selectedRuleTypeInfo.parameterDescriptions[param].includes('[')"
                 [(ngModel)]="ruleParameters[param]"
                 [name]="param"
                 (ngModelChange)="onParameterChange()"
@@ -98,6 +116,15 @@
                   {{ option }}
                 </mat-option>
               </mat-select>
+
+              <!-- Text input for parameters without bracket notation and not date fields -->
+              <input
+                *ngIf="!isDateField(param) && !selectedRuleTypeInfo.parameterDescriptions[param].includes('[')"
+                matInput
+                [(ngModel)]="ruleParameters[param]"
+                [name]="param"
+                (ngModelChange)="onParameterChange()"
+              />
             </mat-form-field>
           </div>
         </div>

@@ -29,10 +29,6 @@ import { DateFormatPipe } from 'app/pipes/date-format.pipe';
           <div class="value">{{ kyc?.personal.dateOfBirth | dateFormat }}</div>
         </div>
         <div class="row">
-          <div class="label">Marital Status</div>
-          <div class="value">{{ kyc?.personal.maritalStatus || 'Not provided' }}</div>
-        </div>
-        <div class="row">
           <div class="label">Gender</div>
           <div class="value">{{ kyc?.personal.gender || 'Not provided' }}</div>
         </div>
