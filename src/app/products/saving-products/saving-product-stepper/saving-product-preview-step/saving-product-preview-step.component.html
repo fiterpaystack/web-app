@@ -124,6 +124,36 @@
     <span class="flex-60">{{ savingProduct.withdrawalFeeForTransfers | yesNo }}</span>
   </div>
 
+  <div class="flex-100 layout-row">
+    <span class="flex-40">{{ 'labels.inputs.Enable Withdrawal Frequency Limits' | translate }}:</span>
+    <span class="flex-60">{{ savingProduct.withdrawalFrequencySettings?.length > 0 | yesNo }}</span>
+  </div>
+
+  <div *ngIf="savingProduct.withdrawalFrequencySettings?.length" class="layout-row-wrap responsive-column flex-100">
+    <h3 class="mat-h3 flex-100">{{ 'labels.inputs.Withdrawal Frequency' | translate }}</h3>
+
+    <mat-divider class="flex-100"></mat-divider>
+    <table class="flex-100 mat-elevation-z1" mat-table [dataSource]="savingProduct.withdrawalFrequencySettings">
+      <ng-container matColumnDef="timePeriod">
+        <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Time Period' | translate }}</th>
+        <td mat-cell *matCellDef="let rule">{{ rule.timePeriod | titlecase }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="maxWithdrawals">
+        <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Maximum Withdrawals' | translate }}</th>
+        <td mat-cell *matCellDef="let rule">{{ rule.maxWithdrawals }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="active">
+        <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Active' | translate }}</th>
+        <td mat-cell *matCellDef="let rule">{{ rule.isActive | yesNo }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="withdrawalFrequencyDisplayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: withdrawalFrequencyDisplayedColumns"></tr>
+    </table>
+  </div>
+
   <div class="flex-100 layout-row" *ngIf="savingProduct.minBalanceForInterestCalculation">
     <span class="flex-40">{{ 'labels.inputs.Balance Required for Interest Calculation' | translate }}:</span>
     <span class="flex-60">{{ savingProduct.minBalanceForInterestCalculation | formatNumber }}</span>
