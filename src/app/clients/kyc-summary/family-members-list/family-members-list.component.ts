@@ -75,21 +75,47 @@ export class FamilyMembersListComponent {
       return gender.length ? gender : 'Not provided';
     }
     if (member?.genderId) {
-      return this.mapGenderIdToLabel(member.genderId);
+      return this.lookupGenderName(member.genderId, member);
     }
     return 'Not provided';
   }
 
-  private mapGenderIdToLabel(id: number): string {
-    switch (id) {
-      case 14:
-        return 'Female';
-      case 15:
-        return 'Male';
-      case 16:
-        return 'Other';
-      default:
-        return 'Not provided';
+  private lookupGenderName(id: number, member: any): string {
+    const candidateSources = [
+      member?.genderName,
+      member?.genderType,
+      member?.genderData,
+      member?.genderLabel,
+      member?.genderValue
+    ];
+
+    for (const source of candidateSources) {
+      const normalized = this.normalizeGenderValue(source);
+      if (normalized) {
+        return normalized;
+      }
     }
+
+    return 'Not provided';
+  }
+
+  private normalizeGenderValue(input: any): string | undefined {
+    if (!input) {
+      return undefined;
+    }
+
+    if (typeof input === 'string') {
+      const trimmed = input.trim();
+      if (trimmed.length) {
+        return trimmed;
+      }
+    }
+
+    if (typeof input === 'object') {
+      const value = input?.value ?? input?.name ?? input?.label;
+      return this.normalizeGenderValue(value);
+    }
+
+    return undefined;
   }
 }
