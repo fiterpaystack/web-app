@@ -897,6 +897,7 @@ export class EditChargeComponent implements OnInit {
       this.selectedDiscountRules.push(discountRuleSelect.value);
       this.updateFilteredAvailableRules();
       discountRuleSelect.value = null; // Clear the selection
+      this.markFormDirty();
     }
   }
 
@@ -906,6 +907,13 @@ export class EditChargeComponent implements OnInit {
   removeDiscountRule(index: number): void {
     this.selectedDiscountRules.splice(index, 1);
     this.updateFilteredAvailableRules();
+    this.markFormDirty();
+  }
+
+  private markFormDirty(): void {
+    this.chargeForm.markAsDirty();
+    this.chargeForm.markAsTouched();
+    this.chargeForm.updateValueAndValidity();
   }
 
   /**
