@@ -12,6 +12,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
         <div class="name">{{ displayName(m) }}</div>
         <div class="meta">
           <span class="relationship"><strong>Relationship:</strong> {{ m.relationship || 'Not provided' }}</span>
+          <span class="gender" *ngIf="m.gender || m.genderId"><strong>Gender:</strong> {{ displayGender(m) }}</span>
           <span class="dob" *ngIf="m.dateOfBirth"
             ><strong>Date of Birth:</strong> {{ m.dateOfBirth | dateFormat }}</span
           >
@@ -66,5 +67,29 @@ export class FamilyMembersListComponent {
       member?.lastName
     ].filter((x) => !!x && String(x).trim().length);
     return parts.join(' ');
+  }
+
+  displayGender(member: any): string {
+    if (member?.gender) {
+      const gender = String(member.gender).trim();
+      return gender.length ? gender : 'Not provided';
+    }
+    if (member?.genderId) {
+      return this.mapGenderIdToLabel(member.genderId);
+    }
+    return 'Not provided';
+  }
+
+  private mapGenderIdToLabel(id: number): string {
+    switch (id) {
+      case 14:
+        return 'Female';
+      case 15:
+        return 'Male';
+      case 16:
+        return 'Other';
+      default:
+        return 'Not provided';
+    }
   }
 }
