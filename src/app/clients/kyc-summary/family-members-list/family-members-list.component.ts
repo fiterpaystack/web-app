@@ -12,6 +12,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
         <div class="name">{{ displayName(m) }}</div>
         <div class="meta">
           <span class="relationship"><strong>Relationship:</strong> {{ m.relationship || 'Not provided' }}</span>
+          <span class="gender" *ngIf="m.gender || m.genderId"><strong>Gender:</strong> {{ displayGender(m) }}</span>
           <span class="dob" *ngIf="m.dateOfBirth"
             ><strong>Date of Birth:</strong> {{ m.dateOfBirth | dateFormat }}</span
           >
@@ -66,5 +67,55 @@ export class FamilyMembersListComponent {
       member?.lastName
     ].filter((x) => !!x && String(x).trim().length);
     return parts.join(' ');
+  }
+
+  displayGender(member: any): string {
+    if (member?.gender) {
+      const gender = String(member.gender).trim();
+      return gender.length ? gender : 'Not provided';
+    }
+    if (member?.genderId) {
+      return this.lookupGenderName(member.genderId, member);
+    }
+    return 'Not provided';
+  }
+
+  private lookupGenderName(id: number, member: any): string {
+    const candidateSources = [
+      member?.genderName,
+      member?.genderType,
+      member?.genderData,
+      member?.genderLabel,
+      member?.genderValue
+    ];
+
+    for (const source of candidateSources) {
+      const normalized = this.normalizeGenderValue(source);
+      if (normalized) {
+        return normalized;
+      }
+    }
+
+    return 'Not provided';
+  }
+
+  private normalizeGenderValue(input: any): string | undefined {
+    if (!input) {
+      return undefined;
+    }
+
+    if (typeof input === 'string') {
+      const trimmed = input.trim();
+      if (trimmed.length) {
+        return trimmed;
+      }
+    }
+
+    if (typeof input === 'object') {
+      const value = input?.value ?? input?.name ?? input?.label;
+      return this.normalizeGenderValue(value);
+    }
+
+    return undefined;
   }
 }

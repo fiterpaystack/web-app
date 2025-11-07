@@ -16,6 +16,8 @@
         <div class="value">{{ kyc.personal.dateOfBirth | dateFormat }}</div>
         <div class="label">Gender</div>
         <div class="value">{{ kyc.personal.gender || 'Not provided' }}</div>
+        <div class="label">Account Tier</div>
+        <div class="value">{{ kyc.account?.accountTier || 'Not provided' }}</div>
       </div>
     </div>
 
@@ -27,8 +29,38 @@
         <div class="value">{{ kyc.contact.mobile || 'Not provided' }}</div>
         <div class="label">Email</div>
         <div class="value">{{ kyc.contact.email || 'Not provided' }}</div>
-        <div class="label">Home Address</div>
-        <div class="value">{{ kyc.contact.address || 'Not provided' }}</div>
+      </div>
+    </div>
+
+    <div class="section" *ngIf="kyc.employment?.employerName">
+      <h3>Employment Details</h3>
+      <mat-divider></mat-divider>
+      <div class="grid">
+        <div class="label">Employer Name</div>
+        <div class="value">{{ kyc.employment?.employerName || 'Not provided' }}</div>
+      </div>
+    </div>
+
+    <div class="section" *ngIf="(kyc.addresses?.length || 0) > 0">
+      <h3>Addresses</h3>
+      <mat-divider></mat-divider>
+      <div class="address-list">
+        <div class="address-card" *ngFor="let address of kyc.addresses">
+          <div class="address-type">{{ address.type }}</div>
+          <div class="address-lines">
+            <div *ngIf="address.addressLine1">{{ address.addressLine1 }}</div>
+            <div *ngIf="address.addressLine2">{{ address.addressLine2 }}</div>
+            <div *ngIf="address.addressLine3">{{ address.addressLine3 }}</div>
+            <div *ngIf="address.city || address.state">
+              {{ address.city }}<span *ngIf="address.city && address.state">, </span>{{ address.state }}
+            </div>
+            <div *ngIf="address.country">{{ address.country }}</div>
+            <div *ngIf="address.postalCode">{{ address.postalCode }}</div>
+          </div>
+          <div class="address-summary" *ngIf="address.fullAddress">
+            {{ address.fullAddress }}
+          </div>
+        </div>
       </div>
     </div>
 
@@ -46,6 +78,22 @@
         <div class="value">{{ kyc.identity.issueDate | dateFormat }}</div>
         <div class="label">Expiry Date</div>
         <div class="value">{{ kyc.identity.expiryDate | dateFormat }}</div>
+      </div>
+    </div>
+
+    <div class="section" *ngIf="(kyc.identityRecords?.length || 0) > 0">
+      <h3>Additional Identity Records</h3>
+      <mat-divider></mat-divider>
+      <div class="identity-record" *ngFor="let record of kyc.identityRecords">
+        <div class="record-header">{{ record.type }}</div>
+        <div class="grid no-type">
+          <div class="label">ID Number</div>
+          <div class="value">{{ record.number || 'Not provided' }}</div>
+          <div class="label">Issue Date</div>
+          <div class="value">{{ record.issueDate | dateFormat }}</div>
+          <div class="label">Expiry Date</div>
+          <div class="value">{{ record.expiryDate | dateFormat }}</div>
+        </div>
       </div>
     </div>
 

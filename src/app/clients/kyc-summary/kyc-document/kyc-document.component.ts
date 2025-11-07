@@ -50,6 +50,32 @@ import { DateFormatPipe } from 'app/pipes/date-format.pipe';
         </div>
       </div>
 
+      <div class="section" *ngIf="(kyc?.addresses?.length || 0) > 0">
+        <h3>Addresses</h3>
+        <div class="table address-table">
+          <div class="trow thead">
+            <div class="tcell type">Type</div>
+            <div class="tcell">Address</div>
+            <div class="tcell">City</div>
+            <div class="tcell">State</div>
+            <div class="tcell">Country</div>
+            <div class="tcell">Postal Code</div>
+          </div>
+          <div class="trow" *ngFor="let addr of kyc?.addresses">
+            <div class="tcell type">{{ addr.type }}</div>
+            <div class="tcell">
+              <div>{{ addr.addressLine1 || '-' }}</div>
+              <div *ngIf="addr.addressLine2">{{ addr.addressLine2 }}</div>
+              <div *ngIf="addr.addressLine3">{{ addr.addressLine3 }}</div>
+            </div>
+            <div class="tcell">{{ addr.city || '-' }}</div>
+            <div class="tcell">{{ addr.state || '-' }}</div>
+            <div class="tcell">{{ addr.country || '-' }}</div>
+            <div class="tcell">{{ addr.postalCode || '-' }}</div>
+          </div>
+        </div>
+      </div>
+
       <div class="section">
         <h3>Identity Information</h3>
         <div class="row">
@@ -71,6 +97,32 @@ import { DateFormatPipe } from 'app/pipes/date-format.pipe';
         <div class="row">
           <div class="label">Expiry Date</div>
           <div class="value">{{ kyc?.identity.expiryDate | dateFormat }}</div>
+        </div>
+      </div>
+
+      <div class="section" *ngIf="kyc?.employment?.employerName">
+        <h3>Employment Details</h3>
+        <div class="row">
+          <div class="label">Employer Name</div>
+          <div class="value">{{ kyc?.employment?.employerName || 'Not provided' }}</div>
+        </div>
+      </div>
+
+      <div class="section" *ngIf="(kyc?.identityRecords?.length || 0) > 0">
+        <h3>Additional Identity Records</h3>
+        <div class="table identity-table">
+          <div class="trow thead">
+            <div class="tcell">Type</div>
+            <div class="tcell">ID Number</div>
+            <div class="tcell">Issue Date</div>
+            <div class="tcell">Expiry Date</div>
+          </div>
+          <div class="trow" *ngFor="let id of kyc?.identityRecords">
+            <div class="tcell type-cell">{{ id.type }}</div>
+            <div class="tcell">{{ id.number || 'Not provided' }}</div>
+            <div class="tcell">{{ id.issueDate | dateFormat }}</div>
+            <div class="tcell">{{ id.expiryDate | dateFormat }}</div>
+          </div>
         </div>
       </div>
 
@@ -167,6 +219,18 @@ import { DateFormatPipe } from 'app/pipes/date-format.pipe';
       }
       .name {
         word-break: break-word;
+      }
+      .identity-table .trow {
+        grid-template-columns: 45mm 1fr 28mm 28mm;
+      }
+      .identity-table .type-cell {
+        font-weight: 600;
+      }
+      .address-table .trow {
+        grid-template-columns: 35mm 1.6fr 1fr 1fr 1fr 24mm;
+      }
+      .address-table .type {
+        font-weight: 600;
       }
     `
 

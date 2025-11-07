@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, forkJoin, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ClientsService } from 'app/clients/clients.service';
-import { KycSummary, DocumentInfo, PersonRef } from './models/kyc-summary.model';
+import { KycSummary, DocumentInfo, PersonRef, IdentityRecord, AddressInfo } from './models/kyc-summary.model';
 
 @Injectable({ providedIn: 'root' })
 export class KycSummaryService {
@@ -14,9 +14,11 @@ export class KycSummaryService {
       identifiers: this.clientsService.getClientIdentifiers(clientId),
       documents: this.clientsService.getClientDocuments(clientId),
       identityDt: this.clientsService.getClientDatatable(clientId, 'Identity Information'),
-      familyMembers: this.clientsService.getClientFamilyMembers(clientId)
+      familyMembers: this.clientsService.getClientFamilyMembers(clientId),
+      occupationDt: this.clientsService.getClientDatatable(clientId, 'Occupation and Employer Name'),
+      addresses: this.clientsService.getClientAddressData(clientId)
     }).pipe(
-      map(({ client, identifiers, documents, identityDt, familyMembers }: any) => {
+      map(({ client, identifiers, documents, identityDt, familyMembers, occupationDt, addresses }: any) => {
         const identityRows = this.parseGenericResultSet(identityDt);
         const bvnRow = identityRows.find(
           (r: any) =>
@@ -28,6 +30,32 @@ export class KycSummaryService {
 
         const primaryId = this.pickPrimaryGovernmentId(identifiers);
         const nokList = this.pickNextOfKinList(familyMembers);
+        const identityRecords: IdentityRecord[] = identityRows
+          .map((row: any): IdentityRecord | undefined => {
+            const type =
+              this.normalizeIdentityType(row['Identity Types_cd_Identity Type']) ??
+              this.normalizeIdentityType(row['Identity Type']) ??
+              this.normalizeIdentityType(row['Identity Types']);
+            const number = this.normalizeOptionalString(row['ID Number'] ?? row['Id Number']);
+            const issueDate = this.extractDateArray(row['Issue Date']);
+            const expiryDate = this.extractDateArray(row['Expiry Date']);
+
+            if (!(type || number || issueDate || expiryDate)) {
+              return undefined;
+            }
+
+            return {
+              type: type ?? 'Unknown',
+              number,
+              issueDate,
+              expiryDate
+            } as IdentityRecord;
+          })
+          .filter((rec): rec is IdentityRecord => !!rec);
+
+        const occupationRows = this.parseGenericResultSet(occupationDt);
+        const employerName = this.extractOccupationEmployer(occupationRows);
+        const addressList = this.mapAddresses(addresses);
 
         const mappedDocuments: DocumentInfo[] = Array.isArray(documents)
           ? documents.map((d: any) => ({
@@ -60,6 +88,14 @@ export class KycSummaryService {
             issueDate: bvn ? (bvnIssue ?? this.extractIssueDate(primaryId)) : this.extractIssueDate(primaryId),
             expiryDate: bvn ? (bvnExpiry ?? this.extractExpiryDate(primaryId)) : this.extractExpiryDate(primaryId)
           },
+          identityRecords,
+          account: {
+            accountTier: this.extractEnumValue(client?.clientClassification)
+          },
+          employment: {
+            employerName: employerName ?? undefined
+          },
+          addresses: addressList,
           nextOfKin: nokList,
           documents: mappedDocuments,
           familyMembers: Array.isArray(familyMembers) ? familyMembers : []
@@ -142,7 +178,85 @@ export class KycSummaryService {
   private extractEnumValue(obj: any): string | undefined {
     // Fineract enums often shaped as { id, code, value }
     if (!obj || typeof obj !== 'object') return undefined;
-    return obj.value ?? obj.code ?? undefined;
+    const candidate = obj.value ?? obj.code ?? obj.name ?? obj.label ?? undefined;
+    return typeof candidate === 'string' && candidate.trim().length ? candidate : undefined;
+  }
+
+  private normalizeIdentityType(value: any): string | undefined {
+    if (value == null) return undefined;
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      return trimmed.length ? trimmed : undefined;
+    }
+    if (typeof value === 'object') {
+      return this.extractEnumValue(value);
+    }
+    const stringified = String(value).trim();
+    return stringified.length ? stringified : undefined;
+  }
+
+  private normalizeOptionalString(value: any): string | undefined {
+    if (value == null) return undefined;
+    const str = String(value).trim();
+    return str.length ? str : undefined;
+  }
+
+  private extractOccupationEmployer(rows: any[]): string | undefined {
+    if (!Array.isArray(rows) || !rows.length) return undefined;
+    const row = rows[0];
+    if (!row) return undefined;
+    const employer =
+      row['Occupation and Employer Name'] ??
+      row['Employer Name'] ??
+      row['occupationAndEmployerName'] ??
+      row['employerName'];
+    return this.normalizeOptionalString(employer);
+  }
+
+  private mapAddresses(addressResponse: any): AddressInfo[] {
+    if (!addressResponse) return [];
+    const addresses = Array.isArray(addressResponse) ? addressResponse : addressResponse.addresses;
+    if (!Array.isArray(addresses)) return [];
+
+    return addresses
+      .map((addr: any): AddressInfo | undefined => {
+        const type = this.normalizeOptionalString(addr?.addressType) ?? 'Address';
+        const line1 = this.normalizeOptionalString(addr?.addressLine1 ?? addr?.street);
+        const line2 = this.normalizeOptionalString(addr?.addressLine2);
+        const line3 = this.normalizeOptionalString(addr?.addressLine3);
+        const city = this.normalizeOptionalString(addr?.city ?? addr?.townVillage);
+        const state = this.normalizeOptionalString(addr?.stateName ?? addr?.stateProvince);
+        const country = this.normalizeOptionalString(addr?.country ?? addr?.countryName);
+        const postalCode = this.normalizeOptionalString(addr?.postalCode);
+
+        const components = [
+          line1,
+          line2,
+          line3,
+          city,
+          state,
+          country
+        ].filter(Boolean);
+        const fullAddress = components.length ? components.join(', ') : undefined;
+
+        if (!line1 && !line2 && !line3 && !city && !state && !country && !postalCode) {
+          // Avoid rendering empty addresses
+          return undefined;
+        }
+
+        return {
+          type,
+          addressLine1: line1,
+          addressLine2: line2,
+          addressLine3: line3,
+          city,
+          state,
+          country,
+          postalCode,
+          fullAddress
+        } as AddressInfo;
+      })
+      .filter((addr): addr is AddressInfo => !!addr);
   }
 
   private parseGenericResultSet(resp: any): any[] {

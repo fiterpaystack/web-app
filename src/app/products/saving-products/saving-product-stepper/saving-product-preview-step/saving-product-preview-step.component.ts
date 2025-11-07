@@ -75,6 +75,11 @@ export class SavingProductPreviewStepComponent implements OnInit, OnChanges {
     'chargeId',
     'incomeAccountId'
   ];
+  withdrawalFrequencyDisplayedColumns: string[] = [
+    'timePeriod',
+    'maxWithdrawals',
+    'active'
+  ];
 
   accountingMappings: any = {};
   accountingRule: OptionData;

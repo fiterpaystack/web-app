@@ -27,6 +27,13 @@ export interface IdentityInfo {
   expiryDate?: string;
 }
 
+export interface IdentityRecord {
+  type: string;
+  number?: string;
+  issueDate?: string;
+  expiryDate?: string;
+}
+
 export interface AccountInfo {
   accountType?: string;
   accountTier?: string;
@@ -44,6 +51,18 @@ export interface EmploymentInfo {
   staffId?: string;
   telephone?: string;
   landmark?: string;
+}
+
+export interface AddressInfo {
+  type: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  addressLine3?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  postalCode?: string;
+  fullAddress?: string;
 }
 
 export interface PersonRef {
@@ -64,6 +83,10 @@ export interface KycSummary {
   personal: PersonalInfo;
   contact: ContactInfo;
   identity: IdentityInfo;
+  identityRecords: IdentityRecord[];
+  account?: AccountInfo;
+  employment?: EmploymentInfo;
+  addresses?: AddressInfo[];
   nextOfKin?: PersonRef[];
   documents: DocumentInfo[];
   familyMembers?: any[];
