@@ -172,6 +172,70 @@
             {{ formatDate(feeData.lastModifiedDate) }}
           </div>
         </div>
+
+        <div class="tier-section" *ngIf="isTieredOverride()">
+          <h4>{{ 'labels.heading.Custom Tiers' | translate }}</h4>
+          <table class="tier-table">
+            <thead>
+              <tr>
+                <th>{{ 'labels.inputs.From Amount' | translate }}</th>
+                <th>{{ 'labels.inputs.To Amount' | translate }}</th>
+                <th>{{ 'labels.inputs.Value' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let slab of getOverrideSlabs(); let i = index">
+                <td>{{ getCurrencySymbol() }}{{ slab.fromAmount | formatNumber }}</td>
+                <td>
+                  <ng-container *ngIf="!isOpenEnded(slab.toAmount); else openEndedOverride">
+                    {{ getCurrencySymbol() }}{{ slab.toAmount | formatNumber }}
+                  </ng-container>
+                  <ng-template #openEndedOverride>∞</ng-template>
+                </td>
+                <td>
+                  <ng-container *ngIf="isPercentageAmount(); else overrideCurrencyValue">
+                    {{ slab.value | formatNumber }}%
+                  </ng-container>
+                  <ng-template #overrideCurrencyValue>
+                    {{ getCurrencySymbol() }}{{ slab.value | formatNumber }}
+                  </ng-template>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="tier-section" *ngIf="hasBaseSlabs()">
+          <h4>{{ 'labels.heading.Base Tiers' | translate }}</h4>
+          <table class="tier-table">
+            <thead>
+              <tr>
+                <th>{{ 'labels.inputs.From Amount' | translate }}</th>
+                <th>{{ 'labels.inputs.To Amount' | translate }}</th>
+                <th>{{ 'labels.inputs.Value' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let slab of getBaseSlabs(); let i = index">
+                <td>{{ getCurrencySymbol() }}{{ slab.fromAmount | formatNumber }}</td>
+                <td>
+                  <ng-container *ngIf="!isOpenEnded(slab.toAmount); else openEndedBase">
+                    {{ getCurrencySymbol() }}{{ slab.toAmount | formatNumber }}
+                  </ng-container>
+                  <ng-template #openEndedBase>∞</ng-template>
+                </td>
+                <td>
+                  <ng-container *ngIf="isPercentageAmount(); else baseCurrencyValue">
+                    {{ slab.value | formatNumber }}%
+                  </ng-container>
+                  <ng-template #baseCurrencyValue>
+                    {{ getCurrencySymbol() }}{{ slab.value | formatNumber }}
+                  </ng-template>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </mat-card-content>
     </mat-card>
 

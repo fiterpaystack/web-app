@@ -48,13 +48,24 @@
     <ng-container matColumnDef="amountPercentage">
       <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Amount/Percentage' | translate }}</th>
       <td mat-cell *matCellDef="let element">
-        <span class="amount-value" *ngIf="getAmountValue(element) !== null">
-          <span *ngIf="!isPercentageAmount(element)"
-            >{{ getCurrencySymbol(element) }}{{ getAmountValue(element) | formatNumber }}</span
-          >
-          <span *ngIf="isPercentageAmount(element)">{{ getAmountValue(element) | formatNumber }}%</span>
-        </span>
-        <span *ngIf="getAmountValue(element) === null">N/A</span>
+        <ng-container *ngIf="isTieredCharge(element); else flatAmount">
+          <span class="amount-value tiered">
+            {{ 'labels.inputs.Tiered' | translate }}
+            <span class="tier-count">({{ element.overrideSlabs.length }})</span>
+          </span>
+          <div class="tier-summary" *ngIf="element.overrideSlabs.length">
+            {{ getTierSummary(element) }}
+          </div>
+        </ng-container>
+        <ng-template #flatAmount>
+          <span class="amount-value" *ngIf="getAmountValue(element) !== null">
+            <span *ngIf="!isPercentageAmount(element)"
+              >{{ getCurrencySymbol(element) }}{{ getAmountValue(element) | formatNumber }}</span
+            >
+            <span *ngIf="isPercentageAmount(element)">{{ getAmountValue(element) | formatNumber }}%</span>
+          </span>
+          <span *ngIf="getAmountValue(element) === null">N/A</span>
+        </ng-template>
       </td>
     </ng-container>
 

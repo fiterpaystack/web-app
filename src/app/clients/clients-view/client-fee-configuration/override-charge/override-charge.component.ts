@@ -1,6 +1,6 @@
 /** Angular Imports */
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
@@ -10,12 +10,14 @@ import { MatAutocomplete, MatAutocompleteTrigger } from '@angular/material/autoc
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatButton } from '@angular/material/button';
 import { MatDivider } from '@angular/material/divider';
+import { MatIconModule } from '@angular/material/icon';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
 import { Observable, of } from 'rxjs';
 import { map, startWith, debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { ClientsService } from '../../../clients.service';
 import { AlertService } from '../../../../core/alert/alert.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 /**
  * Override Charge component for overriding default Fineract charges.
@@ -37,6 +39,7 @@ import { AlertService } from '../../../../core/alert/alert.service';
     MatCheckbox,
     MatButton,
     MatDivider,
+    MatIconModule,
     FaIconComponent
   ]
 })
@@ -71,6 +74,21 @@ export class OverrideChargeComponent implements OnInit {
     { id: 4, name: 'Annual Fee', value: 'ANNUAL_FEE' },
     { id: 5, name: 'Withdrawal Fee', value: 'WITHDRAWAL_FEE' }
   ];
+  /** Flag indicating whether the current charge should use slab-based configuration */
+  isSlabCharge = false;
+  /** Displayed columns for the slab configuration table */
+  slabDisplayedColumns: string[] = [
+    'fromAmount',
+    'toAmount',
+    'value',
+    'actions'
+  ];
+  /** Base validators for amount so we can restore them when slab mode is disabled */
+  private readonly amountBaseValidators = [
+    Validators.required,
+    Validators.min(0)];
+  /** DestroyRef for automatic subscription cleanup */
+  private readonly destroyRef = inject(DestroyRef);
 
   /**
    * @param {FormBuilder} formBuilder Form Builder.
@@ -169,9 +187,7 @@ export class OverrideChargeComponent implements OnInit {
       chargePaymentMode: [{ value: '', disabled: true }],
       amount: [
         '',
-        [
-          Validators.required,
-          Validators.min(0)]
+        this.amountBaseValidators
       ],
       minCap: [
         '',
@@ -186,11 +202,18 @@ export class OverrideChargeComponent implements OnInit {
       feeOnMonthDay: [{ value: '', disabled: true }],
       taxGroupId: [{ value: '', disabled: true }],
       active: [true],
-      penalty: [{ value: false, disabled: true }]
+      penalty: [{ value: false, disabled: true }],
+      slabs: this.formBuilder.array([])
     });
 
     // Add cross-validation for min/max cap
     this.addMinMaxCapValidation();
+
+    this.slabs.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      if (this.isSlabCharge) {
+        this.validateSlabRanges();
+      }
+    });
   }
 
   /**
@@ -263,9 +286,26 @@ export class OverrideChargeComponent implements OnInit {
     }
 
     if (this.overrideChargeForm.valid && this.selectedCharge) {
+      if (this.isSlabCharge) {
+        this.validateSlabRanges();
+
+        if (!this.slabs.length) {
+          this.slabs.setErrors({ required: true });
+        }
+      }
+
+      if (this.isSlabCharge && this.slabs.invalid) {
+        this.slabs.markAllAsTouched();
+        this.alertService.alert({
+          type: 'error',
+          message: this.translateService.instant('Please resolve validation issues in the slab configuration.')
+        });
+        return;
+      }
+
       const overrideChargeData: any = {
         chargeId: this.selectedCharge.chargeId || this.selectedCharge.id,
-        amount: this.overrideChargeForm.get('amount')?.value,
+        amount: this.isSlabCharge ? null : this.overrideChargeForm.get('amount')?.value,
         active: this.overrideChargeForm.get('active')?.value
       };
 
@@ -281,6 +321,20 @@ export class OverrideChargeComponent implements OnInit {
         if (maxCapValue !== null && maxCapValue !== undefined && maxCapValue !== '') {
           overrideChargeData.maxCap = maxCapValue;
         }
+      }
+
+      if (this.isSlabCharge) {
+        overrideChargeData.slabs = this.slabs.getRawValue().map((slab: any) => ({
+          id: slab.id || undefined,
+          fromAmount: Number(slab.fromAmount),
+          toAmount:
+            slab.toAmount === null || slab.toAmount === undefined || slab.toAmount === ''
+              ? null
+              : Number(slab.toAmount),
+          value: Number(slab.value)
+        }));
+      } else if (this.existingChargeData?.overrideSlabs?.length) {
+        overrideChargeData.slabs = [];
       }
 
       // Choose the appropriate API call based on mode
@@ -375,6 +429,13 @@ export class OverrideChargeComponent implements OnInit {
         active: this.existingChargeData.overrideActive !== false,
         taxGroupId: this.existingChargeData.incomeAccount?.name || ''
       });
+
+      const overrideSlabs = this.existingChargeData.overrideSlabs || [];
+      if (overrideSlabs.length) {
+        this.configureSlabMode({ overrideSlabs });
+      } else {
+        this.configureSlabMode(this.existingChargeData);
+      }
     }
   }
 
@@ -411,6 +472,7 @@ export class OverrideChargeComponent implements OnInit {
             penalty: chargeDetails.penalty || false,
             taxGroupId: chargeDetails.taxGroup?.name || ''
           });
+          this.configureSlabMode(chargeDetails);
         },
         error: (error) => {
           // Fallback to basic charge info if detailed fetch fails
@@ -424,6 +486,8 @@ export class OverrideChargeComponent implements OnInit {
             type: 'warning',
             message: this.translateService.instant('Could not load charge details. Using basic information.')
           });
+
+          this.configureSlabMode(selectedCharge);
         }
       });
     }
@@ -527,5 +591,223 @@ export class OverrideChargeComponent implements OnInit {
         maxCapControl.setErrors({ ...maxCapControl.errors, minValue: true });
       }
     }
+  }
+
+  /**
+   * Getter for the slabs form array.
+   */
+  get slabs(): FormArray {
+    return this.overrideChargeForm.get('slabs') as FormArray;
+  }
+
+  /**
+   * Configures whether the override should operate in slab mode.
+   * Prefers override slabs, then template slabs.
+   */
+  private configureSlabMode(chargeDetails: any): void {
+    const overrideSlabs = chargeDetails?.overrideSlabs;
+    const templateSlabs = chargeDetails?.chart?.chartSlabs || chargeDetails?.chargeSlabs || chargeDetails?.slabs || [];
+    const source = Array.isArray(overrideSlabs) && overrideSlabs.length ? overrideSlabs : templateSlabs;
+    const initialSlabs = Array.isArray(source) ? source : [];
+
+    const slabsEnabled = chargeDetails?.enableSlabs === true;
+
+    this.isSlabCharge = slabsEnabled || initialSlabs.length > 0;
+    this.resetSlabArray();
+
+    if (this.isSlabCharge) {
+      this.clearAmountValidators();
+      initialSlabs.forEach((slab: any, index: number) => this.addSlab(slab, true, index === initialSlabs.length - 1));
+
+      if (!initialSlabs.length) {
+        this.addSlab();
+      }
+
+      this.validateSlabRanges();
+    } else {
+      this.restoreAmountValidators();
+    }
+  }
+
+  /**
+   * Adds a slab row to the array.
+   * @param slab Optional slab data to pre-populate the row.
+   * @param skipDirty Controls whether to mark the form as dirty (used during initialization).
+   * @param isLast Flag to indicate the slab should default to an open-ended range when no explicit toAmount is provided.
+   */
+  addSlab(slab?: any, skipDirty: boolean = false, isLast: boolean = false): void {
+    const slabsArray = this.slabs;
+    const previousSlab = slabsArray.length ? slabsArray.at(slabsArray.length - 1) : null;
+    const previousToAmount =
+      previousSlab?.get('toAmount')?.value !== null && previousSlab?.get('toAmount')?.value !== undefined
+        ? Number(previousSlab.get('toAmount')?.value)
+        : null;
+
+    const defaultFromAmount =
+      slab?.fromAmount !== undefined && slab?.fromAmount !== null
+        ? slab.fromAmount
+        : previousToAmount !== null
+          ? Number((previousToAmount + 0.01).toFixed(2))
+          : 0;
+
+    const slabGroup = this.formBuilder.group({
+      id: [slab?.id || null],
+      fromAmount: [
+        defaultFromAmount,
+        [
+          Validators.required,
+          Validators.min(0)]
+      ],
+      toAmount: [
+        slab?.toAmount !== undefined ? slab.toAmount : isLast ? null : ''
+      ],
+      value: [
+        slab?.value !== undefined ? slab.value : '',
+        [
+          Validators.required,
+          Validators.min(0)]
+      ]
+    });
+
+    slabsArray.push(slabGroup);
+
+    if (!skipDirty) {
+      this.overrideChargeForm.markAsDirty();
+    }
+  }
+
+  /**
+   * Removes a slab row by index.
+   */
+  removeSlab(index: number): void {
+    this.slabs.removeAt(index);
+    this.overrideChargeForm.markAsDirty();
+    this.validateSlabRanges();
+  }
+
+  /**
+   * Clears all slabs from the form array.
+   */
+  private resetSlabArray(): void {
+    while (this.slabs.length) {
+      this.slabs.removeAt(0);
+    }
+  }
+
+  /**
+   * Removes validators and value from the amount control when slab mode is active.
+   */
+  private clearAmountValidators(): void {
+    const amountControl = this.overrideChargeForm.get('amount');
+    if (amountControl) {
+      amountControl.clearValidators();
+      amountControl.setValue(null);
+      amountControl.updateValueAndValidity();
+    }
+  }
+
+  /**
+   * Restores the base validators when slab mode is disabled.
+   */
+  private restoreAmountValidators(): void {
+    const amountControl = this.overrideChargeForm.get('amount');
+    if (amountControl) {
+      amountControl.setValidators(this.amountBaseValidators);
+      amountControl.updateValueAndValidity();
+    }
+  }
+
+  /**
+   * Performs client-side validation on slab ranges to keep them ordered and non-overlapping.
+   */
+  private validateSlabRanges(): void {
+    if (!this.isSlabCharge) {
+      this.slabs.setErrors(null);
+      return;
+    }
+
+    let hasErrors = false;
+    let previousTo: number | null = null;
+
+    this.slabs.controls.forEach((slabControl: AbstractControl, index: number) => {
+      const fromControl = slabControl.get('fromAmount');
+      const toControl = slabControl.get('toAmount');
+      const valueControl = slabControl.get('value');
+
+      if (!fromControl || !valueControl) {
+        return;
+      }
+
+      const fromValue = Number(fromControl.value);
+      const rawToValue = toControl?.value;
+      const toValueIsEmpty = rawToValue === null || rawToValue === undefined || rawToValue === '';
+      const toValue = toValueIsEmpty ? null : Number(rawToValue);
+
+      this.clearControlError(fromControl, 'range');
+      if (toControl) {
+        this.clearControlError(toControl, 'range');
+        this.clearControlError(toControl, 'required');
+      }
+
+      if (Number.isNaN(fromValue) || fromValue < 0) {
+        this.setControlError(fromControl, 'range');
+        hasErrors = true;
+      }
+
+      if (toValue !== null && Number.isNaN(toValue)) {
+        this.setControlError(toControl!, 'range');
+        hasErrors = true;
+      }
+
+      if (toValue !== null && toValue < fromValue) {
+        this.setControlError(fromControl, 'range');
+        this.setControlError(toControl!, 'range');
+        hasErrors = true;
+      }
+
+      if (previousTo !== null && fromValue <= previousTo) {
+        this.setControlError(fromControl, 'range');
+        hasErrors = true;
+      }
+
+      if (index !== this.slabs.length - 1 && toValueIsEmpty) {
+        this.setControlError(toControl!, 'required');
+        hasErrors = true;
+      }
+
+      previousTo = toValue;
+    });
+
+    if (hasErrors) {
+      this.slabs.setErrors({ invalidSlabs: true });
+    } else {
+      this.slabs.setErrors(null);
+    }
+  }
+
+  /**
+   * Sets a specific error key on the provided control.
+   */
+  private setControlError(control: AbstractControl, key: string): void {
+    const errors = control.errors || {};
+    if (!errors[key]) {
+      control.setErrors({
+        ...errors,
+        [key]: true
+      });
+    }
+  }
+
+  /**
+   * Clears the specified error key from the provided control.
+   */
+  private clearControlError(control: AbstractControl, key: string): void {
+    const errors = control.errors;
+    if (!errors || !errors[key]) {
+      return;
+    }
+
+    const { [key]: removed, ...remaining } = errors;
+    control.setErrors(Object.keys(remaining).length ? remaining : null);
   }
 }
