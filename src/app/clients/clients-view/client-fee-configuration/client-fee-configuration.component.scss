@@ -54,6 +54,24 @@
 .amount-value {
   font-weight: 600;
   color: #2e7d32;
+
+  &.tiered {
+    color: #1565c0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+}
+
+.tier-count {
+  font-weight: 500;
+  color: #424242;
+}
+
+.tier-summary {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: #616161;
 }
 
 .status-text {

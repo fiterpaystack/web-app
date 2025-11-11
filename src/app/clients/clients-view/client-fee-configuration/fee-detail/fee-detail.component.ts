@@ -186,6 +186,63 @@ export class FeeDetailComponent implements OnInit {
   }
 
   /**
+   * Determines if the override is tiered.
+   */
+  isTieredOverride(): boolean {
+    return Array.isArray(this.feeData?.overrideSlabs) && this.feeData.overrideSlabs.length > 0;
+  }
+
+  /**
+   * Determines if the base charge has tiers.
+   */
+  hasBaseSlabs(): boolean {
+    return this.getBaseSlabs().length > 0;
+  }
+
+  /**
+   * Retrieve override slabs.
+   */
+  getOverrideSlabs(): any[] {
+    return this.isTieredOverride() ? this.feeData.overrideSlabs : [];
+  }
+
+  /**
+   * Retrieve base slabs from the original charge definition.
+   */
+  getBaseSlabs(): any[] {
+    const fromChart = this.feeData?.chart?.chartSlabs;
+    const chargeSlabs = this.feeData?.chargeSlabs || this.feeData?.slabs;
+
+    if (Array.isArray(fromChart) && fromChart.length > 0) {
+      return fromChart;
+    }
+
+    if (Array.isArray(chargeSlabs) && chargeSlabs.length > 0) {
+      return chargeSlabs;
+    }
+
+    return [];
+  }
+
+  /**
+   * Helper to detect open-ended slab.
+   */
+  isOpenEnded(amount: any): boolean {
+    return amount === null || amount === undefined || amount === '';
+  }
+
+  /**
+   * Format slab value according to calculation type.
+   */
+  formatSlabValue(value: number): string {
+    if (this.isPercentageAmount()) {
+      return `${value}%`;
+    }
+
+    return `${this.getCurrencySymbol()}${value}`;
+  }
+
+  /**
    * Checks if charge has been overridden.
    */
   hasChargeOverride(): boolean {

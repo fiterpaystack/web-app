@@ -108,7 +108,7 @@
       <h4>{{ 'labels.heading.Override Configuration' | translate }}</h4>
 
       <div class="layout-row-wrap gap-2percent layout-lt-md-column">
-        <mat-form-field class="flex-48">
+        <mat-form-field class="flex-48" *ngIf="!isSlabCharge">
           <mat-label>{{ 'labels.inputs.Amount' | translate }}</mat-label>
           <input matInput type="number" formControlName="amount" min="0" step="0.01" required />
           <mat-error *ngIf="hasError('amount', 'required')">
@@ -119,6 +119,81 @@
             {{ 'errors.Amount must be greater than or equal to 0' | translate }}
           </mat-error>
         </mat-form-field>
+
+        <div class="flex-100 slab-container" *ngIf="isSlabCharge">
+          <div class="slab-header">
+            <span>{{ 'labels.inputs.From Amount' | translate }}</span>
+            <span>{{ 'labels.inputs.To Amount' | translate }} ({{ 'labels.commons.optional' | translate }})</span>
+            <span>{{ 'labels.inputs.Value' | translate }}</span>
+            <span class="text-right">{{ 'labels.inputs.Actions' | translate }}</span>
+          </div>
+          <div formArrayName="slabs">
+            <div class="slab-row" *ngFor="let slabGroup of slabs.controls; let i = index" [formGroupName]="i">
+              <mat-form-field class="slab-field">
+                <mat-label>{{ 'labels.inputs.From Amount' | translate }}</mat-label>
+                <input matInput type="number" formControlName="fromAmount" min="0" step="0.01" />
+                <mat-error *ngIf="slabGroup.get('fromAmount')?.hasError('required')">
+                  {{ 'labels.inputs.From Amount' | translate }} {{ 'labels.commons.is' | translate }}
+                  <strong>{{ 'labels.commons.required' | translate }}</strong>
+                </mat-error>
+                <mat-error *ngIf="slabGroup.get('fromAmount')?.hasError('range')">
+                  {{ 'errors.Invalid amount range' | translate }}
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field class="slab-field">
+                <mat-label>{{ 'labels.inputs.To Amount' | translate }}</mat-label>
+                <input matInput type="number" formControlName="toAmount" min="0" step="0.01" />
+                <mat-hint *ngIf="i === slabs.length - 1">{{
+                  'labels.hints.Leave empty for open-ended slab' | translate
+                }}</mat-hint>
+                <mat-error *ngIf="slabGroup.get('toAmount')?.hasError('range')">
+                  {{ 'errors.Invalid amount range' | translate }}
+                </mat-error>
+                <mat-error *ngIf="slabGroup.get('toAmount')?.hasError('required')">
+                  {{ 'labels.inputs.To Amount' | translate }} {{ 'labels.commons.is' | translate }}
+                  <strong>{{ 'labels.commons.required' | translate }}</strong>
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field class="slab-field">
+                <mat-label>{{ 'labels.inputs.Value' | translate }}</mat-label>
+                <input matInput type="number" formControlName="value" min="0" step="0.01" />
+                <mat-error *ngIf="slabGroup.get('value')?.hasError('required')">
+                  {{ 'labels.inputs.Value' | translate }} {{ 'labels.commons.is' | translate }}
+                  <strong>{{ 'labels.commons.required' | translate }}</strong>
+                </mat-error>
+                <mat-error *ngIf="slabGroup.get('value')?.hasError('min')">
+                  {{ 'errors.Amount must be greater than or equal to 0' | translate }}
+                </mat-error>
+              </mat-form-field>
+
+              <div class="slab-actions">
+                <button
+                  mat-icon-button
+                  color="warn"
+                  type="button"
+                  (click)="removeSlab(i)"
+                  [disabled]="slabs.length === 1"
+                  matTooltip="{{ 'labels.buttons.Delete' | translate }}"
+                >
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="slab-footer m-t-10">
+            <button mat-stroked-button color="primary" type="button" (click)="addSlab()">
+              <mat-icon>add</mat-icon>
+              {{ 'labels.buttons.Add Tier' | translate }}
+            </button>
+          </div>
+
+          <mat-error class="slab-error" *ngIf="slabs.invalid && slabs.touched">
+            {{ 'errors.Please review the tiers for overlapping or invalid ranges' | translate }}
+          </mat-error>
+        </div>
 
         <mat-form-field class="flex-48" *ngIf="showMinMaxCap()">
           <mat-label>{{ 'labels.inputs.Minimum Charge Cap' | translate }}</mat-label>

@@ -219,12 +219,22 @@ export class ClientFeeConfigurationComponent implements OnInit {
    * @param clientId Client ID
    */
   private performToggleUpdate(element: any, event: any, clientId: string): void {
+    const tiered = this.isTieredCharge(element);
     // Prepare the update payload with current values
     const updatePayload: any = {
       active: event.checked,
-      amount: element.overrideAmount || element.amount,
+      amount: tiered ? null : element.overrideAmount || element.amount,
       chargeId: element.id
     };
+
+    if (tiered && Array.isArray(element.overrideSlabs)) {
+      updatePayload.slabs = element.overrideSlabs.map((slab: any) => ({
+        id: slab.id,
+        fromAmount: slab.fromAmount,
+        toAmount: slab.toAmount === undefined ? null : slab.toAmount,
+        value: slab.value
+      }));
+    }
 
     // Include cap values if they exist
     if (element.minCap !== null && element.minCap !== undefined) {
@@ -414,12 +424,49 @@ export class ClientFeeConfigurationComponent implements OnInit {
   }
 
   /**
+   * Determine if the override uses slab tiers.
+   */
+  isTieredCharge(element: any): boolean {
+    return Array.isArray(element?.overrideSlabs) && element.overrideSlabs.length > 0;
+  }
+
+  /**
+   * Build a human-readable summary of the first and last slabs.
+   */
+  getTierSummary(element: any): string {
+    if (!this.isTieredCharge(element)) {
+      return '';
+    }
+
+    const slabs = element.overrideSlabs;
+    const first = slabs[0];
+    const last = slabs[slabs.length - 1];
+
+    const formatAmount = (value: number | null | undefined) => {
+      if (value === null || value === undefined) {
+        return '∞';
+      }
+      return `${this.getCurrencySymbol(element)}${value}`;
+    };
+
+    const firstRange = `${formatAmount(first.fromAmount)} - ${formatAmount(first.toAmount)} → ${first.value}`;
+
+    if (slabs.length === 1) {
+      return firstRange;
+    }
+
+    const lastRange = `${formatAmount(last.fromAmount)} - ${formatAmount(last.toAmount)} → ${last.value}`;
+
+    return `${firstRange} … ${lastRange}`;
+  }
+
+  /**
    * Get raw amount value for formatting
    * @param element Charge element
    * @returns Raw amount value
    */
   getAmountValue(element: any): number | null {
-    return element.overrideAmount || null;
+    return element.overrideAmount ?? element.amount ?? null;
   }
 
   /**
