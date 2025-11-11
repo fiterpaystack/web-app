@@ -1,6 +1,6 @@
 /** Angular Imports */
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 /** rxjs Imports */
 import { Observable } from 'rxjs';
@@ -244,15 +244,20 @@ export class SavingsService {
     accountId: string,
     command: string,
     data: any,
-    transactionId?: any
+    transactionId?: any,
+    idempotencyKey?: string
   ): Observable<any> {
     const httpParams = new HttpParams().set('command', command);
-    if (transactionId) {
-      return this.http.post(`/savingsaccounts/${accountId}/transactions/${transactionId}`, data, {
-        params: httpParams
-      });
+    const options: { params: HttpParams; headers?: HttpHeaders } = { params: httpParams };
+
+    if (idempotencyKey) {
+      options.headers = new HttpHeaders({ 'Idempotency-Key': idempotencyKey });
     }
-    return this.http.post(`/savingsaccounts/${accountId}/transactions`, data, { params: httpParams });
+
+    if (transactionId) {
+      return this.http.post(`/savingsaccounts/${accountId}/transactions/${transactionId}`, data, options);
+    }
+    return this.http.post(`/savingsaccounts/${accountId}/transactions`, data, options);
   }
 
   /**

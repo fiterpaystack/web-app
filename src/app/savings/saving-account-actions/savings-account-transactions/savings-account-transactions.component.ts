@@ -18,6 +18,7 @@ import { InputAmountComponent } from '../../../shared/input-amount/input-amount.
 import { MatSlideToggle } from '@angular/material/slide-toggle';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { finalize } from 'rxjs';
 
 /**
  * Create savings account transactions component.
@@ -57,6 +58,10 @@ export class SavingsAccountTransactionsComponent implements OnInit {
   /** saving account's Id */
   savingAccountId: string;
   currency: Currency | null = null;
+  /** Flag to prevent duplicate submissions. */
+  isSubmitting = false;
+  /** Current idempotency key for the in-flight submission. */
+  private currentSubmissionKey: string | null = null;
 
   /**
    * Retrieves the Saving Account transaction template data from `resolve`.
@@ -136,6 +141,13 @@ export class SavingsAccountTransactionsComponent implements OnInit {
    * Method to submit the transaction details.
    */
   submit() {
+    if (this.isSubmitting) {
+      return;
+    }
+    this.isSubmitting = true;
+    if (!this.currentSubmissionKey) {
+      this.currentSubmissionKey = this.generateIdempotencyKey();
+    }
     const savingAccountTransactionFormData = this.savingAccountTransactionForm.value;
     const locale = this.settingsService.language.code;
     const dateFormat = this.settingsService.dateFormat;
@@ -150,9 +162,31 @@ export class SavingsAccountTransactionsComponent implements OnInit {
     };
     data['transactionAmount'] = data['transactionAmount'] * 1;
     this.savingsService
-      .executeSavingsAccountTransactionsCommand(this.savingAccountId, this.transactionCommand, data)
-      .subscribe((res) => {
+      .executeSavingsAccountTransactionsCommand(
+        this.savingAccountId,
+        this.transactionCommand,
+        data,
+        undefined,
+        this.currentSubmissionKey
+      )
+      .pipe(
+        finalize(() => {
+          this.isSubmitting = false;
+          this.currentSubmissionKey = null;
+        })
+      )
+      .subscribe(() => {
         this.router.navigate(['../../transactions'], { relativeTo: this.route });
       });
+  }
+
+  /**
+   * Generates an idempotency key using browser crypto when available.
+   */
+  private generateIdempotencyKey(): string {
+    if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+      return crypto.randomUUID();
+    }
+    return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
   }
 }

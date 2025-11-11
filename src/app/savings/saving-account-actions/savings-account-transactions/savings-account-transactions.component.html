@@ -89,7 +89,12 @@
             <button type="button" mat-raised-button [routerLink]="['../../transactions']">
               {{ 'labels.buttons.Cancel' | translate }}
             </button>
-            <button mat-raised-button color="primary" [disabled]="!savingAccountTransactionForm.valid">
+            <button
+              type="submit"
+              mat-raised-button
+              color="primary"
+              [disabled]="isSubmitting || savingAccountTransactionForm.invalid"
+            >
               {{ 'labels.buttons.Submit' | translate }}
             </button>
           </mat-card-actions>
