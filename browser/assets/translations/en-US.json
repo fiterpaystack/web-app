@@ -8,6 +8,8 @@
   },
   "errors": {
     "Charge selection is required": "Charge selection is required",
+    "Invalid amount range": "Please enter a valid amount range.",
+    "Please review the tiers for overlapping or invalid ranges": "Please review the tiers for overlapping or invalid ranges.",
     "Capitalized Income amount adjusted already adjusted": "Capitalized Income amount already adjusted",
     "Capitalized Income Adjustment amount must be lower or equal to": "Capitalized Income Adjustment amount must be lower or equal to",
     "Buy Down Fee amount already adjusted": "Buy Down Fee amount already adjusted",
@@ -291,6 +293,9 @@
     "messages": {
       "No Fee Splits Configured": "No Fee Splits Configured"
     },
+    "hints": {
+      "Leave empty for open-ended slab": "Leave empty to keep the tier open-ended."
+    },
     "accounting": {
       "Accrual (periodic)": "Accrual (periodic)",
       "Accrual (upfront)": "Accrual (upfront)",
@@ -339,6 +344,7 @@
       "Add Role": "Add Role",
       "Add Rule": "Add Rule",
       "Add Slab": "Add Slab",
+      "Add Tier": "Add Tier",
       "Add/Edit": "Add/Edit",
       "Adjustment": "Adjustment",
       "Advanced Options": "Advanced Options",
@@ -818,6 +824,7 @@
       "must be selected": "must be selected",
       "must consist of 2 alphabetic characters": "must consist of 2 alphabetic characters",
       "numeral": "numeral",
+      "optional": "optional",
       "required": "required",
       "required and cannot be negative": "required and cannot be negative",
       "should": "should",
@@ -832,6 +839,8 @@
       "Charge Details": "Charge Details",
       "Charge Selection": "Charge Selection",
       "Customize Charge": "Customize Charge",
+      "Custom Tiers": "Custom Tiers",
+      "Base Tiers": "Base Tiers",
       "List of Custom Charges": "List of Custom Charges",
       "Account Linked Financial": "List of accounts linked to different financial activities. To know more click:",
       "Account Name": "Account Name",
@@ -1778,6 +1787,7 @@
       "From Account": "From Account",
       "From Account ID": "From Account ID",
       "From Account Type": "From Account Type",
+      "From Amount": "From Amount",
       "From Client": "From Client",
       "From Date": "From Date",
       "From Email": "From Email",
@@ -2466,6 +2476,7 @@
       "To": "To",
       "To Account": "To Account",
       "To Account Type": "To Account Type",
+      "To Amount": "To Amount",
       "To Client": "To Client",
       "To Date": "To Date",
       "To Loan Officer": "To Loan Officer",
@@ -2519,6 +2530,7 @@
       "Tuesday": "Tuesday",
       "Type": "Type",
       "Type/Quality": "Type/Quality",
+      "Tiered": "Tiered",
       "Unassigned": "Unassigned",
       "Unassignment Date": "Unassignment Date",
       "Unique": "Unique",
