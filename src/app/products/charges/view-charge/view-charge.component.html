@@ -314,12 +314,16 @@
 
             <ng-container matColumnDef="feeAmount">
               <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Fee Amount' | translate }}</th>
-              <td mat-cell *matCellDef="let detail">{{ detail.totalFeeAmount | currency }}</td>
+              <td mat-cell *matCellDef="let detail">
+                {{ detail.totalFeeAmount | currency: chargeData.currency.code : 'symbol-narrow' : '1.2-2' }}
+              </td>
             </ng-container>
 
             <ng-container matColumnDef="splitAmount">
               <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Split Amount' | translate }}</th>
-              <td mat-cell *matCellDef="let detail">{{ detail.splitAmount | currency }}</td>
+              <td mat-cell *matCellDef="let detail">
+                {{ detail.splitAmount | currency: chargeData.currency.code : 'symbol-narrow' : '1.2-2' }}
+              </td>
             </ng-container>
 
             <ng-container matColumnDef="glAccount">
