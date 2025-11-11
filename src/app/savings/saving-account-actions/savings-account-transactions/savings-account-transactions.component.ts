@@ -169,14 +169,20 @@ export class SavingsAccountTransactionsComponent implements OnInit {
         undefined,
         this.currentSubmissionKey
       )
-      .pipe(
-        finalize(() => {
+      .subscribe({
+        next: () => {
+          // Keep button disabled during navigation
+          this.router.navigate(['../../transactions'], { relativeTo: this.route }).then(() => {
+            // Reset state after navigation completes
+            this.isSubmitting = false;
+            this.currentSubmissionKey = null;
+          });
+        },
+        error: () => {
+          // Reset state on error
           this.isSubmitting = false;
           this.currentSubmissionKey = null;
-        })
-      )
-      .subscribe(() => {
-        this.router.navigate(['../../transactions'], { relativeTo: this.route });
+        }
       });
   }
 
