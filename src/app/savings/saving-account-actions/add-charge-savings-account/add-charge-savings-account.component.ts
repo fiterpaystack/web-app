@@ -84,11 +84,17 @@ export class AddChargeSavingsAccountComponent implements OnInit {
           this.chargeDetails.chargeTimeTypeAnnualOrMonth = true;
         }
         if (!this.chargeDetails.dueDateNotRequired && !this.chargeDetails.chargeTimeTypeAnnualOrMonth) {
+          // Charge with Specified Due Date - allow future dates, prevent past dates
+          this.minDate = this.settingsService.businessDate;
+          this.maxDate = this.settingsService.maxFutureDate;
           this.savingsChargeForm.addControl('dueDate', new UntypedFormControl('', Validators.required));
         } else {
           this.savingsChargeForm.removeControl('dueDate');
         }
         if (!this.chargeDetails.dueDateNotRequired && this.chargeDetails.chargeTimeTypeAnnualOrMonth) {
+          // Annual/Monthly Fee - allow future dates for scheduling, prevent past dates
+          this.minDate = this.settingsService.businessDate;
+          this.maxDate = this.settingsService.maxFutureDate;
           this.savingsChargeForm.addControl('feeOnMonthDay', new UntypedFormControl('', Validators.required));
         } else {
           this.savingsChargeForm.removeControl('feeOnMonthDay');
