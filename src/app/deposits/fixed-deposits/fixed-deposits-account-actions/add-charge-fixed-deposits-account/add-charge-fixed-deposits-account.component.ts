@@ -85,11 +85,17 @@ export class AddChargeFixedDepositsAccountComponent implements OnInit {
           this.chargeDetails.chargeTimeTypeAnnualOrMonth = true;
         }
         if (!this.chargeDetails.dueDateNotRequired && !this.chargeDetails.chargeTimeTypeAnnualOrMonth) {
+          // Charge with Specified Due Date - allow future dates, prevent past dates
+          this.minDate = this.settingsService.businessDate;
+          this.maxDate = this.settingsService.maxFutureDate;
           this.fixedDepositsChargeForm.addControl('dueDate', new UntypedFormControl('', Validators.required));
         } else {
           this.fixedDepositsChargeForm.removeControl('dueDate');
         }
         if (!this.chargeDetails.dueDateNotRequired && this.chargeDetails.chargeTimeTypeAnnualOrMonth) {
+          // Annual/Monthly Fee - allow future dates for scheduling, prevent past dates
+          this.minDate = this.settingsService.businessDate;
+          this.maxDate = this.settingsService.maxFutureDate;
           this.fixedDepositsChargeForm.addControl('feeOnMonthDay', new UntypedFormControl('', Validators.required));
         } else {
           this.fixedDepositsChargeForm.removeControl('feeOnMonthDay');
