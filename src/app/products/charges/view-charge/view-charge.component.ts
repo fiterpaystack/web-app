@@ -78,6 +78,11 @@ export class ViewChargeComponent {
 
   /** Selected audit for details dialog */
   selectedAudit: any = null;
+  /** Viewer timezone for date rendering */
+  readonly viewerTimeZone: string | undefined =
+    typeof Intl !== 'undefined' && typeof Intl.DateTimeFormat === 'function'
+      ? Intl.DateTimeFormat().resolvedOptions().timeZone
+      : undefined;
 
   /** View child for split details dialog template */
   @ViewChild('splitDetailsDialog') splitDetailsDialog!: TemplateRef<any>;
@@ -199,7 +204,7 @@ export class ViewChargeComponent {
         audit.splitDetails.forEach((detail) => {
           flattenedDetails.push({
             transactionId: audit.transactionId,
-            splitDate: audit.splitDate,
+            splitDateTime: detail.createdDate || audit.createdDate || audit.splitDate,
             totalFeeAmount: audit.totalFeeAmount,
             splitAmount: detail.splitAmount,
             splitPercentage: detail.splitPercentage,
