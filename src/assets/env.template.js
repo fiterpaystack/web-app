@@ -44,6 +44,9 @@
   // OAuth Client Id
   window['env']['oauthAppId'] = '$MIFOS_OAUTH_CLIENT_ID';
 
+  // OAuth Client Secret
+  window['env']['oauthClientSecret'] = '$MIFOS_OAUTH_CLIENT_SECRET';
+
   // Min Password length
   window['env']['minPasswordLength'] = '$MIFOS_MIN_PASSWORD_LENGTH';
 

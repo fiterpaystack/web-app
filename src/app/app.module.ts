@@ -2,7 +2,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HttpBackend, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpBackend, HttpClient } from '@angular/common/http';
 
 /** Environment Configuration */
 
@@ -111,7 +111,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 
   ],
   providers: [
-    DatePipe,
-    provideHttpClient(withInterceptorsFromDi())]
+    DatePipe
+  ]
 })
 export class AppModule {}

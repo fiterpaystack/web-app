@@ -86,16 +86,15 @@ import { ContentComponent } from './shell/content/content.component';
       useClass: CacheInterceptor,
       multi: true
     },
+    provideHttpClient(withInterceptorsFromDi()),
     {
       provide: HttpClient,
-      useClass: HttpService,
+      useFactory: (httpHandler: HttpHandler, injector: Injector) => {
+        return new HttpService(httpHandler, injector);
+      },
       deps: [
         HttpHandler,
-        Injector,
-        [
-          new Optional(),
-          HTTP_DYNAMIC_INTERCEPTORS
-        ]
+        Injector
       ]
     },
     ProgressBarService,
@@ -107,8 +106,7 @@ import { ContentComponent } from './shell/content/content.component';
     {
       provide: RouteReuseStrategy,
       useClass: RouteReusableStrategy
-    },
-    provideHttpClient(withInterceptorsFromDi())
+    }
   ]
 })
 export class CoreModule {
