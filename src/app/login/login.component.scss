@@ -62,7 +62,9 @@ mifosx-server-selector {
   transform: translateX(-50%);
 
   .img-container {
-    max-width: 18rem;
+    max-width: 30rem;
+    width: 100%;
+    height: auto;
   }
 }
 
@@ -114,6 +116,13 @@ mifosx-server-selector {
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
+
+  .company-logo {
+    max-width: 200px;
+    width: 100%;
+    height: auto;
+    display: block;
+  }
 
   p {
     margin: 0;
