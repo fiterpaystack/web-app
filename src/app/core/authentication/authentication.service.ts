@@ -102,8 +102,7 @@ export class AuthenticationService {
       httpParams = httpParams.set('username', loginContext.username);
       httpParams = httpParams.set('password', loginContext.password);
       httpParams = httpParams.set('client_id', `${environment.oauth.appId}`);
-      httpParams = httpParams.set('grant_type', 'client_credentials');
-      httpParams = httpParams.set('client_secret', `${environment.oauth.clientSecret}`);
+      httpParams = httpParams.set('grant_type', 'password');
       let headers = new HttpHeaders();
       headers = headers.set('Content-Type', 'application/x-www-form-urlencoded');
       return this.http
