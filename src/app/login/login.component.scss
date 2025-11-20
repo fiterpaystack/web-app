@@ -68,6 +68,20 @@ mifosx-server-selector {
   }
 }
 
+.login-card {
+  width: 100%;
+  max-width: 28rem;
+  background: #fff;
+  border-radius: 1.5rem;
+  padding: 2.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin: auto 0;
+  align-self: center;
+}
+
 .layout-column {
   display: flex;
   flex-direction: column;

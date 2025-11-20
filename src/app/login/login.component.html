@@ -49,17 +49,19 @@
       ></mifosx-server-selector>
     </div>
 
-    <!-- Tenant Identifier Name -->
-    <mifosx-tenant-selector *ngIf="displayTenantSelector()"></mifosx-tenant-selector>
+    <div class="login-card mat-elevation-z6">
+      <!-- Tenant Identifier Name -->
+      <mifosx-tenant-selector *ngIf="displayTenantSelector()"></mifosx-tenant-selector>
 
-    <!--
+      <!--
       Type of Form:
         Login
         Reset Password
         Two Factor Authentication
         Forgot Password (TODO: Decision to be taken on providing this feature.)
     -->
-    <mifosx-login-form *ngIf="!resetPassword && !twoFactorAuthenticationRequired"></mifosx-login-form>
+      <mifosx-login-form *ngIf="!resetPassword && !twoFactorAuthenticationRequired"></mifosx-login-form>
+    </div>
 
     <div class="layout-row">
       <mifosx-reset-password *ngIf="resetPassword"></mifosx-reset-password>
