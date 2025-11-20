@@ -49,26 +49,19 @@
       ></mifosx-server-selector>
     </div>
 
-    <!-- Logo with Organization Name -->
-    <div class="layout-row align-center-center flex-auto">
-      <img
-        src="assets/images/01 - Paystack-Cerulean Blue, Logomark, Stack Blue.svg"
-        alt="{{ 'APP_NAME' | translate }} Logo"
-        class="img-container"
-      />
-    </div>
+    <div class="login-card mat-elevation-z6">
+      <!-- Tenant Identifier Name -->
+      <mifosx-tenant-selector *ngIf="displayTenantSelector()"></mifosx-tenant-selector>
 
-    <!-- Tenant Identifier Name -->
-    <mifosx-tenant-selector *ngIf="displayTenantSelector()"></mifosx-tenant-selector>
-
-    <!--
+      <!--
       Type of Form:
         Login
         Reset Password
         Two Factor Authentication
         Forgot Password (TODO: Decision to be taken on providing this feature.)
     -->
-    <mifosx-login-form *ngIf="!resetPassword && !twoFactorAuthenticationRequired"></mifosx-login-form>
+      <mifosx-login-form *ngIf="!resetPassword && !twoFactorAuthenticationRequired"></mifosx-login-form>
+    </div>
 
     <div class="layout-row">
       <mifosx-reset-password *ngIf="resetPassword"></mifosx-reset-password>
