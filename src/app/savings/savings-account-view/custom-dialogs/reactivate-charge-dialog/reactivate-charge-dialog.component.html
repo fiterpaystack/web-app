@@ -1,0 +1,112 @@
+<h2 mat-dialog-title>{{ 'labels.inputs.Reactivate Charge' | translate }}</h2>
+
+<mat-dialog-content>
+  <div class="context-banner">
+    <mat-icon color="primary">info</mat-icon>
+    <span>Review payment activity and confirm when the charge should resume.</span>
+  </div>
+
+  <form [formGroup]="reactivateChargeForm" class="reactivate-charge-form">
+    <div class="summary-field">
+      <span class="field-label">{{ 'labels.inputs.Name' | translate }}</span>
+      <div class="field-value mat-body-strong">{{ data.charge.name }}</div>
+    </div>
+    <div class="summary-field">
+      <span class="field-label">{{ 'labels.inputs.Charge Type' | translate }}</span>
+      <p class="mat-body-2 muted field-value">
+        {{ data.charge.chargeTimeType.value | translateKey: 'catalogs' }} ·
+        {{ data.charge.chargeCalculationType.value | translateKey: 'catalogs' }}
+      </p>
+    </div>
+    <p class="context-copy">
+      You're reactivating the
+      {{ data.charge.penalty ? ('Penalty' | translateKey: 'catalogs') : ('Fee' | translateKey: 'catalogs') }}
+      so it resumes billing using the
+      {{ data.charge.chargeCalculationType.value | translateKey: 'catalogs' | lowercase }}
+      calculation and {{ data.charge.currency.displayLabel }} currency.
+    </p>
+
+    <mat-card class="charge-summary">
+      <mat-card-title>Charge Overview</mat-card-title>
+      <mat-card-content>
+        <div class="preview-row">
+          <span>{{ 'labels.inputs.Amount' | translate }}</span>
+          <span class="value-chip">
+            {{ data.charge.amount | currency: data.charge.currency.code : 'symbol-narrow' : '1.2-2' }}
+          </span>
+        </div>
+        <div class="preview-row">
+          <span>{{ 'labels.inputs.Outstanding' | translate }}</span>
+          <span class="value-chip warn">
+            {{ data.charge.amountOutstanding | currency: data.charge.currency.code : 'symbol-narrow' : '1.2-2' }}
+          </span>
+        </div>
+        <div class="preview-row">
+          <span>{{ 'labels.inputs.Amount Paid' | translate }}</span>
+          <span class="value-chip">
+            {{ data.charge.amountPaid | currency: data.charge.currency.code : 'symbol-narrow' : '1.2-2' }}
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-divider></mat-divider>
+
+    <div class="form-grid">
+      <mat-form-field appearance="fill">
+        <mat-label>{{ 'labels.inputs.Reactivation Date' | translate }}</mat-label>
+        <input
+          matInput
+          [matDatepicker]="reactivationPicker"
+          formControlName="reactivationDate"
+          [min]="minDate"
+          [max]="maxDate"
+        />
+        <mat-datepicker-toggle matSuffix [for]="reactivationPicker"></mat-datepicker-toggle>
+        <mat-datepicker #reactivationPicker></mat-datepicker>
+        <mat-hint>Determines when the charge becomes active again.</mat-hint>
+        <mat-error *ngIf="reactivateChargeForm.controls.reactivationDate.hasError('required')">
+          {{ 'errors.Date is required' | translate }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" *ngIf="reactivateChargeForm.contains('dueDate')">
+        <mat-label>{{ 'labels.inputs.New Due Date' | translate }}</mat-label>
+        <input matInput [matDatepicker]="dueDatePicker" formControlName="dueDate" [min]="minDate" [max]="maxDate" />
+        <mat-datepicker-toggle matSuffix [for]="dueDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker #dueDatePicker></mat-datepicker>
+        <mat-hint>{{ 'labels.inputs.New Due Date Hint' | translate }}</mat-hint>
+        <mat-error *ngIf="reactivateChargeForm.controls.dueDate.hasError('required')">
+          {{ 'errors.Date is required' | translate }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-slide-toggle formControlName="resumeFromNextBillingCycle" *ngIf="recurringCharge">
+      {{ 'labels.inputs.Resume From Next Billing Cycle' | translate }}
+    </mat-slide-toggle>
+
+    <mat-card class="schedule-preview" *ngIf="recurringCharge">
+      <mat-card-title>{{ 'labels.inputs.Billing Schedule Preview' | translate }}</mat-card-title>
+      <mat-card-content>
+        <div class="preview-row">
+          <span>{{ 'labels.inputs.Last period paid' | translate }}</span>
+          <span>{{
+            lastSettledPeriod() ? (lastSettledPeriod() | dateFormat) : ('labels.inputs.Not available' | translate)
+          }}</span>
+        </div>
+        <div class="preview-row">
+          <span>{{ 'labels.inputs.Next due period' | translate }}</span>
+          <span>{{ nextPeriod() ? (nextPeriod() | dateFormat) : ('labels.inputs.Not scheduled' | translate) }}</span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>{{ 'labels.buttons.Cancel' | translate }}</button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="reactivateChargeForm.invalid">
+    {{ 'labels.buttons.Confirm' | translate }}
+  </button>
+</mat-dialog-actions>
