@@ -2,6 +2,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import {
   MatTableDataSource,
   MatTable,
@@ -24,6 +25,7 @@ import { SettingsService } from 'app/settings/settings.service';
 import { FormDialogComponent } from 'app/shared/form-dialog/form-dialog.component';
 import { WaiveChargeDialogComponent } from '../custom-dialogs/waive-charge-dialog/waive-charge-dialog.component';
 import { InactivateChargeDialogComponent } from '../custom-dialogs/inactivate-charge-dialog/inactivate-charge-dialog.component';
+import { ReactivateChargeDialogComponent } from '../custom-dialogs/reactivate-charge-dialog/reactivate-charge-dialog.component';
 import { DeleteDialogComponent } from 'app/shared/delete-dialog/delete-dialog.component';
 
 /** Custom Models */
@@ -58,7 +60,8 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     MatRowDef,
     MatRow,
     CurrencyPipe,
-    DateFormatPipe
+    DateFormatPipe,
+    MatSnackBarModule
   ]
 })
 export class ChargesTabComponent implements OnInit {
@@ -104,7 +107,8 @@ export class ChargesTabComponent implements OnInit {
     private router: Router,
     private dialog: MatDialog,
     private settingsService: SettingsService,
-    private translateService: TranslateService
+    private translateService: TranslateService,
+    private snackBar: MatSnackBar
   ) {
     this.route.parent.data.subscribe((data: { savingsAccountData: any }) => {
       this.savingsAccountData = data.savingsAccountData;
@@ -210,6 +214,56 @@ export class ChargesTabComponent implements OnInit {
             this.reload();
           });
       }
+    });
+  }
+
+  /**
+   * Reactivates an inactive charge.
+   * @param {any} charge Charge
+   */
+  reactivateCharge(charge: any) {
+    const dialogRef = this.dialog.open(ReactivateChargeDialogComponent, {
+      data: {
+        charge,
+        defaults: {
+          businessDate: this.settingsService.businessDate,
+          maxFutureDate: this.settingsService.maxFutureDate,
+          dateFormat: this.settingsService.dateFormat
+        }
+      },
+      width: '520px'
+    });
+
+    dialogRef.afterClosed().subscribe((response: any) => {
+      if (!response?.data) {
+        return;
+      }
+      const locale = this.settingsService.language.code;
+      const dateFormat = this.settingsService.dateFormat;
+      const payload = {
+        ...response.data.value,
+        locale,
+        dateFormat
+      };
+      if (payload.reactivationDate instanceof Date) {
+        payload.reactivationDate = this.dateUtils.formatDate(payload.reactivationDate, dateFormat);
+      }
+      if (payload.dueDate instanceof Date) {
+        payload.dueDate = this.dateUtils.formatDate(payload.dueDate, dateFormat);
+      }
+      if (typeof payload.resumeFromNextBillingCycle === 'undefined') {
+        payload.resumeFromNextBillingCycle = false;
+      }
+      this.savingsService
+        .executeSavingsAccountChargesCommand(this.savingsAccountData.id, 'reactivate', payload, charge.id)
+        .subscribe(() => {
+          this.snackBar.open(
+            this.translateService.instant('labels.messages.Charge Reactivated'),
+            this.translateService.instant('labels.buttons.Close'),
+            { duration: 4000 }
+          );
+          this.reload();
+        });
     });
   }
 

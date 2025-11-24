@@ -141,6 +141,18 @@
               <i class="fa fa-ban"></i>
             </button>
           </span>
+          <span *ngIf="showInactiveCharges">
+            <button
+              class="account-action-button"
+              mat-raised-button
+              color="primary"
+              matTooltip="{{ 'tooltips.Reactivate Charge' | translate }}"
+              *mifosxHasPermission="'UPDATE_SAVINGSACCOUNTCHARGE'"
+              (click)="routeEdit($event); reactivateCharge(charge)"
+            >
+              <i class="fa fa-undo"></i>
+            </button>
+          </span>
         </td>
       </ng-container>
 

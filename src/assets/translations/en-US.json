@@ -19,6 +19,7 @@
     "Password is required": "Password is required",
     "Searched query resulted more than 200 records": "Searched query resulted more than 200 records, showing first 200 records.",
     "Username is required": "Username is required",
+    "Date is required": "Date is required",
     "Username or password incorrect.": "Username or password incorrect",
     "error.msg.charge.attach.to.savings.product.invalid.currency": "Charge and Savings Product must have the same currency.",
     "error.msg.charge.cannot.be.applied.to.savings.product": "Charge with identifier `{{params[0].value}} cannot be applied to Savings product.",
@@ -291,7 +292,8 @@
   },
   "labels": {
     "messages": {
-      "No Fee Splits Configured": "No Fee Splits Configured"
+      "No Fee Splits Configured": "No Fee Splits Configured",
+      "Charge Reactivated": "Charge reactivated successfully"
     },
     "hints": {
       "Leave empty for open-ended slab": "Leave empty to keep the tier open-ended."
@@ -1199,6 +1201,10 @@
       "Transferred To": "Transferred To",
       "Transferring From Details": "Transferring From Details",
       "Tree View": "Tree View",
+      "Charge Overview": "Charge Overview",
+      "Reactivation Guidance": "Review the latest payment activity and confirm when the charge should resume.",
+      "Reactivation Date Hint": "Determines when the charge becomes active again.",
+      "New Due Date Hint": "Pick the next valid schedule date to prevent double billing.",
       "Two-Factor Authentication": "Two-Factor Authentication",
       "Unassign Role": "Unassign Role",
       "Unassign Staff": "Unassign Staff",
@@ -1472,6 +1478,15 @@
       "Charge Payment By": "Charge Payment By",
       "Charge Payment Mode": "Charge Payment Mode",
       "Charge Time": "Charge Time",
+      "Reactivate Charge": "Reactivate Charge",
+      "Reactivation Date": "Reactivation Date",
+      "New Due Date": "New Due Date",
+      "Resume From Next Billing Cycle": "Resume From Next Billing Cycle",
+      "Billing Schedule Preview": "Billing Schedule Preview",
+      "Last period paid": "Last period paid",
+      "Next due period": "Next due period",
+      "Not available": "Not available",
+      "Not scheduled": "Not scheduled",
       "Charge Time Type": "Charge Time Type",
       "Charge Type": "Charge Type",
       "Charge time type": "Charge time type",
@@ -3725,6 +3740,7 @@
     "Number of days in month": "Number of days in month.",
     "Number of decimal places to be used to track and report": "The number of decimal places to be used to track and report on loans.",
     "Pay Charge": "Pay Charge",
+    "Reactivate Charge": "Reactivate an inactive charge and update its schedule",
     "Primary Key": "Primary Key",
     "Product name is a unique identifier": "The product name is a unique identifier for the lending product.",
     "Provide additional information": "The description is used to provide additional information regarding the purpose and characteristics of the loan product.",
