@@ -94,6 +94,8 @@ export class ViewChargeComponent {
    * @param {MatDialog} dialog Dialog reference.
    * @param {TranslateService} translateService Translate Service.
    */
+  private combinationStrategyCopy = '';
+
   constructor(
     private productsService: ProductsService,
     private route: ActivatedRoute,
@@ -101,6 +103,7 @@ export class ViewChargeComponent {
     private dialog: MatDialog,
     private translateService: TranslateService
   ) {
+    this.combinationStrategyCopy = this.translateService.instant('labels.inputs.Combination Strategy Sum Cap');
     this.route.data.subscribe((data: { charge: any }) => {
       this.chargeData = data.charge;
       if (this.chargeData.minCap) {
@@ -254,5 +257,13 @@ export class ViewChargeComponent {
     } catch (error) {
       return ruleParametersJson;
     }
+  }
+
+  getCombinationStrategyLabel(strategy?: string | null): string {
+    const key = (strategy || 'SUM_CAP').toUpperCase();
+    if (key === 'SUM_CAP') {
+      return this.combinationStrategyCopy;
+    }
+    return key.replace(/_/g, ' ').toLowerCase();
   }
 }

@@ -387,7 +387,7 @@
         </div>
 
         <!-- Discount Rules Assignment Section -->
-        <div *ngIf="chargeForm.controls.chargeAppliesTo.value === 2" class="form-section">
+        <div *ngIf="isSavingsCharge()" class="form-section discount-rules-section">
           <mat-divider class="m-b-20"></mat-divider>
           <h4>{{ 'labels.heading.Discount Rules Assignment' | translate }}</h4>
 
@@ -418,55 +418,109 @@
           <!-- Discount Rules Table -->
           <div *ngIf="selectedDiscountRules.length > 0" class="m-t-20">
             <h5>{{ 'labels.heading.Selected Discount Rules' | translate }}</h5>
-            <table mat-table [dataSource]="selectedDiscountRules" class="discount-rules-table mat-elevation-z1">
-              <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Name' | translate }}</th>
-                <td mat-cell *matCellDef="let rule" class="col-name" [matTooltip]="rule.name">
-                  {{ rule.name }}
-                </td>
-              </ng-container>
+            <div class="discount-rules-wrapper mat-elevation-z1">
+              <table mat-table [dataSource]="selectedDiscountRules" class="discount-rules-table">
+                <ng-container matColumnDef="name">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Name' | translate }}</th>
+                  <td mat-cell *matCellDef="let rule" class="col-name" [matTooltip]="rule.name || rule.ruleName">
+                    {{ rule.name || rule.ruleName }}
+                  </td>
+                </ng-container>
 
-              <ng-container matColumnDef="ruleType">
-                <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Rule Type' | translate }}</th>
-                <td mat-cell *matCellDef="let rule" class="col-rule-type">
-                  {{ rule.ruleType }}
-                </td>
-              </ng-container>
+                <ng-container matColumnDef="ruleType">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Rule Type' | translate }}</th>
+                  <td mat-cell *matCellDef="let rule" class="col-rule-type">
+                    {{ rule.ruleType }}
+                  </td>
+                </ng-container>
 
-              <ng-container matColumnDef="ruleParameters">
-                <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Rule Parameters' | translate }}</th>
-                <td mat-cell *matCellDef="let rule" class="col-rule-parameters">
-                  {{ formatRuleParameters(rule.ruleParametersJson) }}
-                </td>
-              </ng-container>
+                <ng-container matColumnDef="ruleParameters">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Rule Parameters' | translate }}</th>
+                  <td mat-cell *matCellDef="let rule" class="col-rule-parameters">
+                    <pre class="rule-parameters">{{ formatRuleParameters(rule.ruleParametersJson) }}</pre>
+                  </td>
+                </ng-container>
 
-              <ng-container matColumnDef="priority">
-                <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Priority' | translate }}</th>
-                <td mat-cell *matCellDef="let rule" class="col-priority">
-                  {{ rule.rulePriority }}
-                </td>
-              </ng-container>
+                <ng-container matColumnDef="globalPriority">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Rule Priority' | translate }}</th>
+                  <td mat-cell *matCellDef="let rule" class="col-priority">
+                    {{ rule.rulePriority ?? rule.priority ?? '—' }}
+                  </td>
+                </ng-container>
 
-              <ng-container matColumnDef="action">
-                <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Action' | translate }}</th>
-                <td mat-cell *matCellDef="let rule; let i = index">
-                  <button
-                    mat-icon-button
-                    color="warn"
-                    (click)="removeDiscountRule(i)"
-                    matTooltip="{{ 'tooltips.Remove this discount rule' | translate }}"
-                  >
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                </td>
-              </ng-container>
+                <ng-container matColumnDef="assignmentPriority">
+                  <th mat-header-cell *matHeaderCellDef>Assignment Priority</th>
+                  <td mat-cell *matCellDef="let rule" class="col-assignment">
+                    <mat-form-field class="priority-field">
+                      <mat-label>{{ 'labels.inputs.Priority' | translate }}</mat-label>
+                      <input
+                        matInput
+                        type="number"
+                        min="0"
+                        max="999"
+                        [value]="rule.assignmentPriority || 0"
+                        (input)="updateAssignmentPriority(rule, $event)"
+                      />
+                      <mat-hint>0-999</mat-hint>
+                    </mat-form-field>
+                  </td>
+                </ng-container>
 
-              <tr mat-header-row *matHeaderRowDef="['name', 'ruleType', 'ruleParameters', 'priority', 'action']"></tr>
-              <tr
-                mat-row
-                *matRowDef="let row; columns: ['name', 'ruleType', 'ruleParameters', 'priority', 'action']"
-              ></tr>
-            </table>
+                <ng-container matColumnDef="action">
+                  <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Action' | translate }}</th>
+                  <td mat-cell *matCellDef="let rule; let i = index">
+                    <button
+                      mat-icon-button
+                      color="warn"
+                      (click)="removeDiscountRule(i)"
+                      matTooltip="{{ 'tooltips.Remove this discount rule' | translate }}"
+                    >
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr
+                  mat-header-row
+                  *matHeaderRowDef="[
+                    'name',
+                    'ruleType',
+                    'ruleParameters',
+                    'globalPriority',
+                    'assignmentPriority',
+                    'action'
+                  ]"
+                ></tr>
+                <tr
+                  mat-row
+                  *matRowDef="
+                    let row;
+                    columns: ['name', 'ruleType', 'ruleParameters', 'globalPriority', 'assignmentPriority', 'action']
+                  "
+                ></tr>
+              </table>
+            </div>
+
+            <div *ngIf="discountPriorityInvalid" class="discount-error">
+              <p class="discount-error-text">{{ discountValidationMessage }}</p>
+            </div>
+          </div>
+
+          <!-- Discount Policy Configuration (only meaningful when multiple rules) -->
+          <div class="policy-configuration m-t-20" *ngIf="selectedDiscountRules.length > 1">
+            <h5>{{ 'labels.heading.Discount Policy' | translate }}</h5>
+
+            <mat-checkbox formControlName="allRulesRequired"> All rules must be applicable (AND logic) </mat-checkbox>
+            <p class="policy-hint block-hint">Require every assigned rule before any discount is granted.</p>
+
+            <mat-form-field class="flex-40 m-t-10">
+              <mat-label>Combination Strategy</mat-label>
+              <mat-select formControlName="combinationStrategy">
+                <mat-option *ngFor="let option of discountCombinationOptions" [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
           </div>
         </div>
       </mat-card-content>
@@ -478,7 +532,7 @@
         <button
           mat-raised-button
           color="primary"
-          [disabled]="!chargeForm.valid || loading"
+          [disabled]="!chargeForm.valid || loading || discountPriorityInvalid"
           *mifosxHasPermission="'CREATE_CHARGE'"
         >
           <span *ngIf="loading" class="loading-spinner">

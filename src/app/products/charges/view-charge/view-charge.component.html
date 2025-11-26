@@ -174,12 +174,28 @@
 
         <div
           class="flex-50"
-          *ngIf="chargeData.chargeAppliesTo.id === 2 && chargeData.additionalAttributes?.enableDiscountEngine"
+          *ngIf="
+            chargeData.chargeAppliesTo.id === 2 &&
+            chargeData.additionalAttributes?.enableDiscountEngine &&
+            chargeData.additionalAttributes?.discountRules?.length > 1
+          "
         >
           <div class="discount-rules-summary">
             <div class="discount-rule-summary-item">
               <strong>{{ 'labels.inputs.Total Discount Rules' | translate }}:</strong>
               {{ chargeData.additionalAttributes?.discountRules?.length || 0 }}
+            </div>
+            <div
+              class="discount-rule-summary-item"
+              *ngIf="chargeData.additionalAttributes?.discountPolicy as policyConfig"
+            >
+              <strong>AND Logic:</strong> {{ policyConfig.allRulesRequired | yesNo }}
+            </div>
+            <div
+              class="discount-rule-summary-item"
+              *ngIf="chargeData.additionalAttributes?.discountPolicy as policyConfig"
+            >
+              <strong>Combination Strategy:</strong> {{ getCombinationStrategyLabel(policyConfig.combinationStrategy) }}
             </div>
           </div>
         </div>
@@ -210,14 +226,35 @@
             <ng-container matColumnDef="ruleParameters">
               <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Rule Parameters' | translate }}</th>
               <td mat-cell *matCellDef="let rule" class="col-rule-parameters">
-                {{ formatRuleParameters(rule.ruleParametersJson) }}
+                <pre class="rule-parameters">{{ formatRuleParameters(rule.ruleParametersJson) }}</pre>
               </td>
             </ng-container>
 
-            <ng-container matColumnDef="priority">
-              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Priority' | translate }}</th>
+            <ng-container matColumnDef="assignmentPriority">
+              <th mat-header-cell *matHeaderCellDef>Assignment Priority</th>
               <td mat-cell *matCellDef="let rule" class="col-priority">
-                {{ rule.rulePriority }}
+                {{ rule.assignmentPriority ?? 0 }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="rulePriority">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Rule Priority' | translate }}</th>
+              <td mat-cell *matCellDef="let rule" class="col-priority">
+                {{ rule.rulePriority ?? rule.priority ?? '—' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="applicationCount">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Applied' | translate }}</th>
+              <td mat-cell *matCellDef="let rule" class="col-stat">
+                {{ rule.applicationCount || 0 }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="totalDiscountAmount">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Total Discount' | translate }}</th>
+              <td mat-cell *matCellDef="let rule" class="col-stat">
+                {{ rule.totalDiscountAmount || 0 | currency: chargeData.currency.code : 'symbol-narrow' : '1.2-2' }}
               </td>
             </ng-container>
 
@@ -228,10 +265,34 @@
               </td>
             </ng-container>
 
-            <tr mat-header-row *matHeaderRowDef="['name', 'ruleType', 'ruleParameters', 'priority', 'active']"></tr>
+            <tr
+              mat-header-row
+              *matHeaderRowDef="[
+                'name',
+                'ruleType',
+                'ruleParameters',
+                'assignmentPriority',
+                'rulePriority',
+                'applicationCount',
+                'totalDiscountAmount',
+                'active'
+              ]"
+            ></tr>
             <tr
               mat-row
-              *matRowDef="let row; columns: ['name', 'ruleType', 'ruleParameters', 'priority', 'active']"
+              *matRowDef="
+                let row;
+                columns: [
+                  'name',
+                  'ruleType',
+                  'ruleParameters',
+                  'assignmentPriority',
+                  'rulePriority',
+                  'applicationCount',
+                  'totalDiscountAmount',
+                  'active'
+                ]
+              "
             ></tr>
           </table>
         </div>

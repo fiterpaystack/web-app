@@ -63,3 +63,38 @@ mat-divider {
 .margin-t {
   margin-top: 1em;
 }
+
+.discount-rules-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.discount-rules-table {
+  width: 100%;
+
+  .col-rule-parameters {
+    min-width: 240px;
+    white-space: normal;
+  }
+
+  .rule-parameters {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: inherit;
+    font-size: 0.85rem;
+  }
+}
+
+.discount-policy-summary {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 0.5em 0 1em;
+
+  span {
+    font-size: 0.95rem;
+  }
+}

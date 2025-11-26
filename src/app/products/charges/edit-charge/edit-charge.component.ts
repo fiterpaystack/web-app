@@ -39,6 +39,11 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 
 /** Custom Models */
 import { ChargeStakeholderSplit, FeeSplitRequest } from '../models/fee-split.model';
+import {
+  AssignedDiscountRule,
+  DiscountPolicy,
+  DiscountRuleAssignment
+} from '../../discount-rules/models/discount-rule.model';
 
 /**
  * Edit Charge component.
@@ -97,11 +102,22 @@ export class EditChargeComponent implements OnInit {
   /** Original tax group id captured at load for comparison */
   originalTaxGroupId: number | null = null;
   /** Available discount rules */
-  availableDiscountRules: any[] = [];
+  availableDiscountRules: AssignedDiscountRule[] = [];
   /** Selected discount rules */
-  selectedDiscountRules: any[] = [];
+  selectedDiscountRules: AssignedDiscountRule[] = [];
   /** Filtered available rules (excluding already selected ones) */
-  filteredAvailableRules: any[] = [];
+  filteredAvailableRules: AssignedDiscountRule[] = [];
+  /** Discount policy metadata */
+  discountPolicy: DiscountPolicy | null = null;
+  /** Combination strategy options */
+  readonly discountCombinationOptions = [
+    {
+      value: 'SUM_CAP',
+      label: 'Sum with cap (default)'
+    }
+  ];
+  private readonly PRIORITY_MIN = 0;
+  private readonly PRIORITY_MAX = 999;
 
   /**
    * Retrieves the charge data from `resolve`.
@@ -137,6 +153,8 @@ export class EditChargeComponent implements OnInit {
    */
   editChargeForm() {
     this.showFeeOptions = this.chargeData.feeInterval && this.chargeData.feeInterval > 0;
+
+    this.discountPolicy = this.chargeData.additionalAttributes?.discountPolicy ?? null;
 
     this.chargeForm = this.formBuilder.group({
       name: [
@@ -177,6 +195,24 @@ export class EditChargeComponent implements OnInit {
       chartSlabs: this.formBuilder.array([]),
       enableFeeSplit: [this.chargeData.enableFeeSplit === true]
     });
+
+    this.chargeForm.addControl(
+      'allRulesRequired',
+      this.formBuilder.control({
+        value: this.discountPolicy?.allRulesRequired ?? false,
+        disabled: this.chargeData.chargeAppliesTo.id !== 2
+      })
+    );
+    this.chargeForm.addControl(
+      'combinationStrategy',
+      this.formBuilder.control(
+        {
+          value: this.discountPolicy?.combinationStrategy ?? 'SUM_CAP',
+          disabled: this.chargeData.chargeAppliesTo.id !== 2
+        },
+        Validators.required
+      )
+    );
 
     /** Pre-populate slabs if present */
     if (this.chargeData.chargeSlabs?.length) {
@@ -269,9 +305,9 @@ export class EditChargeComponent implements OnInit {
     });
 
     // Add discount rules form control if charge applies to savings
-    if (this.chargeData.chargeAppliesTo.id === 2) {
-      // Initialize selected discount rules from existing data
-      this.selectedDiscountRules = this.chargeData.additionalAttributes?.discountRules || [];
+    if (this.isSavingsCharge()) {
+      const assignedRules = this.chargeData.additionalAttributes?.discountRules || [];
+      this.selectedDiscountRules = assignedRules.map((rule: AssignedDiscountRule) => this.buildAssignedRule(rule));
       this.loadDiscountRules();
     }
 
@@ -438,11 +474,15 @@ export class EditChargeComponent implements OnInit {
       delete charges.chart;
     }
 
-    // Transform discount rules from array of objects to array of objects with id field
-    if (this.selectedDiscountRules && this.selectedDiscountRules.length > 0) {
-      charges.discountRules = this.selectedDiscountRules.map((rule: any) => ({ id: rule.id }));
+    // Transform discount rules from array of objects to array of assignments with optional priority
+    if (this.isSavingsCharge()) {
+      charges.discountRules = this.selectedDiscountRules.map((rule) => this.toDiscountAssignment(rule));
+      charges.allRulesRequired = this.chargeForm.get('allRulesRequired')?.value ?? false;
+      charges.combinationStrategy = this.chargeForm.get('combinationStrategy')?.value ?? 'SUM_CAP';
     } else {
       charges.discountRules = [];
+      delete charges.allRulesRequired;
+      delete charges.combinationStrategy;
     }
 
     // Extract fee split data and record toggle state; API for charge update doesn't accept splits array
@@ -858,7 +898,7 @@ export class EditChargeComponent implements OnInit {
    * Check if form has validation errors
    */
   hasFormErrors(): boolean {
-    return this.chargeForm.invalid || this.getFeeSplitErrors().length > 0;
+    return this.chargeForm.invalid || this.getFeeSplitErrors().length > 0 || this.discountPriorityInvalid;
   }
 
   /**
@@ -882,7 +922,7 @@ export class EditChargeComponent implements OnInit {
    * Update filtered available rules (exclude already selected ones)
    */
   private updateFilteredAvailableRules(): void {
-    const selectedIds = this.selectedDiscountRules.map((rule) => rule.id);
+    const selectedIds = this.selectedDiscountRules.map((rule) => this.getRuleIdentifier(rule));
     this.filteredAvailableRules = this.availableDiscountRules.filter((rule) => !selectedIds.includes(rule.id));
   }
 
@@ -892,9 +932,15 @@ export class EditChargeComponent implements OnInit {
   addDiscountRule(discountRuleSelect: any): void {
     if (
       discountRuleSelect.value &&
-      !this.selectedDiscountRules.find((rule) => rule.id === discountRuleSelect.value.id)
+      !this.selectedDiscountRules.find(
+        (rule) => this.getRuleIdentifier(rule) === this.getRuleIdentifier(discountRuleSelect.value)
+      )
     ) {
-      this.selectedDiscountRules.push(discountRuleSelect.value);
+      const normalizedRule = this.buildAssignedRule(discountRuleSelect.value);
+      this.selectedDiscountRules = [
+        ...this.selectedDiscountRules,
+        normalizedRule
+      ];
       this.updateFilteredAvailableRules();
       discountRuleSelect.value = null; // Clear the selection
       this.markFormDirty();
@@ -906,6 +952,7 @@ export class EditChargeComponent implements OnInit {
    */
   removeDiscountRule(index: number): void {
     this.selectedDiscountRules.splice(index, 1);
+    this.selectedDiscountRules = [...this.selectedDiscountRules];
     this.updateFilteredAvailableRules();
     this.markFormDirty();
   }
@@ -930,5 +977,72 @@ export class EditChargeComponent implements OnInit {
     } catch (error) {
       return ruleParametersJson;
     }
+  }
+
+  /**
+   * Returns true when the charge applies to savings
+   */
+  isSavingsCharge(): boolean {
+    return this.chargeData?.chargeAppliesTo?.id === 2;
+  }
+
+  /**
+   * True when any assignment priority is missing or out of range
+   */
+  get discountPriorityInvalid(): boolean {
+    if (!this.isSavingsCharge() || !this.selectedDiscountRules.length) {
+      return false;
+    }
+    return this.selectedDiscountRules.some((rule) => !this.isPriorityWithinRange(rule.assignmentPriority));
+  }
+
+  /**
+   * User-friendly error text for invalid discount configuration
+   */
+  get discountValidationMessage(): string | null {
+    if (!this.discountPriorityInvalid) {
+      return null;
+    }
+    return `Priority must be between ${this.PRIORITY_MIN} and ${this.PRIORITY_MAX}.`;
+  }
+
+  /**
+   * Handle inline assignment priority edits
+   */
+  updateAssignmentPriority(rule: AssignedDiscountRule, event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    const parsed = Number(value);
+    if (isNaN(parsed)) {
+      rule.assignmentPriority = this.PRIORITY_MIN;
+    } else {
+      rule.assignmentPriority = Math.min(Math.max(parsed, this.PRIORITY_MIN), this.PRIORITY_MAX);
+    }
+    this.markFormDirty();
+  }
+
+  private toDiscountAssignment(rule: AssignedDiscountRule): DiscountRuleAssignment {
+    return {
+      id: this.getRuleIdentifier(rule),
+      assignmentPriority: rule.assignmentPriority ?? this.PRIORITY_MIN
+    };
+  }
+
+  private buildAssignedRule(rule: AssignedDiscountRule): AssignedDiscountRule {
+    return {
+      ...rule,
+      ruleId: rule.ruleId ?? rule.id,
+      assignmentPriority: rule.assignmentPriority ?? this.PRIORITY_MIN
+    };
+  }
+
+  private getRuleIdentifier(rule: AssignedDiscountRule | { id?: number; ruleId?: number }): number {
+    return rule.ruleId ?? rule.id ?? 0;
+  }
+
+  private isPriorityWithinRange(priority: number | undefined | null): boolean {
+    if (priority === null || priority === undefined) {
+      return false;
+    }
+    return priority >= this.PRIORITY_MIN && priority <= this.PRIORITY_MAX;
   }
 }

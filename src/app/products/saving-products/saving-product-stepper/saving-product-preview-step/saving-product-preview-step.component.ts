@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Accounting } from 'app/core/utils/accounting';
 import { OptionData } from 'app/shared/models/option-data.model';
 import { MatDivider } from '@angular/material/divider';
@@ -64,6 +65,7 @@ export class SavingProductPreviewStepComponent implements OnInit, OnChanges {
     'name',
     'ruleType',
     'ruleParameters',
+    'assignmentPriority',
     'priority',
     'active'
   ];
@@ -83,8 +85,14 @@ export class SavingProductPreviewStepComponent implements OnInit, OnChanges {
 
   accountingMappings: any = {};
   accountingRule: OptionData;
+  private combinationStrategyCopy = '';
 
-  constructor(private accounting: Accounting) {}
+  constructor(
+    private accounting: Accounting,
+    private translateService: TranslateService
+  ) {
+    this.combinationStrategyCopy = this.translateService.instant('labels.inputs.Combination Strategy Sum Cap');
+  }
 
   ngOnInit() {
     this.setCurrentValues();
@@ -160,5 +168,13 @@ export class SavingProductPreviewStepComponent implements OnInit, OnChanges {
 
   isAccrualAccounting(): boolean {
     return this.accounting.isAccrualAccounting(this.accountingRule);
+  }
+
+  getCombinationStrategyLabel(strategy?: string | null): string {
+    const key = (strategy || 'SUM_CAP').toUpperCase();
+    if (key === 'SUM_CAP') {
+      return this.combinationStrategyCopy;
+    }
+    return key.replace(/_/g, ' ').toLowerCase();
   }
 }

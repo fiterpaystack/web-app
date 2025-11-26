@@ -185,3 +185,14 @@ mat-divider {
     text-align: center;
   }
 }
+
+.discount-policy-summary {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 8px 0 16px;
+
+  span {
+    font-size: 0.95rem;
+  }
+}

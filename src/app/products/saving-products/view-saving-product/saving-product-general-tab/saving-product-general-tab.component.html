@@ -342,6 +342,33 @@
       <h3 class="mat-h3 flex-fill">{{ 'labels.heading.Discount Rules' | translate }}</h3>
 
       <mat-divider [inset]="true"></mat-divider>
+      <div
+        class="discount-policy-summary flex-fill"
+        *ngIf="
+          discountRulesDataSource.data?.length > 1 &&
+          (savingProduct.additionalAttributes?.discountPolicy ||
+            savingProduct.additionalAttributes?.allRulesRequired !== undefined ||
+            savingProduct.additionalAttributes?.combinationStrategy)
+        "
+      >
+        <span>
+          <strong>AND Logic:</strong>
+          {{
+            savingProduct.additionalAttributes?.discountPolicy?.allRulesRequired ??
+              savingProduct.additionalAttributes?.allRulesRequired ??
+              false | yesNo
+          }}
+        </span>
+        <span>
+          <strong>Combination Strategy:</strong>
+          {{
+            getCombinationStrategyLabel(
+              savingProduct.additionalAttributes?.discountPolicy?.combinationStrategy ||
+                savingProduct.additionalAttributes?.combinationStrategy
+            )
+          }}
+        </span>
+      </div>
 
       <table class="discount-rules-table mat-elevation-z1" mat-table [dataSource]="discountRulesDataSource">
         <ng-container matColumnDef="name">
@@ -365,10 +392,17 @@
           </td>
         </ng-container>
 
-        <ng-container matColumnDef="priority">
-          <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Priority' | translate }}</th>
+        <ng-container matColumnDef="assignmentPriority">
+          <th mat-header-cell *matHeaderCellDef>Assignment Priority</th>
           <td mat-cell *matCellDef="let rule" class="col-priority">
-            {{ rule.rulePriority }}
+            {{ rule.assignmentPriority ?? 0 }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="rulePriority">
+          <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Rule Priority' | translate }}</th>
+          <td mat-cell *matCellDef="let rule" class="col-priority">
+            {{ rule.rulePriority ?? rule.priority ?? '—' }}
           </td>
         </ng-container>
 
