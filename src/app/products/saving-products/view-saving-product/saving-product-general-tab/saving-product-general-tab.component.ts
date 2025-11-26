@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Accounting } from 'app/core/utils/accounting';
 import { FaIconComponent } from '@fortawesome/angular-fontawesome';
@@ -49,6 +50,7 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
 export class SavingProductGeneralTabComponent {
   savingProduct: any;
   discountRulesDataSource: MatTableDataSource<any> = new MatTableDataSource();
+  private combinationStrategyCopy = '';
 
   chargesDisplayedColumns: string[] = [
     'name',
@@ -60,7 +62,8 @@ export class SavingProductGeneralTabComponent {
     'name',
     'ruleType',
     'ruleParameters',
-    'priority',
+    'assignmentPriority',
+    'rulePriority',
     'active'
   ];
   paymentFundSourceDisplayedColumns: string[] = [
@@ -74,8 +77,10 @@ export class SavingProductGeneralTabComponent {
 
   constructor(
     private route: ActivatedRoute,
-    private accounting: Accounting
+    private accounting: Accounting,
+    private translateService: TranslateService
   ) {
+    this.combinationStrategyCopy = this.translateService.instant('labels.inputs.Combination Strategy Sum Cap');
     this.route.data.subscribe((data: { savingProduct: any }) => {
       this.savingProduct = data.savingProduct;
 
@@ -125,5 +130,13 @@ export class SavingProductGeneralTabComponent {
       YEARLY: 'year'
     };
     return labels[timePeriod] || timePeriod.toLowerCase();
+  }
+
+  getCombinationStrategyLabel(strategy?: string | null): string {
+    const key = (strategy || 'SUM_CAP').toUpperCase();
+    if (key === 'SUM_CAP') {
+      return this.combinationStrategyCopy;
+    }
+    return key.replace(/_/g, ' ').toLowerCase();
   }
 }

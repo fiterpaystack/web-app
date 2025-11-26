@@ -135,9 +135,22 @@ export class CreateSavingProductComponent {
     const savingProduct = {
       ...this.savingProduct,
       charges: this.savingProduct.charges.map((charge: any) => ({ id: charge.id })),
-      discountRules: this.savingProduct.discountRules.map((rule: any) => ({ id: rule.id })),
+      discountRules:
+        this.savingProduct.discountRuleAssignments && this.savingProduct.discountRuleAssignments.length
+          ? this.savingProduct.discountRuleAssignments
+          : this.savingProduct.discountRules.map((rule: any) => ({
+              id: rule.id,
+              assignmentPriority: rule.assignmentPriority ?? 0
+            })),
       locale: this.settingsService.language.code // locale required for nominalAnnualInterestRate
     };
+    if (this.savingProduct.allRulesRequired !== undefined) {
+      savingProduct['allRulesRequired'] = this.savingProduct.allRulesRequired;
+    }
+    if (this.savingProduct.combinationStrategy) {
+      savingProduct['combinationStrategy'] = this.savingProduct.combinationStrategy;
+    }
+    delete savingProduct.discountRuleAssignments;
     delete savingProduct.advancedAccountingRules;
     this.productsService.createSavingProduct(savingProduct).subscribe((response: any) => {
       this.router.navigate(

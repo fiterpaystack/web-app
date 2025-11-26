@@ -115,16 +115,43 @@
   .mat-column-ruleParameters {
     min-width: 200px;
     word-break: break-word;
+    white-space: normal;
   }
 
-  .mat-column-priority {
+  .mat-column-assignmentPriority,
+  .mat-column-rulePriority,
+  .mat-column-applicationCount {
     min-width: 80px;
     text-align: center;
+  }
+
+  .mat-column-totalDiscountAmount {
+    min-width: 140px;
+    text-align: right;
   }
 
   .mat-column-active {
     min-width: 80px;
     text-align: center;
+  }
+
+  .rule-parameters {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: inherit;
+    font-size: 0.85rem;
+  }
+}
+
+.discount-policy-summary {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 8px 0 16px;
+
+  span {
+    font-size: 0.95rem;
   }
 }
 
