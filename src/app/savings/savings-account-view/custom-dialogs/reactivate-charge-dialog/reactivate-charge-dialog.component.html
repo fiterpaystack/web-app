@@ -30,10 +30,15 @@
       <mat-card-title>Charge Overview</mat-card-title>
       <mat-card-content>
         <div class="preview-row">
-          <span>{{ 'labels.inputs.Amount' | translate }}</span>
-          <span class="value-chip">
-            {{ data.charge.amount | currency: data.charge.currency.code : 'symbol-narrow' : '1.2-2' }}
-          </span>
+          <span>{{ 'labels.inputs.Charge Rate' | translate }}</span>
+          <div class="rate-display">
+            <span class="value-chip">
+              {{ formatChargeAmount() }}
+            </span>
+            <span class="rate-type-indicator" *ngIf="!isPercentageCharge()">
+              {{ data.charge.chargeCalculationType.value | translateKey: 'catalogs' }}
+            </span>
+          </div>
         </div>
         <div class="preview-row">
           <span>{{ 'labels.inputs.Outstanding' | translate }}</span>

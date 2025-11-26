@@ -172,4 +172,53 @@ export class ReactivateChargeDialogComponent implements OnInit {
       return null;
     }
   }
+
+  /**
+   * Checks if the charge is percentage-based.
+   * @returns {boolean} True if charge calculation type is percentage-based
+   */
+  isPercentageCharge(): boolean {
+    const chargeCalculationType = this.data.charge?.chargeCalculationType?.value || '';
+    const chargeCalculationTypeLower = chargeCalculationType.toLowerCase();
+    return (
+      chargeCalculationTypeLower.includes('percent') ||
+      chargeCalculationTypeLower.includes('%') ||
+      chargeCalculationTypeLower.includes('percentage')
+    );
+  }
+
+  /**
+   * Formats the charge amount based on calculation type.
+   * For percentage charges: returns "X.X%" using amountOrPercentage field
+   * For flat charges: returns formatted currency amount
+   * @returns {string} Formatted charge amount
+   */
+  formatChargeAmount(): string {
+    if (this.isPercentageCharge()) {
+      // For percentage charges, use amountOrPercentage field to avoid showing 0
+      const percentage = this.data.charge?.amountOrPercentage ?? this.data.charge?.amount;
+      if (percentage === null || percentage === undefined) {
+        return 'N/A';
+      }
+      return `${percentage}%`;
+    }
+
+    // For flat charges, use amount field and format as currency
+    const amount = this.data.charge?.amount;
+    if (amount === null || amount === undefined) {
+      return 'N/A';
+    }
+
+    const currencyCode = this.data.charge?.currency?.code || '';
+    const currencySymbol = this.data.charge?.currency?.displaySymbol || currencyCode;
+
+    // Format number with 2 decimal places
+    const formattedAmount = new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount);
+
+    // Return with currency symbol (narrow format: symbol before amount)
+    return `${currencySymbol}${formattedAmount}`;
+  }
 }
