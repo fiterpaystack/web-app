@@ -36,6 +36,33 @@ mat-divider {
   margin: 0 0 0.5em;
 }
 
+/* Advanced Accounting Rules section alignment */
+.flex-100 {
+  width: 100%;
+}
+
+/* Table alignment fixes */
+[mat-table] {
+  width: 100%;
+  display: table;
+
+  th.mat-header-cell,
+  td.mat-cell {
+    padding: 12px 16px;
+    text-align: left;
+  }
+
+  th.mat-header-cell:first-of-type,
+  td.mat-cell:first-of-type {
+    padding-left: 24px;
+  }
+
+  th.mat-header-cell:last-of-type,
+  td.mat-cell:last-of-type {
+    padding-right: 24px;
+  }
+}
+
 .margin-t {
   margin-top: 1em;
 }
