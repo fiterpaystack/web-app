@@ -89,7 +89,7 @@
           [ngClass]="savingsTransactionColor(transaction)"
           (click)="showTransactions(transaction)"
         >
-          {{ isDebit(transaction.transactionType) ? (transaction.amount | formatNumber) : '0' }}
+          {{ isDebit(transaction.transactionType) ? (transaction.amount | formatNumber) : (0 | formatNumber) }}
         </td>
       </ng-container>
 
@@ -102,7 +102,7 @@
           [ngClass]="savingsTransactionColor(transaction)"
           (click)="showTransactions(transaction)"
         >
-          {{ !isDebit(transaction.transactionType) ? (transaction.amount | formatNumber) : '0' }}
+          {{ !isDebit(transaction.transactionType) ? (transaction.amount | formatNumber) : (0 | formatNumber) }}
         </td>
       </ng-container>
 

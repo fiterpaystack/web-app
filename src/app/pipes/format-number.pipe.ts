@@ -10,9 +10,11 @@ export class FormatNumberPipe implements PipeTransform {
   ) {}
 
   transform(value: string | number, defaultValue: any): string {
-    if (!value) {
+    // Treat null/undefined/empty as "no value", but format legitimate zero values
+    if (value === null || value === undefined || value === '') {
       return defaultValue ? defaultValue : '';
     }
+
     const decimals = this.settingsService.decimals;
     const format = `1.${decimals}-${decimals}`;
     return this.decimalFormat.transform(value, format);
