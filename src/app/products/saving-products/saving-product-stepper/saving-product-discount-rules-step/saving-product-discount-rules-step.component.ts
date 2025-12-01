@@ -74,7 +74,6 @@ export class SavingProductDiscountRulesStepComponent implements OnInit {
     'ruleType',
     'ruleParameters',
     'rulePriority',
-    'assignmentPriority',
     'action'
   ];
   policyForm: UntypedFormGroup;
@@ -168,7 +167,10 @@ export class SavingProductDiscountRulesStepComponent implements OnInit {
 
   deleteDiscountRule(rule: DiscountRule) {
     const deleteDialogRef = this.dialog.open(DeleteDialogComponent, {
-      data: { deleteContext: this.translateService.instant('labels.inputs.Discount Rule') + ' ' + rule.name }
+      data: {
+        deleteContext:
+          this.translateService.instant('labels.inputs.Discount Rule') + ' ' + (rule as any).ruleName || rule.name
+      }
     });
 
     deleteDialogRef.afterClosed().subscribe((response: any) => {

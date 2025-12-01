@@ -62,7 +62,6 @@ export class SavingProductGeneralTabComponent {
     'name',
     'ruleType',
     'ruleParameters',
-    'assignmentPriority',
     'rulePriority',
     'active'
   ];
