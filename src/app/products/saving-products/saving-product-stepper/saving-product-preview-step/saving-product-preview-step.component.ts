@@ -65,7 +65,6 @@ export class SavingProductPreviewStepComponent implements OnInit, OnChanges {
     'name',
     'ruleType',
     'ruleParameters',
-    'assignmentPriority',
     'priority',
     'active'
   ];

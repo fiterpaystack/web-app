@@ -135,6 +135,13 @@ mat-divider {
 /* -----------------------------
    Discount Rules Table
 -------------------------------- */
+.discount-rules-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 4px;
+  background: #fff;
+}
+
 .discount-rules-table {
   width: 100%;
   border-collapse: collapse;
@@ -159,6 +166,20 @@ mat-divider {
   /* Column-specific adjustments */
   .col-name {
     max-width: 200px;
+  }
+
+  .col-rule-parameters {
+    min-width: 260px;
+    max-width: 340px;
+    white-space: normal;
+  }
+
+  .rule-parameters {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: inherit;
+    font-size: 0.85rem;
   }
 
   .col-discount-type {

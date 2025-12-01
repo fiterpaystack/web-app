@@ -370,52 +370,47 @@
         </span>
       </div>
 
-      <table class="discount-rules-table mat-elevation-z1" mat-table [dataSource]="discountRulesDataSource">
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Name' | translate }}</th>
-          <td mat-cell *matCellDef="let rule" class="col-name" [matTooltip]="rule.name">
-            {{ rule.name }}
-          </td>
-        </ng-container>
+      <div class="discount-rules-wrapper mat-elevation-z1 flex-fill">
+        <table class="discount-rules-table" mat-table [dataSource]="discountRulesDataSource">
+          <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Name' | translate }}</th>
+            <td mat-cell *matCellDef="let rule" class="col-name" [matTooltip]="rule.ruleName || rule.name">
+              {{ rule.ruleName || rule.name }}
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="ruleType">
-          <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Rule Type' | translate }}</th>
-          <td mat-cell *matCellDef="let rule" class="col-rule-type">
-            {{ rule.ruleType }}
-          </td>
-        </ng-container>
+          <ng-container matColumnDef="ruleType">
+            <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Rule Type' | translate }}</th>
+            <td mat-cell *matCellDef="let rule" class="col-rule-type">
+              {{ rule.ruleType }}
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="ruleParameters">
-          <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Parameters' | translate }}</th>
-          <td mat-cell *matCellDef="let rule" class="col-rule-parameters">
-            {{ rule.ruleParametersJson || 'No parameters' }}
-          </td>
-        </ng-container>
+          <ng-container matColumnDef="ruleParameters">
+            <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Parameters' | translate }}</th>
+            <td mat-cell *matCellDef="let rule" class="col-rule-parameters">
+              <pre class="rule-parameters">{{ rule.ruleParametersJson || 'No parameters' }}</pre>
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="assignmentPriority">
-          <th mat-header-cell *matHeaderCellDef>Assignment Priority</th>
-          <td mat-cell *matCellDef="let rule" class="col-priority">
-            {{ rule.assignmentPriority ?? 0 }}
-          </td>
-        </ng-container>
+          <ng-container matColumnDef="rulePriority">
+            <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Rule Priority' | translate }}</th>
+            <td mat-cell *matCellDef="let rule" class="col-priority">
+              {{ rule.rulePriority ?? rule.priority ?? '—' }}
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="rulePriority">
-          <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Rule Priority' | translate }}</th>
-          <td mat-cell *matCellDef="let rule" class="col-priority">
-            {{ rule.rulePriority ?? rule.priority ?? '—' }}
-          </td>
-        </ng-container>
+          <ng-container matColumnDef="active">
+            <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Active' | translate }}</th>
+            <td mat-cell *matCellDef="let rule" class="col-active">
+              {{ rule.active ? 'Yes' : 'No' }}
+            </td>
+          </ng-container>
 
-        <ng-container matColumnDef="active">
-          <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Active' | translate }}</th>
-          <td mat-cell *matCellDef="let rule" class="col-active">
-            {{ rule.active ? 'Yes' : 'No' }}
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="discountRulesDisplayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: discountRulesDisplayedColumns"></tr>
-      </table>
+          <tr mat-header-row *matHeaderRowDef="discountRulesDisplayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: discountRulesDisplayedColumns"></tr>
+        </table>
+      </div>
     </div>
 
     <h3 class="mat-h3 flex-fill">{{ 'labels.heading.Accounting' | translate }}</h3>
