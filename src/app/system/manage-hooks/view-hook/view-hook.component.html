@@ -96,16 +96,13 @@
           {{ getConfigValue('SMS Provider Token') }}
         </div>
 
-        <div
-          class="flex-50 mat-body-strong"
-          *ngIf="hookData.name === 'Kafka' && getConfigValue('Partition Key Strategy')"
-        >
-          {{ 'labels.inputs.Partition Key Strategy' | translate }}:
-        </div>
+        <ng-container *ngIf="hookData.name === 'Kafka' && getConfigValue('Partition Key Strategy')">
+          <div class="flex-50 mat-body-strong">{{ 'labels.inputs.Partition Key Strategy' | translate }}:</div>
 
-        <div class="flex-50" *ngIf="hookData.name === 'Kafka' && getConfigValue('Partition Key Strategy')">
-          {{ getConfigValue('Partition Key Strategy') }}
-        </div>
+          <div class="flex-50">
+            {{ getConfigValue('Partition Key Strategy') }}
+          </div>
+        </ng-container>
 
         <div class="flex-50 mat-body-strong" *ngIf="hookData.name === 'Kafka'">
           {{ 'labels.inputs.Topic Name' | translate }}:
