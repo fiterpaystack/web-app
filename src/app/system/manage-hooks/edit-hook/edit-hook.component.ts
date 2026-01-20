@@ -137,9 +137,26 @@ export class EditHookComponent implements OnInit {
   }
 
   /**
+   * Helper function to get config value by field name.
+   * @param {string} fieldName The field name to search for.
+   * @returns {string} The field value or empty string if not found.
+   */
+  getConfigValue(fieldName: string): string {
+    if (!this.hookData.config || !Array.isArray(this.hookData.config)) {
+      return '';
+    }
+    const field = this.hookData.config.find((c: any) => c.fieldName === fieldName);
+    return field ? field.fieldValue : '';
+  }
+
+  /**
    * Creates the hook form.
    */
   createHookForm() {
+    const isWeb = this.hookData.name === 'Web';
+    const isSMSBridge = this.hookData.name === 'SMS Bridge';
+    const isKafka = this.hookData.name === 'Kafka';
+
     this.hookForm = this.formBuilder.group({
       name: [
         { value: this.hookData.name, disabled: true },
@@ -152,47 +169,66 @@ export class EditHookComponent implements OnInit {
       isActive: [this.hookData.isActive],
       phoneNumber: [
         {
-          value: this.hookData.name === 'SMS Bridge' ? this.hookData.config[1].fieldValue : '',
-          disabled: this.hookData.name !== 'SMS Bridge'
+          value: isSMSBridge ? this.getConfigValue('Phone Number') : '',
+          disabled: !isSMSBridge
         },
         Validators.required
 
       ],
       smsProvider: [
         {
-          value: this.hookData.name === 'SMS Bridge' ? this.hookData.config[2].fieldValue : '',
-          disabled: this.hookData.name !== 'SMS Bridge'
+          value: isSMSBridge ? this.getConfigValue('SMS Provider') : '',
+          disabled: !isSMSBridge
         },
         Validators.required
 
       ],
       smsProviderAccountId: [
         {
-          value: this.hookData.name === 'SMS Bridge' ? this.hookData.config[3].fieldValue : '',
-          disabled: this.hookData.name !== 'SMS Bridge'
+          value: isSMSBridge ? this.getConfigValue('SMS Provider Account Id') : '',
+          disabled: !isSMSBridge
         },
         Validators.required
 
       ],
       smsProviderToken: [
         {
-          value: this.hookData.name === 'SMS Bridge' ? this.hookData.config[4].fieldValue : '',
-          disabled: this.hookData.name !== 'SMS Bridge'
+          value: isSMSBridge ? this.getConfigValue('SMS Provider Token') : '',
+          disabled: !isSMSBridge
         },
         Validators.required
 
       ],
       contentType: [
         {
-          value: this.hookData.name === 'Web' ? this.hookData.config[0].fieldValue : '',
-          disabled: this.hookData.name !== 'Web'
+          value: isWeb ? this.getConfigValue('Content Type') : '',
+          disabled: !isWeb
         },
         Validators.required
 
       ],
       payloadUrl: [
-        this.hookData.name === 'Web' ? this.hookData.config[1].fieldValue : this.hookData.config[0].fieldValue,
+        {
+          value: isWeb || isSMSBridge ? this.getConfigValue('Payload URL') : '',
+          disabled: !isWeb && !isSMSBridge
+        },
         Validators.required
+
+      ],
+      partitionKeyStrategy: [
+        {
+          value: isKafka ? this.getConfigValue('Partition Key Strategy') : '',
+          disabled: !isKafka
+        }
+        // Optional field - no Validators.required
+      ],
+      topicName: [
+        {
+          value: isKafka ? this.getConfigValue('Topic Name') : '',
+          disabled: !isKafka
+        },
+        Validators.required
+
       ]
     });
   }
@@ -259,11 +295,13 @@ export class EditHookComponent implements OnInit {
       displayName: string;
       events: any;
       config: {
-        'Payload URL': string;
+        'Payload URL'?: string;
         'Content Type'?: string;
         'SMS Provider'?: string;
         'SMS Provider Account Id'?: string;
         'SMS Provider Token'?: string;
+        'Partition Key Strategy'?: string;
+        'Topic Name'?: string;
       };
     } = {
       name: this.hookForm.get('name').value,
@@ -271,7 +309,7 @@ export class EditHookComponent implements OnInit {
       displayName: this.hookForm.get('displayName').value,
       events: this.eventsData,
       config: {
-        'Payload URL': this.hookForm.get('payloadUrl').value,
+        'Payload URL': this.hookForm.get('payloadUrl').enabled ? this.hookForm.get('payloadUrl').value : undefined,
         'Content Type': this.hookForm.get('contentType').enabled ? this.hookForm.get('contentType').value : undefined,
         'SMS Provider': this.hookForm.get('smsProvider').enabled ? this.hookForm.get('smsProvider').value : undefined,
         'SMS Provider Account Id': this.hookForm.get('smsProviderAccountId').enabled
@@ -279,7 +317,12 @@ export class EditHookComponent implements OnInit {
           : undefined,
         'SMS Provider Token': this.hookForm.get('smsProviderToken').enabled
           ? this.hookForm.get('smsProviderToken').value
-          : undefined
+          : undefined,
+        'Partition Key Strategy':
+          this.hookForm.get('partitionKeyStrategy').enabled && this.hookForm.get('partitionKeyStrategy').value
+            ? this.hookForm.get('partitionKeyStrategy').value
+            : undefined,
+        'Topic Name': this.hookForm.get('topicName').enabled ? this.hookForm.get('topicName').value : undefined
       }
     };
     this.systemService.updateHook(this.hookData.id, hook).subscribe((response: any) => {

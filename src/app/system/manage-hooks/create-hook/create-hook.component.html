@@ -25,8 +25,8 @@
             </mat-error>
           </mat-form-field>
 
-          <div class="is-active-wrapper">
-            <mat-checkbox class="is-active flex-10" labelPosition="before" formControlName="isActive">
+          <div class="is-active-wrapper flex-20">
+            <mat-checkbox class="is-active" labelPosition="before" formControlName="isActive">
               {{ 'labels.inputs.Is Active' | translate }}?
             </mat-checkbox>
           </div>
@@ -49,21 +49,43 @@
             </mat-error>
           </mat-form-field>
 
+          <mat-form-field class="flex-40" *ngIf="hookForm.controls.name.value === 'Kafka'">
+            <mat-label>{{ 'labels.inputs.Partition Key Strategy' | translate }}</mat-label>
+            <mat-select formControlName="partitionKeyStrategy">
+              <mat-option [value]="'aggregateRootId'"> aggregateRootId </mat-option>
+              <mat-option [value]="'entityId'"> entityId </mat-option>
+              <mat-option [value]="'roundRobin'"> roundRobin </mat-option>
+            </mat-select>
+            <mat-hint>{{ 'labels.inputs.aggregateRootId / entityId / roundRobin' | translate }}</mat-hint>
+          </mat-form-field>
+
           <mat-form-field class="flex-fill flex-40" *ngIf="hookForm.controls.name.value === 'SMS Bridge'">
             <mat-label>{{ 'labels.inputs.Phone Number' | translate }}</mat-label>
             <input matInput type="tel" #input maxlength="10" required formControlName="phoneNumber" />
             <mat-hint align="end">{{ input.value?.length || 0 }}/10</mat-hint>
             <mat-error *ngIf="hookForm.controls.phoneNumber.hasError('required')">
+              {{ 'labels.inputs.Phone Number' | translate }} {{ 'labels.commons.is' | translate }}
+              <strong>{{ 'labels.commons.required' | translate }}</strong>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field
+            class="flex-40"
+            *ngIf="hookForm.controls.name.value === 'Web' || hookForm.controls.name.value === 'SMS Bridge'"
+          >
+            <mat-label>{{ 'labels.inputs.Payload URL' | translate }}</mat-label>
+            <input matInput required formControlName="payloadUrl" />
+            <mat-error *ngIf="hookForm.controls.payloadUrl.hasError('required')">
               {{ 'labels.inputs.Payload URL' | translate }} {{ 'labels.commons.is' | translate }}
               <strong>{{ 'labels.commons.required' | translate }}</strong>
             </mat-error>
           </mat-form-field>
 
-          <mat-form-field class="flex-40">
-            <mat-label>{{ 'labels.inputs.Payload URL' | translate }}</mat-label>
-            <input matInput required formControlName="payloadUrl" />
-            <mat-error *ngIf="hookForm.controls.payloadUrl.hasError('required')">
-              {{ 'labels.inputs.Payload URL' | translate }} {{ 'labels.commons.is' | translate }}
+          <mat-form-field class="flex-40" *ngIf="hookForm.controls.name.value === 'Kafka'">
+            <mat-label>{{ 'labels.inputs.Topic Name' | translate }}</mat-label>
+            <input matInput required formControlName="topicName" placeholder="fineract-client-account-events" />
+            <mat-error *ngIf="hookForm.controls.topicName.hasError('required')">
+              {{ 'labels.inputs.Topic Name' | translate }} {{ 'labels.commons.is' | translate }}
               <strong>{{ 'labels.commons.required' | translate }}</strong>
             </mat-error>
           </mat-form-field>
@@ -116,6 +138,10 @@
           </button>
         </div>
 
+        <div *ngIf="eventsData.length === 0" class="mat-error" style="margin-top: 10px; margin-bottom: 10px">
+          {{ 'labels.inputs.At least one event is required' | translate }}
+        </div>
+
         <table mat-table [dataSource]="dataSource" matSort>
           <ng-container matColumnDef="entityName">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ 'labels.inputs.Entity Name' | translate }}</th>
@@ -147,7 +173,12 @@
         <button type="button" mat-raised-button [routerLink]="['../']">
           {{ 'labels.buttons.Cancel' | translate }}
         </button>
-        <button mat-raised-button color="primary" [disabled]="!hookForm.valid" *mifosxHasPermission="'CREATE_HOOK'">
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="!hookForm.valid || eventsData.length === 0"
+          *mifosxHasPermission="'CREATE_HOOK'"
+        >
           {{ 'labels.buttons.Submit' | translate }}
         </button>
       </mat-card-actions>
