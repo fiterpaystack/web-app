@@ -51,6 +51,19 @@ export class ViewHookComponent {
   }
 
   /**
+   * Helper function to get config value by field name.
+   * @param {string} fieldName The field name to search for.
+   * @returns {string} The field value or empty string if not found.
+   */
+  getConfigValue(fieldName: string): string {
+    if (!this.hookData.config || !Array.isArray(this.hookData.config)) {
+      return '';
+    }
+    const field = this.hookData.config.find((c: any) => c.fieldName === fieldName);
+    return field ? field.fieldValue : '';
+  }
+
+  /**
    * Deletes the current hook.
    */
   delete() {

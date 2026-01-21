@@ -1,12 +1,11 @@
 @media (width >= 992px) {
   .is-active-wrapper {
-    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding-bottom: 1.3438em; // Match mat-form-field padding-bottom for alignment
 
     .is-active {
-      padding: 0 0 17.5px;
-      position: absolute;
-      bottom: 0;
-      right: 0;
+      margin: 0;
     }
   }
 }
@@ -20,5 +19,10 @@ table {
 }
 
 .AddEventButton {
+  margin-bottom: 10px;
+}
+
+.events-error-message {
+  margin-top: 10px;
   margin-bottom: 10px;
 }

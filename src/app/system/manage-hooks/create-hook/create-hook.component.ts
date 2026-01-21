@@ -106,16 +106,41 @@ export class CreateHookComponent implements OnInit {
     this.hookForm.get('name').valueChanges.subscribe((name) => {
       if (name === 'Web') {
         this.hookForm.get('contentType').enable();
+        this.hookForm.get('payloadUrl').enable();
         this.hookForm.get('phoneNumber').disable();
         this.hookForm.get('smsProvider').disable();
         this.hookForm.get('smsProviderAccountId').disable();
         this.hookForm.get('smsProviderToken').disable();
-      } else {
+        this.hookForm.get('partitionKeyStrategy').disable();
+        this.hookForm.get('topicName').disable();
+      } else if (name === 'SMS Bridge') {
         this.hookForm.get('contentType').disable();
+        this.hookForm.get('payloadUrl').enable();
         this.hookForm.get('phoneNumber').enable();
         this.hookForm.get('smsProvider').enable();
         this.hookForm.get('smsProviderAccountId').enable();
         this.hookForm.get('smsProviderToken').enable();
+        this.hookForm.get('partitionKeyStrategy').disable();
+        this.hookForm.get('topicName').disable();
+      } else if (name === 'Kafka') {
+        this.hookForm.get('contentType').disable();
+        this.hookForm.get('payloadUrl').disable();
+        this.hookForm.get('phoneNumber').disable();
+        this.hookForm.get('smsProvider').disable();
+        this.hookForm.get('smsProviderAccountId').disable();
+        this.hookForm.get('smsProviderToken').disable();
+        this.hookForm.get('partitionKeyStrategy').enable();
+        this.hookForm.get('topicName').enable();
+      } else {
+        // For other templates, disable all template-specific fields
+        this.hookForm.get('contentType').disable();
+        this.hookForm.get('payloadUrl').disable();
+        this.hookForm.get('phoneNumber').disable();
+        this.hookForm.get('smsProvider').disable();
+        this.hookForm.get('smsProviderAccountId').disable();
+        this.hookForm.get('smsProviderToken').disable();
+        this.hookForm.get('partitionKeyStrategy').disable();
+        this.hookForm.get('topicName').disable();
       }
     });
     this.setEvents();
@@ -165,6 +190,14 @@ export class CreateHookComponent implements OnInit {
       ],
       payloadUrl: [
         '',
+        Validators.required
+      ],
+      partitionKeyStrategy: [
+        { value: '', disabled: true }
+        // Optional field - no Validators.required
+      ],
+      topicName: [
+        { value: '', disabled: true },
         Validators.required
       ]
     });
@@ -221,11 +254,13 @@ export class CreateHookComponent implements OnInit {
       displayName: string;
       events: any;
       config: {
-        'Payload URL': string;
+        'Payload URL'?: string;
         'Content Type'?: string;
         'SMS Provider'?: string;
         'SMS Provider Account Id'?: string;
         'SMS Provider Token'?: string;
+        'Partition Key Strategy'?: string;
+        'Topic Name'?: string;
       };
     } = {
       name: this.hookForm.get('name').value,
@@ -233,7 +268,7 @@ export class CreateHookComponent implements OnInit {
       displayName: this.hookForm.get('displayName').value,
       events: this.eventsData,
       config: {
-        'Payload URL': this.hookForm.get('payloadUrl').value,
+        'Payload URL': this.hookForm.get('payloadUrl').enabled ? this.hookForm.get('payloadUrl').value : undefined,
         'Content Type': this.hookForm.get('contentType').enabled ? this.hookForm.get('contentType').value : undefined,
         'SMS Provider': this.hookForm.get('smsProvider').enabled ? this.hookForm.get('smsProvider').value : undefined,
         'SMS Provider Account Id': this.hookForm.get('smsProviderAccountId').enabled
@@ -241,7 +276,12 @@ export class CreateHookComponent implements OnInit {
           : undefined,
         'SMS Provider Token': this.hookForm.get('smsProviderToken').enabled
           ? this.hookForm.get('smsProviderToken').value
-          : undefined
+          : undefined,
+        'Partition Key Strategy':
+          this.hookForm.get('partitionKeyStrategy').enabled && this.hookForm.get('partitionKeyStrategy').value
+            ? this.hookForm.get('partitionKeyStrategy').value
+            : undefined,
+        'Topic Name': this.hookForm.get('topicName').enabled ? this.hookForm.get('topicName').value : undefined
       }
     };
     this.systemService.createHook(hook).subscribe((response: any) => {
