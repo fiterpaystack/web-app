@@ -1250,6 +1250,7 @@
       "Selected Discount Rules": "Selected Discount Rules"
     },
     "inputs": {
+      "aggregateRootId / entityId / roundRobin": "aggregateRootId / entityId / roundRobin",
       "NoTaxGroup": "No Tax Group",
       "Withdrawal Frequency": "Withdrawal Frequency",
       "Conservative": "Conservative",
@@ -1260,6 +1261,7 @@
       "Quick Templates": "Quick Templates",
       "Maximum Withdrawals": "Maximum Withdrawals",
       "Time Period": "Time Period",
+      "Topic Name": "Topic Name",
       "Add Withdrawal Limit": "Add Withdrawal Limit",
       "withdrawals per": "withdrawals per",
       "Effective Settings": "Effective Settings",
@@ -2221,6 +2223,7 @@
       "Passwords should be": "Passwords should be",
       "Past Due Days": "Past Due Days",
       "Payload URL": "Payload URL",
+      "Partition Key Strategy": "Partition Key Strategy",
       "PAYMENT ALLOCATION": "PAYMENT ALLOCATION",
       "Payment Allocation Order": "Payment Allocation Order",
       "Payment Allocation Rule": "Payment Allocation Rule",
@@ -3132,6 +3135,7 @@
       "Effective Date To": "Effective Date To",
       "Elastic Search": "Elastic Search",
       "Email Service Configuration": "Email Service Configuration",
+      "Kafka": "Kafka",
       "Employee represents loan officers": "An employee represents loan officers with no access to systems",
       "end_point": "end_point",
       "Entity Data Table Checks": "Entity Data Table Checks",
