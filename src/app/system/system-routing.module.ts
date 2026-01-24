@@ -47,6 +47,8 @@ import { RolesAndPermissionsComponent } from './roles-and-permissions/roles-and-
 import { ViewRoleComponent } from './roles-and-permissions/view-role/view-role.component';
 import { SystemComponent } from './system.component';
 import { KafkaNotificationsComponent } from './kafka-notifications/kafka-notifications.component';
+import { KafkaEventsComponent } from './kafka-events/kafka-events.component';
+import { ViewKafkaEventComponent } from './kafka-events/view-kafka-event/view-kafka-event.component';
 
 /** Custom Resolvers */
 import { AccountNumberPreferencesResolver } from './account-number-preferences/account-number-preferences.resolver';
@@ -600,6 +602,16 @@ const routes: Routes = [
           path: 'kafka-notifications',
           data: { title: 'Kafka Notifications', breadcrumb: 'Kafka Notifications' },
           component: KafkaNotificationsComponent
+        },
+        {
+          path: 'kafka-events',
+          data: { title: 'Kafka Events', breadcrumb: 'Kafka Events' },
+          component: KafkaEventsComponent
+        },
+        {
+          path: 'kafka-events/:eventId',
+          data: { title: 'Kafka Event Details', breadcrumb: 'Kafka Event Details' },
+          component: ViewKafkaEventComponent
         }
       ]
     }

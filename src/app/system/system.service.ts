@@ -779,4 +779,67 @@ export class SystemService {
   retryAllKafkaNotifications(): Observable<any> {
     return this.http.post('/kafka/notifications/retry-all', {});
   }
+
+  /**
+   * @param {number} offset Page offset (converted to page for API).
+   * @param {number} limit Number of entries (used as size for API).
+   * @param {string} status Optional status filter (PENDING, SENT, FAILED, DLQ).
+   * @param {string} sort Optional sort criteria (e.g., "createdAt,desc").
+   * @returns {Observable<any>} Kafka Events.
+   */
+  getKafkaEvents(offset: number, limit: number, status?: string, sort?: string): Observable<any> {
+    // Convert offset/limit to page/size for API (API uses page-based pagination)
+    const page = Math.floor(offset / limit);
+    const size = limit;
+
+    let httpParams = new HttpParams().set('page', page.toString()).set('size', size.toString());
+
+    // Add status filter if provided (API supports this)
+    if (status && status !== '') {
+      httpParams = httpParams.set('status', status);
+    }
+
+    // Add sort if provided (API supports this)
+    if (sort) {
+      httpParams = httpParams.set('sort', sort);
+    }
+
+    return this.http.get('/custom/hook-events', { params: httpParams });
+  }
+
+  /**
+   * @param {string} eventId Event ID.
+   * @returns {Observable<any>} Kafka Event.
+   */
+  getKafkaEvent(eventId: string): Observable<any> {
+    return this.http.get(`/custom/hook-events/${eventId}`);
+  }
+
+  /**
+   * Retry a failed Kafka event.
+   * @param {string} eventId Event ID to retry.
+   * @returns {Observable<any>} Response.
+   */
+  retryKafkaEvent(eventId: string): Observable<any> {
+    const params = new HttpParams().set('command', 'retry');
+    return this.http.post(`/custom/hook-events/${eventId}`, {}, { params });
+  }
+
+  /**
+   * Retries all failed Kafka events.
+   * @returns {Observable<any>} Response.
+   */
+  retryAllKafkaEvents(): Observable<any> {
+    const params = new HttpParams().set('command', 'retryAllFailed');
+    return this.http.post('/custom/hook-events', {}, { params });
+  }
+
+  /**
+   * Get retry attempts for a specific Kafka event.
+   * @param {string} eventId Event ID.
+   * @returns {Observable<any>} Retry attempts.
+   */
+  getKafkaEventRetryAttempts(eventId: string): Observable<any> {
+    return this.http.get(`/custom/hook-events/${eventId}/retry-attempts`);
+  }
 }
