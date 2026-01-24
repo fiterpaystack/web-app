@@ -1,0 +1,181 @@
+<div class="container">
+  <div class="container m-b-20 layout-row align-end">
+    <button mat-raised-button (click)="goBack()">
+      <fa-icon icon="arrow-left" class="m-r-10"></fa-icon>
+      {{ 'labels.buttons.Back' | translate }}
+    </button>
+    <ng-container *ngIf="event && event.status === 'FAILED'">
+      <button
+        *mifosxHasPermission="'HOOK_EVENT_RETRY'"
+        mat-raised-button
+        color="primary"
+        (click)="retryEvent()"
+        class="m-l-10"
+      >
+        <fa-icon icon="sync" class="m-r-10"></fa-icon>
+        {{ 'labels.buttons.Retry' | translate }}
+      </button>
+    </ng-container>
+  </div>
+
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+
+  <mat-card *ngIf="event && !isLoading">
+    <mat-card-header>
+      <mat-card-title>
+        <fa-icon icon="bolt" size="lg"></fa-icon>
+        {{ 'labels.heading.Kafka Event Details' | translate }}
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <!-- Event Information Section -->
+      <div class="section">
+        <h3 class="section-title">{{ 'labels.heading.Event Information' | translate }}</h3>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">{{ 'labels.inputs.Event ID' | translate }}:</div>
+            <div class="info-value">{{ event.eventId }}</div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">{{ 'labels.inputs.Status' | translate }}:</div>
+            <div class="info-value">
+              <span [ngClass]="getStatusColor(event.status)">{{ event.status }}</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">{{ 'labels.inputs.Hook ID' | translate }}:</div>
+            <div class="info-value">{{ event.hookId }}</div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">{{ 'labels.inputs.Entity' | translate }}:</div>
+            <div class="info-value">{{ event.entityName }}</div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">{{ 'labels.inputs.Action' | translate }}:</div>
+            <div class="info-value">{{ event.actionName }}</div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">{{ 'labels.inputs.Topic Name' | translate }}:</div>
+            <div class="info-value">{{ event.topicName }}</div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">{{ 'labels.inputs.Partition Key' | translate }}:</div>
+            <div class="info-value">{{ event.partitionKey || '-' }}</div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">{{ 'labels.inputs.Created At' | translate }}:</div>
+            <div class="info-value">{{ event.createdAt | dateFormat }}</div>
+          </div>
+
+          <div class="info-item" *ngIf="event.lastRetryAt">
+            <div class="info-label">{{ 'labels.inputs.Last Retry' | translate }}:</div>
+            <div class="info-value">{{ event.lastRetryAt | dateFormat }}</div>
+          </div>
+
+          <div class="info-item" *ngIf="event.sentAt">
+            <div class="info-label">{{ 'labels.inputs.Sent At' | translate }}:</div>
+            <div class="info-value">{{ event.sentAt | dateFormat }}</div>
+          </div>
+
+          <div class="info-item" *ngIf="event.failedAt">
+            <div class="info-label">{{ 'labels.inputs.Failed At' | translate }}:</div>
+            <div class="info-value">{{ event.failedAt | dateFormat }}</div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">{{ 'labels.inputs.Retry Count' | translate }}:</div>
+            <div class="info-value">
+              {{ formatRetryCount(event.retryCount, event.maxRetries) }}
+            </div>
+          </div>
+
+          <div class="info-item" *ngIf="event.maxRetries">
+            <div class="info-label">{{ 'labels.inputs.Max Retries' | translate }}:</div>
+            <div class="info-value">{{ event.maxRetries }}</div>
+          </div>
+
+          <div class="info-item full-width" *ngIf="event.errorMessage">
+            <div class="info-label">{{ 'labels.inputs.Error Message' | translate }}:</div>
+            <div class="info-value error-message">{{ event.errorMessage }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payload Section -->
+      <div class="section" *ngIf="payloadFormatted">
+        <div class="section-header">
+          <h3 class="section-title">{{ 'labels.inputs.Payload' | translate }}</h3>
+          <div class="section-actions">
+            <button mat-icon-button (click)="copyPayload()" matTooltip="{{ 'tooltips.Copy to clipboard' | translate }}">
+              <fa-icon icon="copy"></fa-icon>
+            </button>
+            <button
+              mat-icon-button
+              (click)="downloadPayload()"
+              matTooltip="{{ 'tooltips.Download as JSON' | translate }}"
+            >
+              <fa-icon icon="download"></fa-icon>
+            </button>
+          </div>
+        </div>
+        <pre class="payload-container">{{ payloadFormatted }}</pre>
+      </div>
+
+      <!-- Retry Attempts Section -->
+      <div class="section" *ngIf="retryAttempts && retryAttempts.length > 0">
+        <h3 class="section-title">{{ 'labels.inputs.Retry Attempts' | translate }}</h3>
+        <div class="table-container">
+          <table mat-table [dataSource]="retryAttempts" class="mat-elevation-z2">
+            <ng-container matColumnDef="attemptNumber">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Attempt Number' | translate }}</th>
+              <td mat-cell *matCellDef="let attempt">{{ attempt.attemptNumber || attempt.attempt }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Status' | translate }}</th>
+              <td mat-cell *matCellDef="let attempt">
+                <span [ngClass]="getStatusColor(getRetryAttemptStatus(attempt))">
+                  {{ getRetryAttemptStatus(attempt) }}
+                </span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="errorMessage">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Error Message' | translate }}</th>
+              <td mat-cell *matCellDef="let attempt">{{ attempt.errorMessage || '-' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="attemptedAt">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Attempted At' | translate }}</th>
+              <td mat-cell *matCellDef="let attempt">
+                {{ attempt.attemptedAt ? (attempt.attemptedAt | dateFormat) : '-' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="duration">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Duration' | translate }}</th>
+              <td mat-cell *matCellDef="let attempt">
+                {{
+                  attempt.durationMs ? attempt.durationMs + ' ms' : attempt.duration ? attempt.duration + ' ms' : '-'
+                }}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

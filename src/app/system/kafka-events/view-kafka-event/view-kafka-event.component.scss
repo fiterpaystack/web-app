@@ -1,0 +1,128 @@
+.container {
+  padding: 20px;
+}
+
+.loading-container {
+  margin-bottom: 20px;
+}
+
+.section {
+  margin-bottom: 30px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.section-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+.info-label {
+  font-weight: 500;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.info-value {
+  font-size: 1rem;
+  color: #333;
+  word-break: break-word;
+
+  &.error-message {
+    color: #f44336;
+    background-color: #ffebee;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: monospace;
+  }
+}
+
+.payload-container {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 15px;
+  overflow: auto;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  max-height: 500px;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  min-width: 600px;
+}
+
+// Status color classes
+.status-pending {
+  color: #ff9800; // Orange
+  font-weight: 500;
+}
+
+.status-sent {
+  color: #4caf50; // Green
+  font-weight: 500;
+}
+
+.status-failed {
+  color: #f44336; // Red
+  font-weight: 500;
+}
+
+.status-dlq {
+  color: #9c27b0; // Purple
+  font-weight: 500;
+}
+
+.status-unknown {
+  color: #666; // Gray
+  font-weight: 500;
+}
+
+// Responsive design
+@media (width <= 768px) {
+  .container {
+    padding: 10px;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}

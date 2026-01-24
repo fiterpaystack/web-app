@@ -1,0 +1,47 @@
+<h1 mat-dialog-title>
+  {{
+    data.isBulk
+      ? ('labels.heading.Retry All Failed Events' | translate)
+      : ('labels.heading.Retry Hook Event' | translate)
+  }}
+</h1>
+<div mat-dialog-content>
+  <p *ngIf="!data.isBulk">
+    {{ 'labels.messages.Retry Event Confirmation' | translate }}
+  </p>
+  <p *ngIf="data.isBulk">
+    {{ 'labels.messages.Retry All Failed Confirmation' | translate }}
+  </p>
+
+  <div class="event-details" *ngIf="!data.isBulk && data.eventId">
+    <div class="detail-item">
+      <strong>{{ 'labels.inputs.Event ID' | translate }}:</strong>
+      <span>{{ data.eventId }}</span>
+    </div>
+    <div class="detail-item" *ngIf="data.status">
+      <strong>{{ 'labels.inputs.Status' | translate }}:</strong>
+      <span>{{ data.status }}</span>
+    </div>
+    <div class="detail-item" *ngIf="data.retryCount !== undefined && data.maxRetries !== undefined">
+      <strong>{{ 'labels.inputs.Retry Count' | translate }}:</strong>
+      <span>{{ data.retryCount }} / {{ data.maxRetries }}</span>
+    </div>
+  </div>
+
+  <div class="event-details" *ngIf="data.isBulk && data.totalFailed">
+    <div class="detail-item">
+      <strong>{{ 'labels.messages.Total Failed Events' | translate }}:</strong>
+      <span>{{ data.totalFailed }}</span>
+    </div>
+  </div>
+
+  <p class="info-text">
+    {{ 'labels.text.This will attempt to publish the event to Kafka again' | translate }}
+  </p>
+</div>
+<mat-dialog-actions align="end">
+  <button mat-raised-button (click)="cancel()">{{ 'labels.buttons.Cancel' | translate }}</button>
+  <button mat-raised-button color="primary" (click)="confirm()">
+    {{ data.isBulk ? ('labels.buttons.Retry All' | translate) : ('labels.buttons.Retry' | translate) }}
+  </button>
+</mat-dialog-actions>
