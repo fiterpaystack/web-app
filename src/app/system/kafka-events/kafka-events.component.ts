@@ -17,6 +17,9 @@ import { RetryConfirmationDialogComponent } from './retry-confirmation-dialog/re
 import { SystemService } from '../system.service';
 import { TranslateService } from '@ngx-translate/core';
 
+/** Custom Utils */
+import { getKafkaEventStatusColor, formatKafkaEventRetryCount, KafkaEventStatus } from './kafka-event-status.utils';
+
 /** rxjs Imports */
 import { merge } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -104,6 +107,8 @@ export class KafkaEventsComponent implements OnInit, AfterViewInit {
   isLoading = false;
   /** Selected status filter */
   selectedStatus: string = '';
+  /** Kafka Event Status enum for template usage */
+  kafkaEventStatus = KafkaEventStatus;
 
   /** Paginator for kafka events table. */
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -176,7 +181,7 @@ export class KafkaEventsComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(RetryConfirmationDialogComponent, {
       data: {
         eventId: eventId,
-        status: event?.status || 'FAILED',
+        status: event?.status || KafkaEventStatus.FAILED,
         retryCount: event?.retryCount,
         maxRetries: event?.maxRetries,
         isBulk: false
@@ -222,7 +227,7 @@ export class KafkaEventsComponent implements OnInit, AfterViewInit {
   getKafkaEvents() {
     this.isLoading = true;
     const pageIndex: number = this.paginator ? this.paginator.pageIndex : 0;
-    const pageSize: any = this.paginator ? this.paginator.pageSize : 10;
+    const pageSize: number = this.paginator ? this.paginator.pageSize : 10;
 
     const sortParam = this.getSortParameter();
     this.dataSource.getKafkaEvents(pageIndex, pageSize, this.selectedStatus || undefined, sortParam);
@@ -263,18 +268,7 @@ export class KafkaEventsComponent implements OnInit, AfterViewInit {
    * @returns {string} CSS class name.
    */
   getStatusColor(status: string): string {
-    switch (status) {
-      case 'PENDING':
-        return 'status-pending';
-      case 'SENT':
-        return 'status-sent';
-      case 'FAILED':
-        return 'status-failed';
-      case 'DLQ':
-        return 'status-dlq';
-      default:
-        return 'status-unknown';
-    }
+    return getKafkaEventStatusColor(status);
   }
 
   /**
@@ -295,7 +289,7 @@ export class KafkaEventsComponent implements OnInit, AfterViewInit {
    * @returns {string} Formatted retry count string.
    */
   formatRetryCount(retryCount: number, maxRetries: number): string {
-    return `${retryCount} / ${maxRetries}`;
+    return formatKafkaEventRetryCount(retryCount, maxRetries);
   }
 
   /**

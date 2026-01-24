@@ -10,6 +10,9 @@ import { RetryConfirmationDialogComponent } from '../retry-confirmation-dialog/r
 import { SystemService } from '../../system.service';
 import { TranslateService } from '@ngx-translate/core';
 
+/** Custom Utils */
+import { getKafkaEventStatusColor, formatKafkaEventRetryCount, KafkaEventStatus } from '../kafka-event-status.utils';
+
 /** Material Imports */
 import { MatCard, MatCardHeader, MatCardTitle, MatCardContent } from '@angular/material/card';
 import { MatButton } from '@angular/material/button';
@@ -73,6 +76,8 @@ export class ViewKafkaEventComponent implements OnInit {
   eventId: string;
   /** Formatted payload JSON */
   payloadFormatted: string = '';
+  /** Kafka Event Status enum for template usage */
+  kafkaEventStatus = KafkaEventStatus;
 
   /** Columns for retry attempts table */
   displayedColumns: string[] = [
@@ -238,18 +243,7 @@ export class ViewKafkaEventComponent implements OnInit {
    * @returns {string} CSS class name.
    */
   getStatusColor(status: string): string {
-    switch (status) {
-      case 'PENDING':
-        return 'status-pending';
-      case 'SENT':
-        return 'status-sent';
-      case 'FAILED':
-        return 'status-failed';
-      case 'DLQ':
-        return 'status-dlq';
-      default:
-        return 'status-unknown';
-    }
+    return getKafkaEventStatusColor(status);
   }
 
   /**
@@ -259,7 +253,7 @@ export class ViewKafkaEventComponent implements OnInit {
    * @returns {string} Formatted retry count string.
    */
   formatRetryCount(retryCount: number, maxRetries: number): string {
-    return `${retryCount} / ${maxRetries}`;
+    return formatKafkaEventRetryCount(retryCount, maxRetries);
   }
 
   /**
@@ -268,6 +262,6 @@ export class ViewKafkaEventComponent implements OnInit {
    * @returns {string} Status display.
    */
   getRetryAttemptStatus(attempt: any): string {
-    return attempt.success ? 'SUCCESS' : 'FAILED';
+    return attempt.success ? 'SUCCESS' : KafkaEventStatus.FAILED;
   }
 }

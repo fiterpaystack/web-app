@@ -4,10 +4,10 @@
       <mat-label>{{ 'labels.inputs.Status' | translate }}</mat-label>
       <mat-select [(ngModel)]="selectedStatus" (selectionChange)="onStatusChange($event)">
         <mat-option value="">{{ 'labels.inputs.All' | translate }}</mat-option>
-        <mat-option value="PENDING">{{ 'labels.inputs.Pending' | translate }}</mat-option>
-        <mat-option value="SENT">{{ 'labels.inputs.Sent' | translate }}</mat-option>
-        <mat-option value="FAILED">{{ 'labels.inputs.Failed' | translate }}</mat-option>
-        <mat-option value="DLQ">{{ 'labels.inputs.DLQ' | translate }}</mat-option>
+        <mat-option [value]="kafkaEventStatus.PENDING">{{ 'labels.inputs.Pending' | translate }}</mat-option>
+        <mat-option [value]="kafkaEventStatus.SENT">{{ 'labels.inputs.Sent' | translate }}</mat-option>
+        <mat-option [value]="kafkaEventStatus.FAILED">{{ 'labels.inputs.Failed' | translate }}</mat-option>
+        <mat-option [value]="kafkaEventStatus.DLQ">{{ 'labels.inputs.DLQ' | translate }}</mat-option>
       </mat-select>
     </mat-form-field>
 
@@ -137,7 +137,7 @@
               >
                 <fa-icon icon="eye"></fa-icon>
               </button>
-              <ng-container *ngIf="event.status === 'FAILED'">
+              <ng-container *ngIf="event.status === kafkaEventStatus.FAILED">
                 <button
                   *mifosxHasPermission="'HOOK_EVENT_RETRY'"
                   mat-icon-button

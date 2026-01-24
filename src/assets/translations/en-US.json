@@ -1759,6 +1759,8 @@
       "Error": "Error",
       "Error Log": "Error Log",
       "Error Message": "Error Message",
+      "Attempted At": "Attempted At",
+      "Attempt Number": "Attempt Number",
       "Escheat liability": "Escheat liability",
       "Event ID": "Event ID",
       "Event Type": "Event Type",
