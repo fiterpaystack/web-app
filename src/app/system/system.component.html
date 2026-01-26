@@ -482,6 +482,36 @@
             </div>
           </mat-list-item>
 
+          <mat-list-item [routerLink]="['kafka-events']">
+            <div class="menu-list-item-content">
+              <div class="menu-left-section" [routerLink]="['kafka-events']">
+                <mat-icon matListIcon>
+                  <fa-icon icon="bolt" size="sm"></fa-icon>
+                </mat-icon>
+                <div matLine>
+                  {{ 'labels.heading.Kafka Events' | translate }}
+                  <p matLine *ngIf="arrowBooleans[15]" [routerLink]="['kafka-events']" class="menu-explanation">
+                    {{ 'labels.text.View Kafka hook events' | translate }}
+                  </p>
+                </div>
+              </div>
+              <div class="menu-right-section">
+                <fa-icon
+                  (click)="arrowBooleansToggle(15); $event.stopPropagation()"
+                  *ngIf="!arrowBooleans[15]"
+                  icon="arrow-down"
+                  size="md"
+                ></fa-icon>
+                <fa-icon
+                  (click)="arrowBooleansToggle(15); $event.stopPropagation()"
+                  *ngIf="arrowBooleans[15]"
+                  icon="arrow-up"
+                  size="md"
+                ></fa-icon>
+              </div>
+            </div>
+          </mat-list-item>
+
           <mat-list-item [ngClass]="{ 'disabled-item': isDisabled }">
             <div class="menu-list-item-content">
               <div class="menu-left-section">

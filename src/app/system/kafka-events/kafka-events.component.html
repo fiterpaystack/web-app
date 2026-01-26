@@ -1,0 +1,173 @@
+<div class="container">
+  <div class="container m-b-20 layout-row align-end">
+    <mat-form-field class="flex-20">
+      <mat-label>{{ 'labels.inputs.Status' | translate }}</mat-label>
+      <mat-select [(ngModel)]="selectedStatus" (selectionChange)="onStatusChange($event)">
+        <mat-option value="">{{ 'labels.inputs.All' | translate }}</mat-option>
+        <mat-option [value]="kafkaEventStatus.PENDING">{{ 'labels.inputs.Pending' | translate }}</mat-option>
+        <mat-option [value]="kafkaEventStatus.SENT">{{ 'labels.inputs.Sent' | translate }}</mat-option>
+        <mat-option [value]="kafkaEventStatus.FAILED">{{ 'labels.inputs.Failed' | translate }}</mat-option>
+        <mat-option [value]="kafkaEventStatus.DLQ">{{ 'labels.inputs.DLQ' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="retryAll()"
+      *mifosxHasPermission="'HOOK_EVENT_RETRY'"
+      matTooltip="{{ 'tooltips.Retry all failed events' | translate }}"
+    >
+      <fa-icon icon="sync" class="m-r-10"></fa-icon>
+      {{ 'labels.buttons.Retry All' | translate }}
+    </button>
+  </div>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <fa-icon icon="bolt" size="lg"></fa-icon>
+        {{ 'labels.heading.Kafka Events' | translate }}
+      </mat-card-title>
+      <mat-card-subtitle>
+        {{ 'labels.text.View Kafka hook events' | translate }}
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="loading-container" *ngIf="isLoading">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      </div>
+
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8">
+          <!-- Event ID Column -->
+          <ng-container matColumnDef="eventId">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'labels.inputs.Event ID' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let event" [matTooltip]="event.eventId">
+              {{ truncateEventId(event.eventId) }}
+            </td>
+          </ng-container>
+
+          <!-- Entity Name Column -->
+          <ng-container matColumnDef="entityName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'labels.inputs.Entity' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let event">{{ event.entityName }}</td>
+          </ng-container>
+
+          <!-- Action Name Column -->
+          <ng-container matColumnDef="actionName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'labels.inputs.Action' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let event">{{ event.actionName }}</td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'labels.inputs.Status' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let event">
+              <span [ngClass]="getStatusColor(event.status)">
+                {{ event.status }}
+              </span>
+            </td>
+          </ng-container>
+
+          <!-- Topic Name Column -->
+          <ng-container matColumnDef="topicName">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'labels.inputs.Topic Name' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let event">{{ event.topicName }}</td>
+          </ng-container>
+
+          <!-- Partition Key Column -->
+          <ng-container matColumnDef="partitionKey">
+            <th mat-header-cell *matHeaderCellDef>
+              {{ 'labels.inputs.Partition Key' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let event">{{ event.partitionKey }}</td>
+          </ng-container>
+
+          <!-- Retry Count Column -->
+          <ng-container matColumnDef="retryCount">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'labels.inputs.Retry Count' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let event">
+              {{ formatRetryCount(event.retryCount, event.maxRetries) }}
+            </td>
+          </ng-container>
+
+          <!-- Created At Column -->
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'labels.inputs.Created At' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let event">
+              {{ event.createdAt | dateFormat }}
+            </td>
+          </ng-container>
+
+          <!-- Last Retry At Column -->
+          <ng-container matColumnDef="lastRetryAt">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'labels.inputs.Last Retry' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let event">
+              {{ event.lastRetryAt ? (event.lastRetryAt | dateFormat) : '-' }}
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Actions' | translate }}</th>
+            <td mat-cell *matCellDef="let event">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="viewEvent(event.eventId); $event.stopPropagation()"
+                matTooltip="{{ 'tooltips.View event details' | translate }}"
+              >
+                <fa-icon icon="eye"></fa-icon>
+              </button>
+              <ng-container *ngIf="event.status === kafkaEventStatus.FAILED">
+                <button
+                  *mifosxHasPermission="'HOOK_EVENT_RETRY'"
+                  mat-icon-button
+                  color="accent"
+                  (click)="retryEvent(event.eventId, event); $event.stopPropagation()"
+                  matTooltip="{{ 'tooltips.Retry this event' | translate }}"
+                >
+                  <fa-icon icon="sync"></fa-icon>
+                </button>
+              </ng-container>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            class="select-row"
+            (click)="viewEvent(row.eventId)"
+          ></tr>
+        </table>
+
+        <mat-paginator
+          *ngIf="!isLoading"
+          [length]="dataSource?.records$ | async"
+          [pageSize]="10"
+          [pageSizeOptions]="[10, 25, 50, 100]"
+          showFirstLastButtons
+        ></mat-paginator>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
