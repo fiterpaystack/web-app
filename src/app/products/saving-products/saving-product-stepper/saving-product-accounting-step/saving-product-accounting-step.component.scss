@@ -30,6 +30,12 @@ mat-divider {
   flex-direction: row;
 }
 
+.layout-row-wrap_override {
+  display: block;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
 @media (width <= 768px) {
   .radio-group-spacing {
     flex-direction: column;
