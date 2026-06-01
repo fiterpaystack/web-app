@@ -500,6 +500,32 @@
         </div>
       </ng-template>
 
+      <!-- Charge Slabs Section -->
+      <div *ngIf="chargeData.chargeSlabs?.length > 0" class="charge-slabs-details m-t-20">
+        <h3>{{ 'labels.inputs.Charge Slabs' | translate }}</h3>
+        <div class="mat-elevation-z8">
+          <table mat-table [dataSource]="chargeData.chargeSlabs" class="charge-slabs-table">
+            <ng-container matColumnDef="fromAmount">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.From Amount' | translate }}</th>
+              <td mat-cell *matCellDef="let slab">{{ slab.fromAmount }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="toAmount">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.To Amount' | translate }}</th>
+              <td mat-cell *matCellDef="let slab">{{ slab.toAmount || '∞' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="value">
+              <th mat-header-cell *matHeaderCellDef>{{ 'labels.inputs.Value' | translate }}</th>
+              <td mat-cell *matCellDef="let slab">{{ slab.value }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['fromAmount', 'toAmount', 'value']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['fromAmount', 'toAmount', 'value']"></tr>
+          </table>
+        </div>
+      </div>
+
       <div class="layout-row layout-align-center gap-2percent column-on-mobile">
         <button type="button" mat-raised-button color="primary" [routerLink]="['../']">
           {{ 'labels.buttons.Back' | translate }}
