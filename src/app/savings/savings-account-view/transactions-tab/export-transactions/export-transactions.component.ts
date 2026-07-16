@@ -54,7 +54,7 @@ export class ExportTransactionsComponent implements OnInit {
     private route: ActivatedRoute,
     private settingsService: SettingsService
   ) {
-    this.route.parent.parent.data.subscribe((data: { savingsAccountData: any }) => {
+    this.route.parent?.parent?.data.subscribe((data: any) => {
       this.savingsAccountId = data.savingsAccountData.accountNo;
     });
   }
@@ -81,11 +81,12 @@ export class ExportTransactionsComponent implements OnInit {
   }
 
   /**
-   * Generates client savings transactions report.
+   * Generates client savings transactions report in specified format.
+   * @param outputType Output format type (PDF, CSV, XLS, XLSX)
    */
-  generate() {
+  generate(outputType: string = 'PDF') {
     const data = {
-      'output-type': 'PDF',
+      'output-type': outputType,
       R_fromDate: this.dateUtils.formatDate(
         this.transactionsReportForm.value.fromDate,
         this.settingsService.dateFormat
@@ -104,9 +105,30 @@ export class ExportTransactionsComponent implements OnInit {
       .subscribe((res: any) => {
         const contentType = res.headers.get('Content-Type');
         const file = new Blob([res.body], { type: contentType });
-        const filecontent = URL.createObjectURL(file);
-        this.pentahoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(filecontent);
-        this.hideOutput = false;
+        if (outputType === 'PDF') {
+          const filecontent = URL.createObjectURL(file);
+          this.pentahoUrl = this.sanitizer.bypassSecurityTrustResourceUrl(filecontent);
+          this.hideOutput = false;
+        } else {
+          // For CSV, XLS, XLSX - download the file
+          this.downloadFile(file, outputType);
+        }
       });
+  }
+
+  /**
+   * Downloads the generated file.
+   * @param blob File blob
+   * @param outputType Output format type
+   */
+  downloadFile(blob: Blob, outputType: string) {
+    const extension = outputType.toLowerCase();
+    const fileName = `savings-statement-${this.savingsAccountId}-${this.dateUtils.formatDate(new Date(), 'yyyyMMdd')}.${extension}`;
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    URL.revokeObjectURL(url);
   }
 }

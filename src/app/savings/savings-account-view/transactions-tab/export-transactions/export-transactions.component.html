@@ -1,4 +1,4 @@
-<form class="m-t-20 layout-column" [formGroup]="transactionsReportForm" (ngSubmit)="generate()">
+<form class="m-t-20 layout-column" [formGroup]="transactionsReportForm">
   <div class="layout-row layout-align-center gap-3percent">
     <mat-form-field class="flex-30" (click)="fromDatePicker.open()">
       <mat-label>{{ 'labels.inputs.From Date' | translate }}</mat-label>
@@ -37,10 +37,25 @@
     </mat-form-field>
   </div>
 
-  <div class="generate-button layout-row layout-xs-column layout-align-center gap-5percent">
+  <div class="generate-button layout-row layout-xs-column layout-align-center gap-5percent flex-wrap">
     <button type="button" mat-raised-button [routerLink]="['../']">{{ 'labels.buttons.Cancel' | translate }}</button>
-    <button mat-raised-button color="primary" [disabled]="!transactionsReportForm.valid">
-      <fa-icon icon="cogs" class="m-r-10"></fa-icon>{{ 'labels.buttons.Generate Report' | translate }} &nbsp;
+    <button
+      type="button"
+      mat-raised-button
+      color="primary"
+      [disabled]="!transactionsReportForm.valid"
+      (click)="generate('PDF')"
+    >
+      <fa-icon icon="file-pdf" class="m-r-10"></fa-icon>{{ 'labels.buttons.Export PDF' | translate }}
+    </button>
+    <button
+      type="button"
+      mat-raised-button
+      color="accent"
+      [disabled]="!transactionsReportForm.valid"
+      (click)="generate('CSV')"
+    >
+      <fa-icon icon="file-csv" class="m-r-10"></fa-icon>{{ 'labels.buttons.Export CSV' | translate }}
     </button>
   </div>
 </form>
