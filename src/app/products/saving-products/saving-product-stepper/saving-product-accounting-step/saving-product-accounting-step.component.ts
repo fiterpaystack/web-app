@@ -36,6 +36,7 @@ import {
 import { MatStepperPrevious, MatStepperNext } from '@angular/material/stepper';
 import { FindPipe } from '../../../../pipes/find.pipe';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { GlAccountSelectorBase } from 'app/shared/form-dialog/formfield/model/GlAccountSelectorBase';
 
 @Component({
   selector: 'mifosx-saving-product-accounting-step',
@@ -393,6 +394,7 @@ export class SavingProductAccountingStepComponent implements OnInit {
   }
 
   getPaymentFundSourceFormfields(values?: any) {
+    console.log(values);
     const formfields: FormfieldBase[] = [
       new SelectBase({
         controlName: 'paymentTypeId',
@@ -402,11 +404,13 @@ export class SavingProductAccountingStepComponent implements OnInit {
         required: true,
         order: 1
       }),
-      new SelectBase({
+
+      new GlAccountSelectorBase({
         controlName: 'fundSourceAccountId',
         label: this.translateService.instant('labels.inputs.Fund Source'),
-        value: values ? values.fundSourceAccountId : this.combinedAccountData[0].id,
-        options: { label: 'name', value: 'id', data: this.combinedAccountData },
+        value: values ? values.fundSourceAccountId : null,
+        controlType: 'glAccount',
+        glAccountList: this.combinedAccountData,
         required: true,
         order: 2
       })
@@ -425,11 +429,12 @@ export class SavingProductAccountingStepComponent implements OnInit {
         required: true,
         order: 1
       }),
-      new SelectBase({
+      new GlAccountSelectorBase({
         controlName: 'incomeAccountId',
         label: this.translateService.instant('labels.inputs.Income Account'),
         value: values ? values.incomeAccountId : this.incomeAccountData[0].id,
-        options: { label: 'name', value: 'id', data: this.incomeAccountData },
+        controlType: 'glAccount',
+        glAccountList: this.incomeAccountData,
         required: true,
         order: 2
       })
@@ -448,11 +453,12 @@ export class SavingProductAccountingStepComponent implements OnInit {
         required: true,
         order: 1
       }),
-      new SelectBase({
+      new GlAccountSelectorBase({
         controlName: 'incomeAccountId',
         label: this.translateService.instant('labels.inputs.Income Account'),
         value: values ? values.incomeAccountId : this.incomeAccountData[0].id,
-        options: { label: 'name', value: 'id', data: this.incomeAccountData },
+        controlType: 'glAccount',
+        glAccountList: this.incomeAccountData,
         required: true,
         order: 2
       })
