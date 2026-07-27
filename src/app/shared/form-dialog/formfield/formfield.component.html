@@ -71,4 +71,18 @@
   >
     {{ formfield.label }}
   </mat-checkbox>
+
+  <ng-container [ngSwitch]="formfield.controlType">
+    <div *ngSwitchCase="'glAccount'" class="flex-fill">
+      <mifosx-gl-account-selector
+        class="mifosx-gl-account-selector"
+        *ngSwitchCase="'glAccount'"
+        [inputFormControl]="form.get(formfield.controlName)"
+        [glAccountList]="formfield.glAccountList"
+        [required]="formfield.required"
+        [inputLabel]="formfield.label"
+      >
+      </mifosx-gl-account-selector>
+    </div>
+  </ng-container>
 </div>

@@ -4,6 +4,7 @@ import { UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FormfieldBase } from './model/formfield-base';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
+import { GlAccountSelectorComponent } from 'app/shared/accounting/gl-account-selector/gl-account-selector.component';
 
 @Component({
   selector: 'mifosx-formfield',
@@ -11,7 +12,8 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
   styleUrls: ['./formfield.component.scss'],
   imports: [
     ...STANDALONE_SHARED_IMPORTS,
-    MatCheckbox
+    MatCheckbox,
+    GlAccountSelectorComponent
   ]
 })
 export class FormfieldComponent {
