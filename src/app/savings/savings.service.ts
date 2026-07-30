@@ -5,6 +5,9 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 /** rxjs Imports */
 import { Observable } from 'rxjs';
 
+/** Number of transactions fetched per page in the savings account transactions table. */
+export const SAVINGS_TRANSACTIONS_PAGE_SIZE = 50;
+
 /**
  * Savings Service.
  */
@@ -49,10 +52,17 @@ export class SavingsService {
 
   /**
    * @param accountId Savings Account Id of account to get data for.
+   * @param transactionLimit Maximum number of transactions to return (enables paging of the transactions list).
+   * @param transactionOffset Number of transactions to skip before returning results.
    * @returns {Observable<any>} Savings data.
    */
-  getSavingsAccountData(accountId: string): Observable<any> {
-    const httpParams = new HttpParams().set('associations', 'all');
+  getSavingsAccountData(accountId: string, transactionLimit?: number, transactionOffset?: number): Observable<any> {
+    let httpParams = new HttpParams().set('associations', 'all');
+    if (transactionLimit !== undefined && transactionOffset !== undefined) {
+      httpParams = httpParams
+        .set('transactionLimit', transactionLimit.toString())
+        .set('transactionOffset', transactionOffset.toString());
+    }
     return this.http.get(`/savingsaccounts/${accountId}`, { params: httpParams });
   }
 

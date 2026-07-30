@@ -165,7 +165,13 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns" class="select-row"></tr>
     </table>
 
-    <mat-paginator [pageSize]="50" [pageSizeOptions]="[50, 100, 200]" showFirstLastButtons></mat-paginator>
+    <mat-paginator
+      [length]="totalTransactionsCount"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[pageSize]"
+      [disabled]="isLoadingTransactions"
+      showFirstLastButtons
+    ></mat-paginator>
   </div>
 
   <div class="alert" [hidden]="accountWithTransactions">
