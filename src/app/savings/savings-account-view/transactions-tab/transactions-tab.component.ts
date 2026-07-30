@@ -1,7 +1,7 @@
 /** Angular Imports */
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { UntypedFormControl, ReactiveFormsModule } from '@angular/forms';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
 import {
   MatTableDataSource,
@@ -22,7 +22,7 @@ import {
   SavingsAccountTransaction,
   SavingsAccountTransactionType
 } from 'app/savings/models/savings-account-transaction.model';
-import { SavingsService } from 'app/savings/savings.service';
+import { SavingsService, SAVINGS_TRANSACTIONS_PAGE_SIZE } from 'app/savings/savings.service';
 import { SettingsService } from 'app/settings/settings.service';
 import { UndoTransactionDialogComponent } from '../custom-dialogs/undo-transaction-dialog/undo-transaction-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -72,11 +72,17 @@ import { STANDALONE_SHARED_IMPORTS } from 'app/standalone-shared.module';
     FormatNumberPipe
   ]
 })
-export class TransactionsTabComponent implements OnInit {
+export class TransactionsTabComponent implements OnInit, AfterViewInit {
   /** Savings Account Status */
   status: any;
   /** Transactions Data */
   transactionsData: SavingsAccountTransaction[] = [];
+  /** Total number of transactions on the account, used to size the paginator. */
+  totalTransactionsCount = 0;
+  /** Page size used when fetching transactions from the API. */
+  readonly pageSize = SAVINGS_TRANSACTIONS_PAGE_SIZE;
+  /** Whether a page of transactions is currently being fetched. */
+  isLoadingTransactions = false;
   /** Form control to handle accural parameter */
   hideAccrualsParam: UntypedFormControl;
   hideReversedParam: UntypedFormControl;
@@ -116,6 +122,8 @@ export class TransactionsTabComponent implements OnInit {
   ) {
     this.route.parent.parent.data.subscribe((data: { savingsAccountData: any }) => {
       this.transactionsData = data.savingsAccountData.transactions;
+      this.totalTransactionsCount =
+        data.savingsAccountData.totalTransactionsCount ?? this.transactionsData?.length ?? 0;
       this.status = data.savingsAccountData.status.value;
     });
     this.accountId = this.route.parent.parent.snapshot.params['savingAccountId'];
@@ -127,11 +135,29 @@ export class TransactionsTabComponent implements OnInit {
     this.setTransactions();
   }
 
+  ngAfterViewInit(): void {
+    this.paginator.page.subscribe((event: PageEvent) => this.loadTransactionsPage(event.pageIndex));
+  }
+
   setTransactions(): void {
     this.dataSource = new MatTableDataSource(this.transactionsData);
-    this.accountWithTransactions = this.transactionsData && this.transactionsData.length > 0;
-    this.dataSource.paginator = this.paginator;
+    this.accountWithTransactions = this.totalTransactionsCount > 0;
     this.dataSource.sort = this.sort;
+  }
+
+  /**
+   * Fetches a page of transactions from the API using transactionLimit/transactionOffset.
+   * @param pageIndex Zero-based page index requested by the paginator.
+   */
+  loadTransactionsPage(pageIndex: number): void {
+    this.isLoadingTransactions = true;
+    const offset = pageIndex * this.pageSize;
+    this.savingsService.getSavingsAccountData(this.accountId, this.pageSize, offset).subscribe((data: any) => {
+      this.transactionsData = data.transactions;
+      this.totalTransactionsCount = data.totalTransactionsCount ?? this.totalTransactionsCount;
+      this.isLoadingTransactions = false;
+      this.filterTransactions(this.hideReversedParam.value, this.hideAccrualsParam.value);
+    });
   }
 
   /**
@@ -215,7 +241,6 @@ export class TransactionsTabComponent implements OnInit {
       });
     }
     this.dataSource = new MatTableDataSource(transactions);
-    this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
