@@ -88,14 +88,6 @@ export class ExportTransactionsComponent implements OnInit {
     });
   }
 
-  /**
-   * Generates client savings transactions report in specified format.
-   * @param outputType Output format type (PDF, CSV, XLS, XLSX)
-   */
-  /**
-   * Generates client savings transactions report in specified format.
-   * @param outputType Output format type (PDF, CSV)
-   */
   generate(outputType: string = 'PDF'): void {
     if (!this.transactionsReportForm.valid) {
       this.transactionsReportForm.markAllAsTouched();
@@ -162,46 +154,47 @@ export class ExportTransactionsComponent implements OnInit {
 
     const today = this.dateUtils.formatDate(new Date(), 'dd-MMM-yyyy');
 
-    const totalDeposits = this.transactionSummary.totalDeposits || 0;
-
-    const totalWithdrawals = this.transactionSummary.totalWithdrawals || 0;
+    const totalDeposits = Number(this.transactionSummary?.totalDeposits ?? 0);
+    const totalWithdrawals = Number(this.transactionSummary?.totalWithdrawals ?? 0);
 
     const openingBalance =
       transactions.length > 0
-        ? Number(transactions[0].runningBalance) +
-          (transactions[0].entryType === 'DEBIT' ? Number(transactions[0].amount) : -Number(transactions[0].amount))
+        ? Number(transactions[0].runningBalance ?? 0) +
+          (transactions[0].entryType === 'DEBIT'
+            ? Number(transactions[0].amount ?? 0)
+            : -Number(transactions[0].amount ?? 0))
         : 0;
 
-    const closingBalance = this.transactionSummary.accountBalance || 0;
+    const closingBalance = Number(this.transactionSummary?.accountBalance ?? 0);
 
     const rows: string[] = [];
 
     // ===== Statement Header =====
-    rows.push(`CUSTOMER NAME,`);
-    rows.push(`CUSTOMER ADDRESS,`);
+    rows.push('CUSTOMER NAME,');
+    rows.push('CUSTOMER ADDRESS,');
     rows.push('');
 
-    rows.push(`SUMMARY STATEMENT FOR:,${fromDate} to ${toDate}`);
+    rows.push(`SUMMARY STATEMENT FOR:,${this.escapeCsv(`${fromDate} to ${toDate}`)}`);
     rows.push(`STATEMENT GENERATED ON:,${today}`);
     rows.push('');
 
-    rows.push(`ACCOUNT NUMBER,${this.savingsAccountId}`);
-    rows.push(`ACCOUNT CLASS (TIER),`);
-    rows.push(`CURRENCY,USD`);
+    rows.push(`ACCOUNT NUMBER,${this.escapeCsv(this.savingsAccountId)}`);
+    rows.push('ACCOUNT CLASS (TIER),');
+    rows.push('CURRENCY,USD');
     rows.push('');
 
-    rows.push(`TOTAL WITHDRAWALS,${totalWithdrawals.toFixed(2)}`);
-    rows.push(`TOTAL DEPOSITS,${totalDeposits.toFixed(2)}`);
-    rows.push(`ACCOUNT BALANCE,${closingBalance.toFixed(2)}`);
-    rows.push(`LEDGER BALANCE,${closingBalance.toFixed(2)}`);
-    rows.push(`CLEARED BALANCE,${closingBalance.toFixed(2)}`);
-    rows.push(`UNCLEARED BALANCE,0.00`);
+    rows.push(`TOTAL WITHDRAWALS,${this.formatCsvAmount(totalWithdrawals)}`);
+    rows.push(`TOTAL DEPOSITS,${this.formatCsvAmount(totalDeposits)}`);
+    rows.push(`ACCOUNT BALANCE,${this.formatCsvAmount(closingBalance)}`);
+    rows.push(`LEDGER BALANCE,${this.formatCsvAmount(closingBalance)}`);
+    rows.push(`CLEARED BALANCE,${this.formatCsvAmount(closingBalance)}`);
+    rows.push('UNCLEARED BALANCE,0.00');
     rows.push('');
 
-    rows.push(`BRANCH ADDRESS,`);
+    rows.push('BRANCH ADDRESS,');
     rows.push('');
 
-    rows.push(`OPENING BALANCE,${openingBalance.toFixed(2)}`);
+    rows.push(`OPENING BALANCE,${this.formatCsvAmount(openingBalance)}`);
     rows.push('');
 
     // ===== Transaction Header =====
@@ -209,21 +202,32 @@ export class ExportTransactionsComponent implements OnInit {
 
     // ===== Transactions =====
     transactions.forEach((t: any) => {
-      const txDate = this.dateUtils.formatDate(new Date(t.date[0], t.date[1] - 1, t.date[2]), 'dd-MMM-yyyy');
+      const transactionDate = new Date(t.date[0], t.date[1] - 1, t.date[2]);
+
+      const txDate = this.dateUtils.formatDate(transactionDate, 'dd-MMM-yyyy');
+
+      const debit = t.entryType === 'DEBIT' ? this.formatCsvAmount(t.amount) : this.formatCsvAmount(0);
+
+      const credit = t.entryType === 'CREDIT' ? this.formatCsvAmount(t.amount) : this.formatCsvAmount(0);
+
+      const balance = this.formatCsvAmount(t.runningBalance);
 
       rows.push(
         [
           txDate,
           txDate,
-          `"${t.narration ?? ''}"`,
-          `"${t.transactionType?.value ?? ''}"`,
-          t.entryType === 'DEBIT' ? Number(t.amount).toFixed(2) : '0.00',
-          t.entryType === 'CREDIT' ? Number(t.amount).toFixed(2) : '0.00',
-          Number(t.runningBalance).toFixed(2)].join(',')
+          this.escapeCsv(t.narration),
+          this.escapeCsv(t.transactionType?.value),
+          debit,
+          credit,
+          balance
+        ].join(',')
       );
     });
 
-    const blob = new Blob([rows.join('\r\n')], {
+    const csvContent = rows.join('\r\n');
+
+    const blob = new Blob([csvContent], {
       type: 'text/csv;charset=utf-8;'
     });
 
@@ -232,9 +236,47 @@ export class ExportTransactionsComponent implements OnInit {
     const link = document.createElement('a');
     link.href = url;
     link.download = `SavingsStatement_${this.savingsAccountId}.csv`;
+
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
 
     URL.revokeObjectURL(url);
+  }
+
+  private formatCsvAmount(value: any): string {
+    return this.escapeCsv(this.formatAmount(value));
+  }
+
+  private formatAmount(value: any): string {
+    if (value === null || value === undefined || value === '') {
+      return '0.00';
+    }
+
+    const normalizedValue = typeof value === 'string' ? value.replace(/\s+/g, '').replace(/,/g, '') : value;
+
+    const amount = Number(normalizedValue);
+
+    if (!Number.isFinite(amount)) {
+      return '0.00';
+    }
+
+    return amount.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+      useGrouping: true
+    });
+  }
+
+  /**
+   * Escapes values safely for CSV.
+   */
+  private escapeCsv(value: any): string {
+    const text = String(value ?? '')
+      .replace(/\r?\n|\r/g, ' ')
+      .replace(/"/g, '""');
+
+    return `"${text}"`;
   }
 
   private downloadCsv(rows: any[]): void {
